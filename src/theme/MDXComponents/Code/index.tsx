@@ -27,37 +27,22 @@ function getTextForCopy(node: React.ReactNode): string {
       return '';
     case 'object':
       if (node instanceof Array) return node.map(getTextForCopy).join('');
-      if ('props' in node) {
-        // skip lines that are "removed" in a diff by adding some recognizable whitespace
-        if (node.props.className?.includes('diff remove')) return '\n \n';
-        return getTextForCopy(node.props.children);
-      }
+      if ('props' in node) return getTextForCopy(node.props.children);
     default:
       return '';
   }
 }
 
-function stripDiffSpacer(str: string): string {
-  // remove the extra space added to removed lines in diffs
-  return str.replace(/\n \n\n/g, '');
-}
-
 function CodeBlock(props: ComponentProps<'code'>): JSX.Element {
   const codeRef = React.useRef<HTMLElement>(null);
-  const language = props.className?.replace(/language-/, '');
-  const code = stripDiffSpacer(getTextForCopy(props.children));
+  const code = getTextForCopy(props.children);
 
   return (
     <div className={codeBlockStyles.CodeBlock}>
-      <div className={codeBlockStyles.header}>
-        <div>{language}</div>
-      </div>
-      <div className={codeBlockStyles.content}>
-        <pre className={clsx(codeBlockStyles.pre, 'shiki')}>
-          <code {...props} ref={codeRef} />
-        </pre>
-        <CopyButton className={codeBlockStyles.button} code={code} />
-      </div>
+      <pre className={clsx(codeBlockStyles.pre, 'shiki')}>
+        <code {...props} ref={codeRef} />
+      </pre>
+      <CopyButton className={codeBlockStyles.button} code={code} />
     </div>
   );
 }

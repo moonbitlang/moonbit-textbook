@@ -1,20 +1,6 @@
 .CodeBlock {
   position: relative;
 }
-  
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--ifm-color-emphasis-700);
-  border-bottom: 1px solid var(--ifm-color-emphasis-200);
-  background-color: var(--ifm-color-emphasis-100);
-  font-size: calc(var(--ifm-code-font-size) * 0.8);
-  font-weight: 500;
-  padding: 0.5em var(--ifm-pre-padding);
-  border-top-left-radius: var(--ifm-pre-border-radius);
-  border-top-right-radius: var(--ifm-pre-border-radius);
-}
 
 .button {
   position: absolute;
@@ -23,8 +9,8 @@
   display: flex;
   align-items: center;
   background: var(--prism-background-color);
-  color: var(--ifm-color-emphasis-700);
-  border: 1.4px solid var(--ifm-color-emphasis-700);
+  color: var(--prism-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: var(--ifm-global-radius);
   padding: 0.4rem;
   line-height: 0;
@@ -39,13 +25,4 @@
 .CodeBlock:hover .button:focus-visible,
 .CodeBlock:hover .button:hover {
   opacity: 1;
-}
-
-.content {
-  position: relative;
-}
-
-.header + .content .pre {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
 }

@@ -5,34 +5,14 @@ import remarkMath from 'remark-math';
 import rehypeMathjax from 'rehype-mathjax';
 import rehypeShiki, { RehypeShikiOptions } from '@shikijs/rehype';
 import { bundledLanguages } from 'shiki';
-import {
-  transformerMetaHighlight,
-  transformerNotationDiff,
-  transformerNotationHighlight,
-  transformerNotationFocus,
-} from '@shikijs/transformers';
 
 const rehypeShikiPlugin = [
   rehypeShiki,
   {
     themes: {
-      dark: 'github-dark',
       light: 'github-light',
+      dark: 'github-dark',
     },
-    transformers: [
-      {
-        name: 'meta',
-        code(node) {
-          const language = this.options.lang ?? 'plaintext';
-          this.addClassToHast(node, `language-${language}`);
-          return node;
-        },
-      },
-      transformerMetaHighlight(),
-      transformerNotationDiff(),
-      transformerNotationHighlight(),
-      transformerNotationFocus(),
-    ],
     langs: [
       ...(Object.keys(bundledLanguages) as Array<keyof typeof bundledLanguages>),
       async () => JSON.parse(await fs.readFile('./languages/moonbit.tmLanguage.json', 'utf-8')),
