@@ -1,8 +1,44 @@
-import {themes as prismThemes} from 'prism-react-renderer';
+import fs from 'node:fs/promises';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import remarkMath from 'remark-math';
 import rehypeMathjax from 'rehype-mathjax';
+import rehypeShiki, { RehypeShikiOptions } from '@shikijs/rehype';
+import { bundledLanguages } from 'shiki';
+import {
+  transformerMetaHighlight,
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerNotationFocus,
+} from '@shikijs/transformers';
+
+const rehypeShikiPlugin = [
+  rehypeShiki,
+  {
+    themes: {
+      dark: 'github-dark',
+      light: 'github-light',
+    },
+    transformers: [
+      {
+        name: 'meta',
+        code(node) {
+          const language = this.options.lang ?? 'plaintext';
+          this.addClassToHast(node, `language-${language}`);
+          return node;
+        },
+      },
+      transformerMetaHighlight(),
+      transformerNotationDiff(),
+      transformerNotationHighlight(),
+      transformerNotationFocus(),
+    ],
+    langs: [
+      ...(Object.keys(bundledLanguages) as Array<keyof typeof bundledLanguages>),
+      async () => JSON.parse(await fs.readFile('./languages/moonbit.tmLanguage.json', 'utf-8')),
+    ],
+  } as RehypeShikiOptions,
+];
 
 const config: Config = {
   title: 'Modern Programming Ideology',
@@ -13,7 +49,7 @@ const config: Config = {
   url: 'https://your-docusaurus-site.example.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/moonbit-textbook/',
+  baseUrl: '/moonbit-textbook/ ',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -38,7 +74,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           remarkPlugins: [remarkMath],
-          rehypePlugins: [rehypeMathjax],
+          rehypePlugins: [rehypeMathjax, rehypeShikiPlugin],
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
@@ -126,10 +162,6 @@ const config: Config = {
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
-    },
-    prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
 };
