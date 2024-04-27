@@ -28,3 +28,21 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* Shiki Styles */
+*,
+*::before,
+*::after {
+  --shiki-dark: var(--ifm-pre-color);
+  --shiki-dark-bg: var(--ifm-color-emphasis-100);
+}
+
+[data-theme='dark'] .shiki {
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+[data-theme='dark'] .shiki,
+[data-theme='dark'] .shiki span {
+  color: var(--shiki-dark) !important;
+}
+/* End Shiki Styles */

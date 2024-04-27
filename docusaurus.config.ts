@@ -1,8 +1,24 @@
-import {themes as prismThemes} from 'prism-react-renderer';
+import fs from 'node:fs/promises';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import remarkMath from 'remark-math';
 import rehypeMathjax from 'rehype-mathjax';
+import rehypeShiki, { RehypeShikiOptions } from '@shikijs/rehype';
+import { bundledLanguages } from 'shiki';
+
+const rehypeShikiPlugin = [
+  rehypeShiki,
+  {
+    themes: {
+      light: 'github-light',
+      dark: 'github-dark',
+    },
+    langs: [
+      ...(Object.keys(bundledLanguages) as Array<keyof typeof bundledLanguages>),
+      async () => JSON.parse(await fs.readFile('./languages/moonbit.tmLanguage.json', 'utf-8')),
+    ],
+  } as RehypeShikiOptions,
+];
 
 const config: Config = {
   title: 'Modern Programming Ideology',
@@ -38,7 +54,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           remarkPlugins: [remarkMath],
-          rehypePlugins: [rehypeMathjax],
+          rehypePlugins: [rehypeMathjax, rehypeShikiPlugin],
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
@@ -126,10 +142,6 @@ const config: Config = {
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
-    },
-    prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
 };
