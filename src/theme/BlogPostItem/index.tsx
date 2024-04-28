@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import {useBlogPost} from '@docusaurus/theme-common/internal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fab } from '@fortawesome/free-brands-svg-icons';
@@ -19,18 +20,24 @@ function useContainerClassName() {
 }
 
 function ShareButtons(): JSX.Element {
-  const url = window.location.href;
   return (
-    <div className={blogPostItemStyles.SocialButtons}>
-      <span className={blogPostItemStyles.FollowButtons}>
-        <Link className="button button--secondary" to='https://x.com/moonbitlang'>Follow us on X</Link>
-      </span>
-      <span className={blogPostItemStyles.ShareButtons}>
-        <Link className={blogPostItemStyles.ShareButton} to={'https://x.com/intent/tweet?url=' + url}><FontAwesomeIcon icon={fab.faXTwitter} size='2x' fixedWidth /></Link>
-        <Link className={blogPostItemStyles.ShareButton} to={'https://www.facebook.com/sharer/sharer.php?u=' + url}><FontAwesomeIcon icon={fab.faFacebook} size='2x' fixedWidth /></Link>
-        <Link className={blogPostItemStyles.ShareButton} to='#' onClick={() => {navigator.clipboard.writeText(url)}}><FontAwesomeIcon icon={fas.faLink} size='2x' fixedWidth /></Link>
-      </span>
-    </div>
+    <BrowserOnly>
+      {() => {
+        const url = window.location.href;
+        return (
+          <div className={blogPostItemStyles.SocialButtons}>
+            <span className={blogPostItemStyles.FollowButtons}>
+              <Link className="button button--secondary" to='https://x.com/moonbitlang'>Follow us on X</Link>
+            </span>
+            <span className={blogPostItemStyles.ShareButtons}>
+              <Link className={blogPostItemStyles.ShareButton} to={'https://x.com/intent/tweet?url=' + url}><FontAwesomeIcon icon={fab.faXTwitter} size='2x' fixedWidth /></Link>
+              <Link className={blogPostItemStyles.ShareButton} to={'https://www.facebook.com/sharer/sharer.php?u=' + url}><FontAwesomeIcon icon={fab.faFacebook} size='2x' fixedWidth /></Link>
+              <Link className={blogPostItemStyles.ShareButton} to='#' onClick={() => {navigator.clipboard.writeText(url)}}><FontAwesomeIcon icon={fas.faLink} size='2x' fixedWidth /></Link>
+            </span>
+          </div>
+        );
+      }}
+    </BrowserOnly>
   )
 }
 
