@@ -1,0 +1,15 @@
+.SocialButtons {
+  display: block;
+}
+
+.ShareButtons {
+  float: right;
+}
+
+.ShareButton {
+  color: var(--ifm-color-secondary);
+}
+
+.ShareButton:hover {
+  color: var(--ifm-color-primary);
+}
