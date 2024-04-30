@@ -58,7 +58,7 @@ Development Environment:
 
 ### Feedback channels
 
-### Discord server
+#### Discord server
 
 The best way to get help with your studies and discuss with the community is joining our [Discord](https://discord.gg/dnCme9Un2w) Server.
 
