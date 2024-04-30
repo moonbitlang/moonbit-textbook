@@ -22,19 +22,18 @@ const rehypeShikiPlugin = [
 
 const config: Config = {
   title: 'Modern Programming Ideology',
-  tagline: 'Dinosaurs are cool',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://moonbitlang.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/moonbit-textbook/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'moonbitlang', // Usually your GitHub org/user name.
+  projectName: 'moonbit-textbook', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -82,7 +81,7 @@ const config: Config = {
           label: 'Textbook',
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/moonbitlang/moonbit-textbook',
           label: 'GitHub',
           position: 'right',
         },
