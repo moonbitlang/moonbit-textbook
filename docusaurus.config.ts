@@ -96,7 +96,7 @@ const config: Config = {
           items: [
             {
               label: 'Textbook',
-              to: '/docs/cover',
+              to: '/docs',
             },
           ],
         },
