@@ -1,6 +1,5 @@
 ---
 slug: /
-sidebar_position: 0
 ---
 
 # 0. Course Overview
@@ -17,9 +16,9 @@ The course is suitable for a wide audience, from programming beginners to experi
 
 | Chapter | Topic | Slides | Video | Code Repository |
 | :-: | :- | :-: | :-: | :-: |
-| 1 | [Program Design](./ch01) | Pending | Pending |  |
-| 2 | [Development Environments & Expressions](./ch02) | Pending | Pending |  |
-| 3 | [Functions, Lists & Recursion](./ch03) | Pending | Pending |  |
+| 1 | [Program Design](./program-design) | Pending | Pending |  |
+| 2 | [Development Environments & Expressions](./development-environments-expressions) | Pending | Pending |  |
+| 3 | [Functions, Lists & Recursion](./functions-lists-recursion) | Pending | Pending |  |
 | 4 | Tuples, Structs & Enums | Pending | Pending |  |
 | 5 | Trees | Pending | Pending |  |
 | 6 | Generics & Higher-Order Functions | Pending | Pending |  |
@@ -49,7 +48,7 @@ The first and most important thing is to connect with the community, where you c
 
 Besides, we have also established a [forum](https://discuss.moonbitlang.com/) for MoonBit-related discussions, where questions, feedback, and suggestions are all welcome.
 
-In this course, we will be using MoonBit as our programming language. The installation and configuration of the development environment will be covered in [Chapter 2](./ch02).
+In this course, we will be using MoonBit as our programming language. The installation and configuration of the development environment will be covered in [Chapter 2](./development-environments-expressions).
 
 ## Acknowledgements
 

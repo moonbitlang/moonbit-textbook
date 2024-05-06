@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # 2. Development Environments & Expressions
 
 ## Development Environments
