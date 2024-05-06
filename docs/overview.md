@@ -3,7 +3,7 @@ slug: /
 sidebar_position: 0
 ---
 
-# Course Overview
+# 0. Course Overview
 
 Welcome to the _**Modern Programming Ideology**_ course.
 
@@ -17,7 +17,7 @@ The course is suitable for a wide audience, from programming beginners to experi
 
 | Chapter | Topic | Slides | Video | Code Repository |
 | :-: | :- | :-: | :-: | :-: |
-| 1 | [Introduction & Program Design](./ch01) | Pending | Pending |  |
+| 1 | [Program Design](./ch01) | Pending | Pending |  |
 | 2 | [Development Environments & Expressions](./ch02) | Pending | Pending |  |
 | 3 | [Functions, Lists & Recursion](./ch03) | Pending | Pending |  |
 | 4 | Tuples, Structs & Enums | Pending | Pending |  |
@@ -53,4 +53,4 @@ In this course, we will be using MoonBit as our programming language. The instal
 
 ## Acknowledgements
 
-This course draws inspiration from [UPenn CIS 120](https://www.seas.upenn.edu/~cis120/current/).
+This course draws inspiration from [UPenn CIS 1200](https://www.seas.upenn.edu/~cis120/current/).
