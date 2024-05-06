@@ -38,22 +38,22 @@ Development Environment:
 
 ### Syllabus
 
-| Chapter | Subject | Slides | Video | Code repository | Recommended Reading |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Course introduction and programming Design | Pending | Pending |  |  |
-| 2 | MoonBit development and expressions in MoonBit | Pending | Pending |  |  |
-| 3 | Functions, Lists and Recursion | Pending | Pending |  |  |
-| 4 | Tuple, structure, enumeration type | Pending | Pending |  | Category Theory for Programmers Chapter 6 |
-| 5 | Data type: tree, binary tree, binary search tree, AVL tree | Pending | Pending |  |  |
-| 6 | Generics and higher-order functions | Pending | Pending |  | Software Foundations Chapter 4, or Programming Language Foundations in Agda Chapter 10 |
-| 7 | Imperative programming: commands, mutable data structures, loops | Pending | Pending |  |  |
-| 8 | Queue: mutable data implementation | Pending | Pending |  |  |
-| 9 | Interface | Pending | Pending |  |  |
-| 10 | Hash tables and closures | Pending | Pending |  |  |
-| 11 | Case: Grammar Parser and Tagless Final | Pending | Pending |  |  |
-| 12 | Case: automatic differentiation | Pending | Pending |  | https://youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi&si=K-7gSi2V8dWvPAyr |
-| 13 | Case: Neural Network | Pending | Pending |  |  |
-| 14 | Case: Virtual Machine Stack | Pending | Pending |  |  |
+| Chapter | Topic | Slides | Video | Code Repository |
+| :-: | :- | :-: | :-: | :-: |
+| 1 | Introduction & Program Design | Pending | Pending |  |
+| 2 | Development Environments & Expressions | Pending | Pending |  |
+| 3 | Functions, Lists & Recursion | Pending | Pending |  |
+| 4 | Tuples, Structs & Enums | Pending | Pending |  |
+| 5 | Trees | Pending | Pending |  |
+| 6 | Generics & Higher-Order Functions | Pending | Pending |  |
+| 7 | Imperative Programming | Pending | Pending |  |
+| 8 | Queues | Pending | Pending |  |
+| 9 | Traits | Pending | Pending |  |
+| 10 | Hash Tables & Closures | Pending | Pending |  |
+| 11 | Case Study: Parser | Pending | Pending |  |
+| 12 | Case Study: Autodiff | Pending | Pending |  |
+| 13 | Case Study: Neural Network | Pending | Pending |  |
+| 14 | Case Study: Stack Machine | Pending | Pending |  |
 
 ### Feedback channels
 
