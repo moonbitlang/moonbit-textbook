@@ -40,9 +40,9 @@ Development Environment:
 
 | Chapter | Topic | Slides | Video | Code Repository |
 | :-: | :- | :-: | :-: | :-: |
-| 1 | Introduction & Program Design | Pending | Pending |  |
-| 2 | Development Environments & Expressions | Pending | Pending |  |
-| 3 | Functions, Lists & Recursion | Pending | Pending |  |
+| 1 | [Introduction & Program Design](./ch01) | Pending | Pending |  |
+| 2 | [Development Environments & Expressions](./ch02) | Pending | Pending |  |
+| 3 | [Functions, Lists & Recursion](./ch03) | Pending | Pending |  |
 | 4 | Tuples, Structs & Enums | Pending | Pending |  |
 | 5 | Trees | Pending | Pending |  |
 | 6 | Generics & Higher-Order Functions | Pending | Pending |  |
