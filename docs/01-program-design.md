@@ -51,7 +51,7 @@ Our goal is to calculate the maximum number of water bottles we can consume, giv
 
 According to the problem description, there is no need to handle any input or output operations. Instead, we should return an integer that represents the maximum number of bottles based on the two input integers, `num_bottles` and `num_exchange`. Therefore, we can write the following function as the interface:
 
-```moonbit
+```moonbit expr
 fn num_water_bottles(num_bottles: Int, num_exchange: Int) -> Int {
   abort("To be done")
 }
