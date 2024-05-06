@@ -35,7 +35,6 @@ Development Environment:
 
 - [VSCode Download](https://code.visualstudio.com/Download)
 - [MoonBit VSCode Extension](https://marketplace.visualstudio.com/items?itemName=moonbit.moonbit-lang&ssr=false#overview)
-- [Development templates](https://github.com/peter-jerry-ye/moonbit-template)
 
 ### Syllabus
 
