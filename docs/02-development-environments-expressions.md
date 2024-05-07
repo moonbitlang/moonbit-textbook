@@ -196,12 +196,31 @@ MoonBit has a rich type system, which includes many other types that we have not
 #### Reduction vs Execution
 
 MoonBit expressions can be seen as a way of representing **values**, and its evaluation can be seen as a series of **computations** or **reductions**. In contrast, imperative programming can be seen as executing a series of **actions** or **commands**, where each command modifies the state of the machine, e.g.,
+
 - Create pointers `x` and `y` and allocate memory, set `x` to 3, set `y` to 4.
 - Set `y` to point to `x`.
 - Increment `x`.
-- ...
-    
-![](/pics/local-store.drawio.webp)
+
+```mermaid
+flowchart LR
+  subgraph G1[Memory]
+    direction RL
+    G1A1[x]-->G1A2[3]
+    G1B1[y]-->G1B2[4]
+  end
+  subgraph G2[Memory]
+    direction RL
+    G2A1[x]-->G2A2[3]
+    G2B1[y]-->G2A2
+  end
+  subgraph G3[Memory]
+    direction RL
+    G3A1[x]-->G3A2[4]
+    G3B1[y]-->G3A2
+  end
+  G1==>G2
+  G2==>G3
+```
 
 We can denote the reduction of an $\texttt{<expression>}$ to a $\texttt{<value>}$ as $\texttt{<expression>} \Rightarrow \texttt{<value>}$. For example,
 - $3 \Rightarrow 3$ (the reduction result of a value is itself)
