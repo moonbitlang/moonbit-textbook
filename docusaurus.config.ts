@@ -66,6 +66,11 @@ const config: Config = {
 
   plugins: [require.resolve('docusaurus-lunr-search')],
 
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
+
   themeConfig: {
     navbar: {
       title: 'Modern Programming Ideology',
@@ -85,6 +90,9 @@ const config: Config = {
     footer: {
       style: 'dark',
       copyright: `Copyright © ${new Date().getFullYear()} IDEA. All rights reserved.`,
+    },
+    mermaid: {
+      theme: {light: 'neutral', dark: 'dark'},
     },
   } satisfies Preset.ThemeConfig,
 };
