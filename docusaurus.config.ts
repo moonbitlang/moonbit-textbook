@@ -21,7 +21,7 @@ const rehypeShikiPlugin = [
 ];
 
 const config: Config = {
-  title: 'Modern Programming Ideology',
+  title: 'Programming with MoonBit: A Modern Approach',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -73,7 +73,7 @@ const config: Config = {
 
   themeConfig: {
     navbar: {
-      title: 'Modern Programming Ideology',
+      title: 'Programming with MoonBit: A Modern Approach',
       logo: {
         alt: 'MoonBit Logo',
         src: 'img/logo.png',
