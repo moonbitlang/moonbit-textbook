@@ -217,7 +217,43 @@ As we can observe, the definition of `List[T]` is inductive. Similar to mathemat
 
 The following figure shows the structure of a list:
 
-![](/pics/list.drawio.webp)
+```mermaid
+block-beta
+  columns 7
+  block
+    C1["Cons"]
+    N1["1"]
+    T1[" "]
+  end
+  space
+  block
+    C2["Cons"]
+    N2["2"]
+    T2[" "]
+  end
+  space
+  block
+    C3["Cons"]
+    N3["3"]
+    T3[" "]
+  end
+  space
+  block
+    C4["Nil"]
+    space
+    space
+  end
+  T1-->C2
+  T2-->C3
+  T3-->C4
+  style C1 fill-opacity:0, stroke-opacity:0
+  style C2 fill-opacity:0, stroke-opacity:0
+  style C3 fill-opacity:0, stroke-opacity:0
+  style C4 fill-opacity:0, stroke-opacity:0
+  style T1 stroke-dasharray: 5 5
+  style T2 stroke-dasharray: 5 5
+  style T3 stroke-dasharray: 5 5
+```
 
 The following examples help deepen our understanding of lists.
 - The following are valid lists:
@@ -455,7 +491,17 @@ When calculating $F_{40}$ on a mainstream performance PC, the first implementati
 
 The figure below visualizes the process of calculating $F_5$ for the first implementation.
 
-![](/pics/fib_simple.drawio.webp)
+```mermaid
+flowchart BT
+  N2["fib(4)"]-->N1["fib(5)"]
+  N3["fib(3)"]-->N1
+  N4["fib(3)"]-->N2
+  N5["fib(2)"]-->N2
+  N6["fib(2)"]-->N3
+  N7["fib(1)"]-->N3
+  N8["fib(2)"]-->N4
+  N9["fib(1)"]-->N4
+```
 
 As we can see, `fib(5)` depends on `fib(4)` and `fib(3)`, and `fib(4)` also depends on `fib(3)`. Therefore, `fib(3)` is calculated twice. If we want to calculate $F_n$ for larger $n$ using function `fib`, more and more calculations will be repeated.
 
@@ -479,7 +525,17 @@ DP is applicable to the problem of Fibonacci sequence, which has:
 
 The figure below visualizes the process of calculating $F_6$ with DP.
 
-![](/pics/fib_unique.drawio.webp)
+```mermaid
+flowchart RL
+  N2["fib(5)"]-->N1["fib(6)"]
+  N3["fib(4)"]-->N1
+  N3-->N2
+  N4["fib(3)"]-->N3
+  N4-->N2
+  N5["fib(2)"]-->N3
+  N5-->N4
+  N6["fib(1)"]-->N4
+```
 
 As we can see, since we reuse the previous calculation results, the function calculates `fib(i)` only once for all $1 \le i \le n$, and thus the growth rate of time cost is much smaller than the naïve implementation.
 
@@ -575,9 +631,13 @@ fn fib2(num : Int) -> Int64 {
 }
 ```
 
-The figure below visualizes the process of calculating $F_5$ and $F_4$ with bottom-up DP.
+The figure below visualizes the process of calculating $F_4$ and $F_5$ with bottom-up DP.
 
-![](/pics/fib_aux.drawio.webp)
+```mermaid
+flowchart LR
+  M1["fib2(4)"]-->M2["aux(4, 0, 1)"]-->M3["aux(3, 1, 1)"]-->M4["aux(2, 1, 2)"]-->M5["aux(1, 2, 3)"]-->M6["aux(0, 3, 5)"]-->3
+  N1["fib2(5)"]-->N2["aux(5, 0, 1)"]-->N3["aux(4, 1, 1)"]-->N4["aux(3, 1, 2)"]-->N5["aux(2, 2, 3)"]-->N6["aux(1, 3, 5)"]-->N7["aux(0, 5, 8)"]-->5
+```
 
 ## Summary
 
