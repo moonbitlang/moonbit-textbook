@@ -509,19 +509,21 @@ This performance is obviously unacceptable. Therefore, we can use the technique 
 
 Dynamic programming (DP) refers to the algorithmic paradigm that solves a complex problem by decomposing it into smaller subproblems that are similar to the original problem but of a reduced scale. It is an optimization over naïve recursion.
 
-DP is applicable to problems that have:
-- **Duplicated subproblems**: DP solves each subproblem once and caches the result, avoiding redundant computations.
+DP is applicable to optimization problems that have:
+- **Overlapping subproblems**: DP solves each subproblem once and caches the result, avoiding redundant computations.
 - **Optimal substructure**: The global solution can be built from subproblems.
 
-It can be implemented top-down or bottom-up:
+Specifically, in cases where non-optimization problems exhibit a recursive substructure and their solutions are uniquely determined by this recursive form, the only solution can be regarded as the optimal solution. Therefore, dynamic programming algorithms can also be applied to these non-optimization problems, such as the Fibonacci sequence.
+
+DP algorithms can be implemented top-down or bottom-up:
 - **Top-down**: For each subproblem, if it has already been solved, use the cached result; otherwise, solve it and cache the result.
 - **Bottom-up**: Solve the subproblems first, then calculate the solutions of larger subproblems from the smaller ones.
 
 ### Solving Fibonacci Sequence with DP
 
 DP is applicable to the problem of Fibonacci sequence, which has:
-- Duplicated subproblems: Both $F_{n + 1}$ and $F_{n + 2}$ require $F_n$.
-- Optimal substructure: $F_n$ is determined by $F_{n - 1}$ and $F_{n - 2}$.
+- Overlapping subproblems: Both $F_{n + 1}$ and $F_{n + 2}$ require $F_n$.
+- Recursive substructure: $F_n$ is determined by $F_{n - 1}$ and $F_{n - 2}$.
 
 The figure below visualizes the process of calculating $F_6$ with DP.
 
