@@ -8,7 +8,7 @@ MoonBit's development tools mainly consist of two parts: the VS Code extension a
 
 The extension is based on the widely used editor, VS Code, and provides a coding environment, a language server, and a package-level building tool. The language server provides useful features such as syntax highlighting, variable reference and definition jumping, automatic code completion, and program running and debugging. A package in MoonBit is a structure organizing multiple source files. In a package, functions defined in different source files are mutually accessible, making it easy for developers to work on various projects, especially those of a small scale.
 
-The command-line tool provides project-level development support, including building, testing, and dependency management. A project in MoonBit typically consists of multiple mutually-dependent packages. One may also import other packages to use features implemented by other developers.
+The command-line tool provides project-level development support, including building, testing, and dependency management. A project in MoonBit typically consists of multiple mutually-dependent packages. You may also import other packages to use features implemented by other developers.
 
 In later chapters, we will provide a detailed introduction to projects and packages. For now, we will focus on the package level.
 
@@ -30,7 +30,7 @@ Advenced users may also install the [command-line tools](https://www.moonbitlang
 
 ### Local Environment
 
-To set up a local environment for MoonBit, one can begin by installing [VS Code](https://code.visualstudio.com/) or [VS Codium](https://vscodium.com/) as the code editor. Afterwards, one can follow the same procedure as in the cloud-native environment to install the MoonBit extension and command-line tools.
+To set up a local environment for MoonBit, you can begin by installing [VS Code](https://code.visualstudio.com/) or [VS Codium](https://vscodium.com/) as the code editor. Afterwards, you can follow the same procedure as in the cloud-native environment to install the MoonBit extension and command-line tools.
 
 ## Expressions
 
@@ -248,7 +248,7 @@ In MoonBit, variable binding can be achieved using the syntax `let <identifier> 
 
 Rebinding an identifier in MoonBit will result in shadowing the previous value associated with that identifier, rather than modifying it. This means that the new value assigned to the identifier will take precedence over the previous value within the scope where it is rebound.
 
-By utilizing variable binding effectively, one can avoid complex nesting of expressions and make their code more readable and maintainable.
+By utilizing variable binding effectively, you can avoid complex nesting of expressions and make their code more readable and maintainable.
 
 #### Expression Blocks and Scope
 
@@ -360,7 +360,7 @@ let value: Int = 15
 
 #### Conditional Expression
 
-Conditional expressions enable one to obtain different values ​​based on specified logical conditions.
+Conditional expressions enable you to obtain different values ​​based on specified logical conditions.
 
 In MoonBit, its syntax is:
 

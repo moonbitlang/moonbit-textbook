@@ -63,7 +63,7 @@ fn add_char(ch: Char, str: String) -> String {
 }
 ```
 
-This syntax enables one to use a function using the interface it provides, without needing to know the details of how it is implemented.
+This syntax enables you to use a function using the interface it provides, without needing to know the details of how it is implemented.
 
 ### Function Application and Evaluation
 
