@@ -18,7 +18,7 @@ The workflow of TDD can be broken down into four steps:
 
 - Step 3: Write the test cases
 
-  In this step, we specify the expected behavior for both normal and abnormal inputs. For instance, when ordering a beer at a bar, one should receive a beer; when ordering a cocktail, one should receive a cocktail instead of a beer. However, what if one orders a bowl of fried rice instead?
+  In this step, we specify the expected behavior for both normal and abnormal inputs. For instance, when you order a beer at a bar, you should receive a beer; when you order a cocktail, you should receive a cocktail instead of a beer. However, what if you order a bowl of fried rice instead?
 
 - Step 4: Implement the program
 
@@ -61,7 +61,7 @@ In this case, we are only defining the interface since in MoonBit, it is permiss
 
 #### Step 3: Write the Test Cases
 
-The process of writing test cases not only helps in validating the solution but also deepens one's understanding of the problem. In this case, two sample test cases are provided:
+The process of writing test cases not only helps in validating the solution but also deepens your understanding of the problem. In this case, two sample test cases are provided:
 
 ```moonbit
 test {
