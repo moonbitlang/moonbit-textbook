@@ -1,12 +1,12 @@
-# Modern Programming Ideology: Tuples, Structures, and Enumerated Types
+# 4. Tuples, Structs & Enums
 
-Hello everyone, welcome to the open course on modern programming concepts brought to you by the IDEA's Digital Infrastructure Innovation. Today's topic is tuples, structures, and enumerated types. In a nutshell, we will be exploring how to customize data structures in MoonBit.
+The topic of this chapter is tuples, structures, and enumerated types. In a nutshell, we will be exploring how to customize data structures in MoonBit.
 
 ## Review: Tuples
 
-First, review the fundamental data type in MoonBit introduced in course 2: Tuples.
+First, review the fundamental data type in MoonBit introduced in [Chapter 2](./development-environments-expressions): Tuples.
 
-A MoonBit tuple is a composite of data which have different types with a fixed length. In comparison, lists are collections of data which have the same type with arbitrary lengths. For example, the length of the list below is not fixed, but the values stored must all be of the character type. In the previous lesson, we didn't discuss why `Cons` is named `Cons`. It is an abbreviation for `Construct`.
+A MoonBit tuple is a composite of data which have different types with a fixed length. In comparison, lists are collections of data which have the same type with arbitrary lengths. For example, the length of the list below is not fixed, but the values stored must all be of the character type. In the previous chapter, we didn't discuss why `Cons` is named "Cons". It is an abbreviation for "Construct".
 
 ```moonbit no-check
 Cons('H', Cons('i', Cons('!', Nil)))
@@ -14,13 +14,13 @@ Cons('H', Cons('i', Cons('!', Nil)))
 
 The definition of tuples is represented by expressions enclosed in parentheses and separated by commas. The types are also specified using the same syntax, as in the definition of personal identity information here: `("Bob", 2023, 10, 24): (String, Int, Int, Int)`.
 
-Tuple members are accessed by indexes, starting from 0 on the left. For example, `(2023, 10, 24).0 == 2023`.
+Tuple members are accessed by indexes, starting from `0` on the left. For example, `(2023, 10, 24).0 == 2023`.
 
 ## Cartesian Product
 
-You may be familiar with the concept of the Cartesian product. The Cartesian product of two sets is a set where all elements are ordered pairs formed by the elements of the original two sets. For example, the Cartesian product of the set of card suits and the numbers 1 to 52 forms all possible ordered pairs of suits and numbers. 
+You may be familiar with the concept of the Cartesian product. The Cartesian product of two sets is a set where all elements are ordered pairs formed by the elements of the original two sets. For example, the Cartesian product of the set of card suits and the numbers $1$ to $52$ forms all possible ordered pairs of suits and numbers.
 
-{ ♥️ ♦️ ♠️ ♣️ } $\times \lbrace n \in \mathbb{N} | 1 \leq n \leq 52 \rbrace$ 
+$\{♥️ ♦️ ♠️ ♣️\} \times \{ n \in \mathbb{N} \mid 1 \leq n \leq 52 \}$
 
 Tuples, on the other hand, go beyond the Cartesian product of two sets; they represent the Cartesian product of multiple sets, making them more accurately termed as ordered sets. Consequently, tuples are also known as product types. You might wonder if there are sum types alongside product types. We will introduce sum types and explore the concepts of **zero** and **one** later.
 
@@ -57,9 +57,21 @@ let other_info = { .. old_info, name: "Hello", }
 
 ## Relationship Between Tuples and Structures
 
-You may notice that tuples and structures seem quite similar. In fact, a structure and a tuple composed of the same types are isomorphic. Isomorphism, in this context, means there exists a one-to-one mapping between two sets. If there are mappings `f: (A) -> B` and `g: (B) -> A` between sets `A` and `B`, such that for any `a` and `b`, it satisfies `g(f(a)) == a` and `f(g(b)) == b`, as shown in the diagram below, then these two sets are isomorphic.
+You may notice that tuples and structures seem quite similar. In fact, a structure and a tuple composed of the same types are isomorphic. Isomorphism, in this context, means there exists a one-to-one mapping between two sets. If there are mappings $f: A \to B$ and $g: B \to A$ between sets $A$ and $B$, such that for any $a \in A$ and $b \in B$, it satisfies $g(f(a)) = a$ and $f(g(b)) = b$, as shown in the diagram below, then these two sets are isomorphic.
 
-![Isomorphism Diagram](../pics/isomorphism.drawio.png)
+```mermaid
+flowchart RL
+  subgraph A["$$A$$"]
+    a(($$a$$))
+  end
+  subgraph B[""$$B$$""]
+    b(($$b$$))
+  end
+  a-..->|"g: B → A"|b
+  b-..->|"f: A → B"|a
+  style A rx:25, ry:25
+  style B rx:25, ry:25
+```
 
 For example, `PersonalInfo` and `(String, Int)` are isomorphic, as we can establish the following pair of mappings:
 
@@ -125,7 +137,7 @@ fn is_zero(i: Int) -> Bool {
 }
 ```
 
-In the examples above, we matched numbers. Here we use the pipe symbol (the 'or' pattern) to simultaneously match multiple possible values. The underscore (_) is the wildcard to match all remaining cases. We can nest patterns in constructors, or bind corresponding structures with identifiers.
+In the examples above, we matched numbers. Here we use the pipe symbol (the `or` pattern) to simultaneously match multiple possible values. The underscore (`_`) is the wildcard to match all remaining cases. We can nest patterns in constructors, or bind corresponding structures with identifiers.
 
 ```moonbit
 fn contains_zero(l: List[Int]) -> Bool {
@@ -137,7 +149,7 @@ fn contains_zero(l: List[Int]) -> Bool {
 }
 ```
 
-In this example, the branch `Cons(0, _)` matches lists starting with 0 with the literal number 0. The branch `Cons(_, tl)` matches other lists, while binding the sublist to the identifier `tl` for further processing. The head of the current list is discarded by the wildcard.
+In this example, the branch `Cons(0, _)` matches lists starting with `0`. The branch `Cons(_, tl)` matches other lists, while binding the sublist to the identifier `tl` for further processing. The head of the current list is discarded by the wildcard.
 
 Pattern matching for tuples and structures is just like for constructions. 
 
@@ -162,7 +174,7 @@ Tuples' patterns are just like their definitions, enclosed in parentheses and se
 * Use another identifier to bind a field, such as `age: my_age`. This is useful when you don't want to use the field name as an identifier.
 * Omit remaining fields with `..` at the end.
 
-Here is another example for better understanding how to use nested patterns. The `zip` function combines two lists into a new list of pairs like a zipper. The length of the resulting list is the minimum of the lengths of the input lists. Given the lists [1, 2, 3] and [a, b, c, d], the zipped list would be (1, a) (2, b) (3, c).
+Here is another example for better understanding how to use nested patterns. The `zip` function combines two lists into a new list of pairs like a zipper. The length of the resulting list is the minimum of the lengths of the input lists. Given the lists `[1, 2, 3]` and `['a', 'b', 'c', 'd']`, the zipped list would be `[(1, 'a'), (2, 'b'), (3, 'c')]`.
 
 ```moonbit
 fn zip(l1: List[Int], l2: List[Char]) -> List[(Int, Char)] {
@@ -218,7 +230,7 @@ fn tomorrow(today: DaysOfWeek) -> DaysOfWeek
 let tuesday = 1 * 2 // Is this Tuesday?
 ```
 
-The most significant difference is that functions defined with enumerated types are total functions, while those defined with integers are partial functions. This increases the possibility of users providing incorrect inputs – they might pass -1 or 8, and we have no way to prevent this through the compiler. Another consideration is, what does adding one to a day of the week mean? What is the meaning of multiplying the day of the week by a number? Why is Monday multiplied by two equal to Tuesday? Why is Tuesday divided by two equal to Monday? Enumerated types can distinguish themselves from existing types and abstract better.
+The most significant difference is that functions defined with enumerated types are total functions, while those defined with integers are partial functions. This increases the possibility of users providing incorrect inputs – they might pass `-1` or `8`, and we have no way to prevent this through the compiler. Another consideration is, what does adding one to a day of the week mean? What is the meaning of multiplying the day of the week by a number? Why is Monday multiplied by two equal to Tuesday? Why is Tuesday divided by two equal to Monday? Enumerated types can distinguish themselves from existing types and abstract better.
 
 Additionally, enumerated types prevent the representation of irrational data. For instance, when using various services, user identification can be based on either a phone number or an email, both of which are optional but only one is required. If we use a structure with two nullable fields to represent this, there is a risk of both fields being empty or both having data, which is not what we want. Therefore, enumerated types can be used to better restrict the range of reasonable data.
 
@@ -251,14 +263,14 @@ The terms tuple, structure, and enumerated type, which we discussed earlier, are
 
 Here, **Zero** is a type that corresponds to an **empty type**. We can define an empty enumerated type without any cases; such a type has no constructors, and no values can be constructed, making it empty. **One** corresponds to a type with only one element, which we call the **Unit type**, and its value is a zero-tuple.
 
-Let's verify the properties mentioned earlier: any number multiplied by 1 equals itself, and any number plus 0 equals itself.
+Let's verify the properties mentioned earlier: any number multiplied by $1$ equals itself, and any number plus $0$ equals itself.
 
 ```moonbit no-check
 fn f[T](t: T) -> (T, Unit) { (t, ()) }
 fn g[T](pair: (T, Unit)) -> T { pair.0 }
 ```
 
-In this context, a type `T` multiplied by 1 implies that `(T, Unit)` is isomorphic to `T`. We can establish a set of mappings: it's straightforward to go from `T` to `(T, Unit)` by simply adding the zero-tuple. Conversely, going from `(T, Unit)` to `T` involves ignoring the zero-tuple. You can intuitively find that they are isomorphic. 
+In this context, a type `T` multiplied by $1$ implies that `(T, Unit)` is isomorphic to `T`. We can establish a set of mappings: it's straightforward to go from `T` to `(T, Unit)` by simply adding the zero-tuple. Conversely, going from `(T, Unit)` to `T` involves ignoring the zero-tuple. You can intuitively find that they are isomorphic. 
 
 ```moonbit
 enum Nothing {}
@@ -291,7 +303,7 @@ enum DaysOfWeek { Monday; Tuesday; ...; }
 
 $\texttt{DaysOfWeek} = 1 + 1 + 1 + 1 + 1 + 1 + 1 = 7$
 
-The data type for the coin toss can be considered as 1 + 1, as each case, `Head` and `Tail`, actually represents a set with only one value. Therefore, each case is isomorphic to the Unit type. When combined by the sum type, the `Coin` type becomes 1 + 1 = 2, representing a set with two values, which is isomorphic to any other type with two values. Similarly, `DaysOfWeek` represents a set of seven values, isomorphic to any other type with seven values. 
+The data type for the coin toss can be considered as $1 + 1$, as each case, `Head` and `Tail`, actually represents a set with only one value. Therefore, each case is isomorphic to the Unit type. When combined by the sum type, the `Coin` type becomes $1 + 1 = 2$, representing a set with two values, which is isomorphic to any other type with two values. Similarly, `DaysOfWeek` represents a set of seven values, isomorphic to any other type with seven values. 
 
 A more interesting example is `List`, using `List[Int]` as an example. 
 
@@ -309,7 +321,7 @@ The definition of `List[Int]` tells us that a list of intergers is either an emp
 
 ## Summary
 
-In this section, we explored various custom data types in MoonBit, including:
+In this chapter, we explored various custom data types in MoonBit, including:
 
 - **Tuples:** Fixed-length combinations of different data types.
 - **Structures:** Tuples with names to fields for better understanding.
@@ -317,6 +329,6 @@ In this section, we explored various custom data types in MoonBit, including:
   
 We also touched upon the concept of algebraic data types, which encompass tuples, structures, and enumerated types, and discussed some basic properties resembling those found in algebra.
 
-For further exploration, we recommend reading Chapter 6 of [Category Theory for Programmers](https://bartoszmilewski.com/2015/01/13/simple-algebraic-data-types/).
+For further exploration, please refer to:
 
-You can also experiment with MoonBit: [try.moonbitlang.com](https://try.moonbitlang.com/course/lec4/data_structures.mbt).
+- _**Category Theory for Programmers**_: [Chapter 6 - Simple Algebraic Data Types](https://bartoszmilewski.com/2015/01/13/simple-algebraic-data-types/)
