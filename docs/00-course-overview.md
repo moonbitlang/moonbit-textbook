@@ -19,7 +19,7 @@ The course is suitable for a wide audience, from programming beginners to experi
 | 1 | [Program Design](./program-design) | Pending | Pending |  |
 | 2 | [Development Environments & Expressions](./development-environments-expressions) | Pending | Pending |  |
 | 3 | [Functions, Lists & Recursion](./functions-lists-recursion) | Pending | Pending |  |
-| 4 | Tuples, Structs & Enums | Pending | Pending |  |
+| 4 | [Tuples, Structs & Enums](./tuples-structs-enums) | Pending | Pending |  |
 | 5 | Trees | Pending | Pending |  |
 | 6 | Generics & Higher-Order Functions | Pending | Pending |  |
 | 7 | Imperative Programming | Pending | Pending |  |
