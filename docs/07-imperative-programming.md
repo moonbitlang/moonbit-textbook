@@ -1,4 +1,4 @@
-# Modern Programming Ideology: Imperative Programming
+# 7. Imperative Programming
 
 ## Revisiting Functional Programming
 
