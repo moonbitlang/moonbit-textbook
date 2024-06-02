@@ -248,7 +248,7 @@ In MoonBit, variable binding can be achieved using the syntax `let <identifier> 
 
 Rebinding an identifier in MoonBit will result in shadowing the previous value associated with that identifier, rather than modifying it. This means that the new value assigned to the identifier will take precedence over the previous value within the scope where it is rebound.
 
-By utilizing variable binding effectively, you can avoid complex nesting of expressions and make their code more readable and maintainable.
+By utilizing variable binding effectively, you can avoid complex nesting of expressions and make the code more readable and maintainable.
 
 #### Expression Blocks and Scope
 
