@@ -26,7 +26,7 @@ Cloud-native environments are typically based on remote servers. Unlike traditio
 
 These servers are provided by different cloud server providers. However, the general setup procedures for a MoonBit development environment remain the same: create or clone a repository, launch the environment, and then install the "MoonBit Language" extension.
 
-Advenced users may also install the [command-line tools](https://www.moonbitlang.com/download/) or clone the [cloud-native development template](https://github.com/peter-jerry-ye/moonbit-template). For further guidance, please refer to the [_MoonBit's Build System Tutorial_](https://www.moonbitlang.com/docs/build-system-tutorial/).
+Advanced users may also install the [command-line tools](https://www.moonbitlang.com/download/) or clone the [cloud-native development template](https://github.com/peter-jerry-ye/moonbit-template). For further guidance, please refer to the [_MoonBit's Build System Tutorial_](https://www.moonbitlang.com/docs/build-system-tutorial/).
 
 ### Local Environment
 
