@@ -352,7 +352,7 @@ let value: Int = {
 }
 ```
 
-Fanally, we get the value of `value`.
+Finally, we get the value of `value`.
 
 ```moonbit no-check
 let value: Int = 15
