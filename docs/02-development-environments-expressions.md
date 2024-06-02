@@ -377,7 +377,7 @@ In MoonBit, conditional expressions are also expressions and can be used within 
 - `( if x > y { "x" } else { "y" } ) + " is bigger"`
 - `if 0.1 + 0.2 == 0.3 { "Great!" } else { "C'est la vie :-)" }`
 
-The expression blocks in the branches must have the same type, and the type of the entire conditional expression is determined by on the type of the expression blocks in the branches. The type of the condition must be a Boolean.
+Expression blocks in branches must have the same type, and the type of the entire conditional expression is determined by the type of an expression block from these branches. The type of the condition must be a Boolean.
 
 ![](/pics/if-else-then.drawio.webp)
 
