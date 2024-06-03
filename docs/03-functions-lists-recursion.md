@@ -4,16 +4,16 @@
 ```moonbit
 let pi = 3.1415
 
-fn put(map: @map.Map[Int, Int64], num: Int, result: Int64) -> @map.Map[Int, Int64] {
+fn put(map: @immut/sorted_map.Map[Int, Int64], num: Int, result: Int64) -> @immut/sorted_map.Map[Int, Int64] {
   map.insert(num, result)
 }
 
-fn get(map: @map.Map[Int, Int64], num: Int) -> Option[Int64] {
+fn get(map: @immut/sorted_map.Map[Int, Int64], num: Int) -> Option[Int64] {
   map.lookup(num)
 }
 
-fn make() -> @map.Map[Int, Int64] {
-  @map.empty()
+fn make() -> @immut/sorted_map.Map[Int, Int64] {
+  @immut/sorted_map.empty()
 }
 
 ```
@@ -164,6 +164,44 @@ For example:
 - `((Int, Int, Int)) -> (Int, Int, Int)` accepts a tuple and returns a tuple
 
 Since `->` is right-associative, in the last example, the brackets in the return type can be omitted.
+
+### Labeled Arguments and Optional Arguments
+
+It is not uncommon to encounter difficulties recalling the order of parameters when calling a function, particularly when multiple parameters share the same type. In such situations, referring to documentation or IDE prompts can be helpful. However, when reviewing code written by others, these resources may not be readily available. To overcome this challenge, labeled arguments offer a practical solution. In MoonBit, we can make a parameter "labeled" by prefixing it with `~`. For instance, consider the following code snippet:
+
+```moonbit
+fn greeting1(~name: String, ~location: String) -> Unit {
+  println("Hi, \(name) from \(location)!")
+}
+
+fn init {
+  greeting1(~name="somebody", ~location="some city")
+  let name = "someone else"
+  let location = "another city"
+  // `~label=label` can be abbreviated as `~label`
+  greeting1(~name, ~location)
+}
+```
+
+By using labeled arguments, the order of the parameters becomes less important. In addition, they can be made optional by specifying a default value when declaring them. When the function is called, if no argument is explicitly provided, the default value will be used. 
+
+Consider the following example:
+
+```moonbit
+fn greeting2(~name: String, ~location: Option[String] = None) -> Unit {
+  match location {
+    Some(location) => println("Hi, \(name)!")
+    None => println("Hi, \(name) from \(location)!")
+  }
+}
+
+fn init {
+  greeting2(~name="A") // Hi, A!
+  greeting2(~name="B", ~location=Some("X")) // Hi, B from X!
+}
+```
+
+It is important to note that the default value expression will be evaluated each time the function is called.
 
 ## Lists
 
@@ -555,13 +593,13 @@ fn get(map: IntMap, num: Int) -> Option[Int64]        // Retrieve
 
 In other words, we should be able to perform the following operations using an `IntMap`: create an empty map, insert a key-value pair into it, and look up the value corresponding to a given key.
 
-Thanks to our paradigm of modular programming, we only need to care about the interfaces rather than the specific implementation. Therefore, there are many siutable data structures in MoonBit's standard library. In this example, we will use `@map.Map[Int, Int64]`, but we can easily replace it with another data structure, as long as it implements the interfaces we need.
+Thanks to our paradigm of modular programming, we only need to care about the interfaces rather than the specific implementation. Therefore, there are many siutable data structures in MoonBit's standard library. In this example, we will use `@immut/sorted_map.Map[Int, Int64]`, but we can easily replace it with another data structure, as long as it implements the interfaces we need.
 
 In the top-down implementation, before each computation, we first check if our desired result has been cached: if it does, we can simply use the result; if it doesn't, we calculate the result and store it in the data structure.
 
 ```moonbit expr
 fn fib1(num: Int) -> Int64 {
-  fn aux(num: Int, map: @map.Map[Int, Int64]) -> (Int64, @map.Map[Int, Int64]) {
+  fn aux(num: Int, map: @immut/sorted_map.Map[Int, Int64]) -> (Int64, @immut/sorted_map.Map[Int, Int64]) {
     match get(map, num) {
       Some(result) => (result, map)
       None => {
@@ -608,7 +646,7 @@ In the bottom-up implementation, we typically start from the smallest subproblem
 
 ```moonbit expr
 fn fib2(num: Int) -> Int64 {
-  fn aux(n: Int, map: @map.Map[Int, Int64]) -> Int64 {
+  fn aux(n: Int, map: @immut/sorted_map.Map[Int, Int64]) -> Int64 {
     let result = get_or_else(get(map, n - 1), 1L) + 
       get_or_else(get(map, n - 2), 1L)
     if n == num { result } 

@@ -236,7 +236,7 @@ Additionally, enumerated types prevent the representation of irrational data. Fo
 
 Each variant of an enumerated type can also carry data. For instance, we've seen the enumerated type `Option`. 
 
-```moonbit
+```moonbit no-check
 enum Option[T] {
     Some(T)
     None
@@ -250,6 +250,35 @@ enum ComputeResult {
 ```
 
 To do this, simply enclose parameters with parentheses and separate them by commas after each variant. In the second example, we define the case of successful integer operation, and the value is an integer. Enumerated types correspond to a distinguishable union. What does that mean? First, it is a union of different cases, for example, the set represented by the type `T` for `Some` and the set defined by the singular value `None`. Second, this union is distinguishable because each case has a unique name. Even if there are two cases with the same data type, they are entirely different. Thus, enumerated types are also known as sum types.
+
+### Labeled Arguments
+
+Similar to functions, enum constructors also support the use of labeled arguments. This feature is beneficial in simplifying pattern matching patterns. For example:
+
+```moonbit
+enum Tree[X] {
+  Nil
+  Branch(X, ~left : Tree[X], ~right : Tree[X])
+}
+
+fn leftmost[X](self : Tree[X]) -> Option[X] {
+  loop self {
+    Nil => None
+    // use `label=pattern` to match labeled arguments of constructor
+    Branch(top, left=Nil, right=Nil) => Some(top)
+    // `label=label` can be abbreviated as `~label`
+    Branch(_, left=Nil, ~right) => continue right
+    // use `..` to ignore all remaining labeled arguments
+    Branch(_, ~left, ..) => continue left
+  }
+}
+
+fn init  {
+  // syntax for creating constructor with labeled arguments is the same as callig labeled function
+  let t: Tree[Int] = Branch(0, right=Nil, left=Branch(1, left=Nil, right=Nil))
+  println(t.leftmost()) // `Some(1)`
+}
+```
 
 ## Algebraic Data Types
 

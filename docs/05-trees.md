@@ -83,10 +83,6 @@ fn dfs_search(target: Int, tree: IntTree) -> Bool {
 
 As we introduced earlier, this is a traversal based on structural recursion. We first handle the base case, i.e., when the tree is empty, as shown in the third line. In this case, we haven't found the value we're looking for, so we return `false`. Then, we handle the recursive case. For a node, we check if its value is the desired result, as shown in line 5. If we find it, the result is `true`. Otherwise, we continue to traverse the left and right subtrees alternately, if either we find it in left subtree or right subtree will the result be `true`. In the current binary tree, we need to traverse both the left and right subtrees to find the given value. The binary search tree introduced later will optimize this process. The only differences between preorder, inorder, and postorder searches is the order of operations on the current node, the left subtree search, and the right subtree search.
 
-### Short-Circuit Evaluation of Booleans
-
-Here, we supplement the content not mentioned in the second lesson, the short-circuit evaluation of booleans. The logical `OR` and `AND` operations are short-circuited. This means that if the result of the current evaluation can be determined, the calculation will be terminated, and the result will be returned directly. For example, in the first case, we are evaluating `true ||` some value. It's clear that `true || any value` will always be true, so only the left side of the operation needs to be evaluated, and the right side won't be evaluated. Therefore, even if we write an instruction such as `abort` here to halt the program, the program will still run normally because the right side hasn't been computed at all. Similarly, if we evaluate `false &&` some value, knowing that `false && any value` will always be false, we won't evaluate the right side either. This brings us back to the traversal of the tree we discussed earlier. When using logical OR, traversal will immediately terminate once any condition is met.
-
 ### Queues
 
 Now let's continue with breadth-first traversal. 
@@ -299,13 +295,13 @@ The key to maintaining balance in a binary balanced tree is that when the tree b
 enum AVLTree {
   Empty
   // current value, left subtree, right subtree, height
-  Node(Int, AVLTree, AVLTree, Int) 
+  Node(Int, ~left: AVLTree, ~right: AVLTree, ~height: Int)
 }
-fn create(value: Int, left: AVLTree, right: AVLTree) -> AVLTree
+fn create(value : Int, ~left : AVLTree = Empty, ~right : AVLTree = Empty) -> AVLTree
 fn height(tree: AVLTree) -> Int
 ```
 
-The creation function creates a new AVL tree without explicitly maintaining its height. Since the insertion and deletion operations of AVL trees are similar to standard binary search trees, we won't go into detail here.
+Here, we used the syntax for labeled arguments, which we introduced in [Chapter 3](./functions-lists-recursion#labeled-argument-and-optional-arguments) and [Chapter 4](./tuples-structs-enums#labeled-arguments). The `create` function creates a new AVL tree whose both subtrees are empty by default, without explicitly maintaining its height. Since the insertion and deletion operations of AVL trees are similar to standard binary search trees, we won't go into detail here.
 
 ![](/pics/rotation.drawio.webp)
 
@@ -332,8 +328,11 @@ Here is a snippet of code for a balanced tree. You can easily complete the code 
 ```moonbit no-check
 fn add(tree: AVLTree, value: Int) -> AVLTree {
   match tree {
-    Node(v, left, right, _) as t => {
-      if value < v { balance(add(left, value), v, right) } else { ... }
+    // When encountering the pattern `Node(v, ..) as t`,
+    // the compiler will know that `t` must be constructed by `Node`,
+    // so `t.left` and `t.right` can be directly accessed within the branch.
+    Node(v, ..) as t => {
+      if value < v { balance(add(t.left, value), v, t.right) } else { ... }
     }
     Empty => ...
   }
