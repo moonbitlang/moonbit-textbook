@@ -343,7 +343,7 @@ After inserting the element, we directly perform a rebalancing operation on the 
 
 ## Summary
 
-In this chapter, we introduced the trees, including the definition of a tree and its related terminology, the definition of a binary tree, traversal algorithms, the definition of a binary search tree, its insertion and deletion operations, as well as the rebalancing operation of AVL trees, a type of balanced binary tree. For furthur study, please refer to:
+In this chapter, we introduced the trees, including the definition of a tree and its related terminology, the definition of a binary tree, traversal algorithms, the definition of a binary search tree, its insertion and deletion operations, as well as the rebalancing operation of AVL trees, a type of balanced binary tree. For further study, please refer to:
 
 - _**Introduction to Algorithms**_: Chapter 12 - Binary Search Trees; and
 - _**Introduction to Algorithms**_: Chapter 13 - Red-Black Trees

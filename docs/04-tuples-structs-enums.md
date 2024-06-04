@@ -274,7 +274,7 @@ fn leftmost[X](self : Tree[X]) -> Option[X] {
 }
 
 fn init  {
-  // syntax for creating constructor with labeled arguments is the same as callig labeled function
+  // syntax for creating constructor with labeled arguments is the same as calling labeled function
   let t: Tree[Int] = Branch(0, right=Nil, left=Branch(1, left=Nil, right=Nil))
   println(t.leftmost()) // `Some(1)`
 }
