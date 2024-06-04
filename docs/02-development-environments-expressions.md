@@ -26,7 +26,7 @@ Cloud-native environments are typically based on remote servers. Unlike traditio
 
 These servers are provided by different cloud server providers. However, the general setup procedures for a MoonBit development environment remain the same: create or clone a repository, launch the environment, and then install the "MoonBit Language" extension.
 
-Advenced users may also install the [command-line tools](https://www.moonbitlang.com/download/) or clone the [cloud-native development template](https://github.com/peter-jerry-ye/moonbit-template). For further guidance, please refer to the [_MoonBit's Build System Tutorial_](https://www.moonbitlang.com/docs/build-system-tutorial/).
+Advanced users may also install the [command-line tools](https://www.moonbitlang.com/download/) or clone the [cloud-native development template](https://github.com/peter-jerry-ye/moonbit-template). For further guidance, please refer to the [_MoonBit's Build System Tutorial_](https://www.moonbitlang.com/docs/build-system-tutorial/).
 
 ### Local Environment
 
@@ -248,7 +248,7 @@ In MoonBit, variable binding can be achieved using the syntax `let <identifier> 
 
 Rebinding an identifier in MoonBit will result in shadowing the previous value associated with that identifier, rather than modifying it. This means that the new value assigned to the identifier will take precedence over the previous value within the scope where it is rebound.
 
-By utilizing variable binding effectively, you can avoid complex nesting of expressions and make their code more readable and maintainable.
+By utilizing variable binding effectively, you can avoid complex nesting of expressions and make the code more readable and maintainable.
 
 #### Expression Blocks and Scope
 
@@ -352,7 +352,7 @@ let value: Int = {
 }
 ```
 
-Fanally, we get the value of `value`.
+Finally, we get the value of `value`.
 
 ```moonbit no-check
 let value: Int = 15
@@ -377,7 +377,7 @@ In MoonBit, conditional expressions are also expressions and can be used within 
 - `( if x > y { "x" } else { "y" } ) + " is bigger"`
 - `if 0.1 + 0.2 == 0.3 { "Great!" } else { "C'est la vie :-)" }`
 
-The expression blocks in the branches must have the same type, and the type of the entire conditional expression is determined by on the type of the expression blocks in the branches. The type of the condition must be a Boolean.
+Expression blocks in branches must have the same type, and the type of the entire conditional expression is determined by the type of an expression block from these branches. The type of the condition must be a Boolean.
 
 ![](/pics/if-else-then.drawio.webp)
 
