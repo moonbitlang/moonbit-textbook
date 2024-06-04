@@ -264,7 +264,7 @@ The following examples help deepen our understanding of lists.
     - `Cons(1, 2)`: `2` itself is not a list.
     - `Cons(1, Cons(Nil, Nil))`: Items are of different types.
 
-Like `Option[T]`, the list type `List[T]` is also genereic.
+Like `Option[T]`, the list type `List[T]` is also generic.
 
 - A list of integers is of type `List[Int]`.
 - A list of strings is of type `List[String]`.
@@ -555,7 +555,7 @@ fn get(map: IntMap, num: Int) -> Option[Int64]        // Retrieve
 
 In other words, we should be able to perform the following operations using an `IntMap`: create an empty map, insert a key-value pair into it, and look up the value corresponding to a given key.
 
-Thanks to our paradigm of modular programming, we only need to care about the interfaces rather than the specific implementation. Therefore, there are many siutable data structures in MoonBit's standard library. In this example, we will use `@map.Map[Int, Int64]`, but we can easily replace it with another data structure, as long as it implements the interfaces we need.
+Thanks to our paradigm of modular programming, we only need to care about the interfaces rather than the specific implementation. Therefore, there are many suitable data structures in MoonBit's standard library. In this example, we will use `@map.Map[Int, Int64]`, but we can easily replace it with another data structure, as long as it implements the interfaces we need.
 
 In the top-down implementation, before each computation, we first check if our desired result has been cached: if it does, we can simply use the result; if it doesn't, we calculate the result and store it in the data structure.
 
