@@ -1,41 +1,13 @@
-# Website
+# Programming with MoonBit: A Modern Approach
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Welcome to the [_**Programming with MoonBit**: A Modern Approach_](https://moonbitlang.github.io/moonbit-textbook/) course.
 
-### Installation
+Programming is a subject with a long history, dating back to the 19th century when Ada Lovelace wrote early programs. Since then, after a century of evolution, programming languages have emerged like mushrooms after rain, various programming paradigms have been proposed, and various industries have gradually had digital demands, with the scale of software development becoming increasingly large. In this context, we are launching this public course, aimed at allowing more people to get in touch with programming, understand modern programming concepts, and master the essentials of software development.
 
-```
-$ yarn
-```
+The course mainly focuses on program design and practical applications. It will introduce various programming paradigms, including functional programming, imperative programming, and object-oriented programming. At the same time, it will demonstrate how to use the [MoonBit](https://moonbitlang.com/) programming language to develop complex software projects.
 
-### Local Development
+The course is suitable for a wide audience, from programming beginners to experienced developers. No specific prerequisites are required, and we will continue to refine the course to provide clear and understandable content.
 
-```
-$ yarn start
-```
+---
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
-```
-$ yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+<center>Copyright © 2024 IDEA. All rights reserved.</center>
