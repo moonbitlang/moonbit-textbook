@@ -107,6 +107,6 @@ It is recommended to adopt a TDD workflow, namely,
 3. Write the test cases
 4. Implement the program
 
-Modern softwares are typically vast in scale, making TDD a reliable workflow for their development. By creating test cases in advance, developers can efficiently identify and rectify potential errors at an early stage, while also ensuring the seamless integration of new functions without disrupting existing ones.
+Modern software products are typically vast in scale, making TDD a reliable workflow for their development. By creating test cases in advance, developers can efficiently identify and rectify potential errors at an early stage, while also ensuring the seamless integration of new functions without disrupting existing ones.
 
 Quiz: For some abnormal inputs, the sample program for the water bottles problem may fail. Can you identify them? (Hint: In MoonBit, the range of `Int` values is $-2^{31}$ to $2^{31} - 1$.)
