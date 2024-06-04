@@ -346,7 +346,7 @@ $$
 \end{array}
 $$
 
-The definition of `List[Int]` tells us that a list of intergers is either an empty list or composed of an integer with a sublist. An empty list is isomorphic to the Unit type, so it can be expressed as `1 + Int * List`. As `List` is recursive, it can be substituted with `1 + Int * 1 + Int * List`. Applying the associative law of multiplication, we get `1 + Int * (1 + Int * List)`. Continuing the substitution and simplification, we find that the set of integer lists is a distinguishable union of a single-value set, an integer set, two integer sets, and even an infinite Cartesian product of integer sets. This corresponds with reality.
+The definition of `List[Int]` tells us that a list of integers is either an empty list or composed of an integer with a sublist. An empty list is isomorphic to the Unit type, so it can be expressed as `1 + Int * List`. As `List` is recursive, it can be substituted with `1 + Int * 1 + Int * List`. Applying the associative law of multiplication, we get `1 + Int * (1 + Int * List)`. Continuing the substitution and simplification, we find that the set of integer lists is a distinguishable union of a single-value set, an integer set, two integer sets, and even an infinite Cartesian product of integer sets. This corresponds with reality.
 
 ## Summary
 
