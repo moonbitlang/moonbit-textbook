@@ -131,6 +131,8 @@ In MoonBit, the type for Boolean values is `Bool`, and it can only have two poss
 
 In MoonBit, `==` represents a comparison between values. In the above examples, the left-hand side is an expression, and the right-hand side is the expected result. In other words, these examples themselves are expressions of type `Bool`, and we expect their values ​​to be `true`.
 
+The `||` and `&&` operators are short-circuited. This means that if the outcome of the entire expression can be determined, the calculation will be halted, and the result will be immediately returned. For instance, in the case of `true || ...`, it is evident that `true || any value` will always yield true. Therefore, only the left side of the `||` operator needs to be evaluated. Similarly, when evaluating `false && ...`, since it is known that `false && any value` will always be false, the right side is not evaluated either. In this case, if the right side of the operator contains side effects, those side effects may not occur.
+
 Quiz: How to define XOR (true if only one is true) using OR, AND, and NOT?
 
 #### Integers
