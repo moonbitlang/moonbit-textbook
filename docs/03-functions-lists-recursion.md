@@ -165,6 +165,44 @@ For example:
 
 Since `->` is right-associative, in the last example, the brackets in the return type can be omitted.
 
+### Labeled Arguments and Optional Arguments
+
+It is not uncommon to encounter difficulties recalling the order of parameters when calling a function, particularly when multiple parameters share the same type. In such situations, referring to documentation or IDE prompts can be helpful. However, when reviewing code written by others, these resources may not be readily available. To overcome this challenge, labeled arguments offer a practical solution. In MoonBit, we can make a parameter "labeled" by prefixing it with `~`. For instance, consider the following code snippet:
+
+```moonbit
+fn greeting1(~name: String, ~location: String) -> Unit {
+  println("Hi, \(name) from \(location)!")
+}
+
+fn init {
+  greeting1(~name="somebody", ~location="some city")
+  let name = "someone else"
+  let location = "another city"
+  // `~label=label` can be abbreviated as `~label`
+  greeting1(~name, ~location)
+}
+```
+
+By using labeled arguments, the order of the parameters becomes less important. In addition, they can be made optional by specifying a default value when declaring them. When the function is called, if no argument is explicitly provided, the default value will be used. 
+
+Consider the following example:
+
+```moonbit
+fn greeting2(~name: String, ~location: Option[String] = None) -> Unit {
+  match location {
+    Some(location) => println("Hi, \(name)!")
+    None => println("Hi, \(name) from \(location)!")
+  }
+}
+
+fn init {
+  greeting2(~name="A") // Hi, A!
+  greeting2(~name="B", ~location=Some("X")) // Hi, B from X!
+}
+```
+
+It is important to note that the default value expression will be evaluated each time the function is called.
+
 ## Lists
 
 Data is everywhere. Sometimes, we have data with the following characteristics:
