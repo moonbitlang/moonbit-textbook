@@ -25,4 +25,4 @@ jobs:
       - name: check typos
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
-        run: echo $ALL_CHANGED_FILES | typos --file-list -
+        run: echo -e "$ALL_CHANGED_FILES" | typos --file-list -
