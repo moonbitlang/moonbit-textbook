@@ -16,6 +16,7 @@ const rehypeShikiPlugin = [
     langs: [
       ...(Object.keys(bundledLanguages) as Array<keyof typeof bundledLanguages>),
       async () => JSON.parse(await fs.readFile('./languages/moonbit.tmLanguage.json', 'utf-8')),
+      async () => JSON.parse(await fs.readFile('./languages/abnf.tmLanguage.json', 'utf-8')),
     ],
   } as RehypeShikiOptions,
 ];

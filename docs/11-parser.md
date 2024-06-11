@@ -1,8 +1,8 @@
-# Case Study: Parser
+# 11. Case Study: Parser
 
 Now with the basic understanding of the MoonBit programming language, we can explore more complex programs and present some interesting cases. In this lecture, we'll present a parser.
 
-There are various types of languages in the world, including programming languages and other symbolic languages. Let's take the four basic arithmetic operations as an example. For a string like `"(1+ 5) * 7 / 2"`, the first step is to split it into a list of tokens. For instance, we can tokenize it into a left parenthesis, integer 1, plus sign, integer 5, right parenthesis, multiplication sign, integer 7, division sign, and integer 2. Although there is no space between integer 1, the parenthesis, and the plus sign, they should be separated into three tokens to follow the lexical rules. This step is known as lexical analysis.
+There are various types of languages in the world, including programming languages and other symbolic languages. Let's take the four basic arithmetic operations as an example. For a string like `"(1+ 5) * 7 / 2"`, the first step is to split it into a @immut/list.List of tokens. For instance, we can tokenize it into a left parenthesis, integer 1, plus sign, integer 5, right parenthesis, multiplication sign, integer 7, division sign, and integer 2. Although there is no space between integer 1, the parenthesis, and the plus sign, they should be separated into three tokens to follow the lexical rules. This step is known as lexical analysis.
 
 Now with a stream of tokens, we will convert it into an abstract syntax tree (AST) based on syntax/grammar. For example, the sum of integers 1 and 5 should come first, then this sum should be multiplied by 7, and finally, this product should be divided by 2, instead of producing the sum of 1 plus the product of 5 and 7, as this does not follow the syntax rules. This step is known as syntax analysis.
 
@@ -27,14 +27,14 @@ Whitespace = " "
 
 Let's take integers and the plus sign for examples. Each line in the lexical rules corresponds to a pattern-matching rule. Content within quotes means matching a string of the same content. Rule `a b` means matching rule `a` first, and if it succeeds, continue to pattern match rule `b`. Rule `a / b` means matching rule `a` or `b`, try matching `a` first, and then try matching rule `b` if it fails. Rule `*a ` with an asterisk in front refers to zero or more matches. Lastly, `%x` means matching a UTF-encoded character, where `x` indicates it's in hexadecimal. For example, `0x30` corresponds to the 48th character `0`, and it is `30` in hexadecimal. With this understanding, let's examine the definition rules. Plus is straightforward, representing the plus sign. Number corresponds to zero or a character from 1-9 followed by zero or more characters from 0-9.
 
-![](../pics/lex_rail.drawio.svg)
+![](/pics/lex_rail.drawio.svg)
 
 In MoonBit, we define tokens as enums, and tokens can be values containing integers or operators and parentheses. Whitespaces are simply discarded.
 
 ```moonbit
 enum Token {
   Value(Int); LParen; RParen; Plus; Minus; Multiply; Divide
-} derive(Debug)
+} derive(Debug, Show)
 ```
 
 ### Parser Combinator
@@ -127,12 +127,12 @@ fn or[Value](self : Lexer[Value], parser2 : Lexer[Value]) -> Lexer[Value] {
 } },) }
 ```
 
-For matching zero or more occurrences, we use a loop as shown in lines 5 to 10. We try parsing the remaining input in line 6. If it fails, we exit the loop; otherwise, we add the parsed content to the list and update the remaining input. Ultimately, the parsing always succeeds, so we put the result into `Some`. Note that we're storing values in a list, and a list is a stack, so it needs to be reversed to obtain the correct order.
+For matching zero or more occurrences, we use a loop as shown in lines 5 to 10. We try parsing the remaining input in line 6. If it fails, we exit the loop; otherwise, we add the parsed content to the @immut/list.List and update the remaining input. Ultimately, the parsing always succeeds, so we put the result into `Some`. Note that we're storing values in a @immut/list.List, and a @immut/list.List is a stack, so it needs to be reversed to obtain the correct order.
 
 ```moonbit
-fn many[Value](self : Lexer[Value]) -> Lexer[List[Value]] {
+fn many[Value](self : Lexer[Value]) -> Lexer[@immut/list.List[Value]] {
   Lexer(fn(input) {
-   loop input, List::Nil {
+   loop input, @immut/list.List::Nil {
       rest, cumul => match self.parse(rest) {
         None => Some((cumul.reverse(), rest))
         Some((value, rest)) => continue rest, Cons(value, cumul)
@@ -141,7 +141,7 @@ fn many[Value](self : Lexer[Value]) -> Lexer[List[Value]] {
 },) }
 ```
 
-Lastly, we can build a lexical analyzer for integers. An integer is either zero or starts with a non-zero digit followed by any number of digits. We'll first build three helper parsers. The first parser matches the character `0` and maps it to the number zero. The next two parsers match `1-9` and `0-9`, respectively. Here, we use the ranges of UTF encoding to determine, and since numbers in UTF are ordered from 0 to 9, we calculate the difference between a character's encoding and the encoding of `0` to obtain the corresponding number. Finally, we follow the syntax rules to construct the parser using our combinators. As shown in lines 11 and 12, we mirror the rules exactly. However, a non-zero digit and any number of digits just form a tuple of a digit and a list of digits, so we need one more mapping step. We use `fold_left` to fold it into an integer. Since digits near the head of the list are left digits to the left, multiplying the digit by 10 and adding a right digit forms the final integer, which we then map to an enum.
+Lastly, we can build a lexical analyzer for integers. An integer is either zero or starts with a non-zero digit followed by any number of digits. We'll first build three helper parsers. The first parser matches the character `0` and maps it to the number zero. The next two parsers match `1-9` and `0-9`, respectively. Here, we use the ranges of UTF encoding to determine, and since numbers in UTF are ordered from 0 to 9, we calculate the difference between a character's encoding and the encoding of `0` to obtain the corresponding number. Finally, we follow the syntax rules to construct the parser using our combinators. As shown in lines 11 and 12, we mirror the rules exactly. However, a non-zero digit and any number of digits just form a tuple of a digit and a @immut/list.List of digits, so we need one more mapping step. We use `fold_left` to fold it into an integer. Since digits near the head of the @immut/list.List are left digits to the left, multiplying the digit by 10 and adding a right digit forms the final integer, which we then map to an enum.
 
 ```moonbit
 // Convert characters to integers via encoding
@@ -154,7 +154,7 @@ let zero_to_nine: Lexer[Int] =
 
 // number = %x30 / (%x31-39) *(%x30-39)  
 let value : Lexer[Token] = zero.or(
-  one_to_nine.and(zero_to_nine.many()).map( // (Int, List[Int])
+  one_to_nine.and(zero_to_nine.many()).map( // (Int, @immut/list.List[Int])
     fn { (i, ls) => ls.fold_left(fn { i, j => i * 10 + j }, init=i) },
   ),
 ).map(Token::Value)
@@ -163,7 +163,7 @@ let value : Lexer[Token] = zero.or(
 We're now just one step away from finishing lexical analysis: analyzing the entire input stream. There may be whitespaces in between tokens, so we allow arbitrary lengths of whitespaces after defining the number or symbol in line 2. We map and discard the second value in the tuple representing spaces, and may repeat the entire parser an arbitrary number of times. Finally, we can split a string into minus signs, numbers, plus signs, parentheses, etc. However, this output stream doesn't follow the syntax rules of arithmetic expressions. For this, we will need syntax analysis.
 
 ```moonbit
-let tokens : Lexer[List[Token]] = 
+let tokens : Lexer[@immut/list.List[Token]] = 
   value.or(symbol).and(whitespace.many())
     .map(fn { (symbols, _) => symbols },) // Ignore whitespaces
     .many()
@@ -183,7 +183,7 @@ expression =/ expression "+" expression / expression "-" expression
 expression =/ expression "*" expression / expression "/" expression
 ```
 
-![](../pics/ast-example.drawio.svg)
+![](/pics/ast-example.drawio.svg)
 
 However, our syntax rules have some issues since it doesn't differentiate the precedence levels. For instance, `a + b * c` should be interpreted as `a` plus the product of `b` and `c`, but according to the current syntax rules, the sum of `a` and `b` multiplied by `c` is also valid, which introduces ambiguity. It also doesn't show associativity. Arithmetic operators should be left-associative, meaning `a + b + c` should be interpreted as `a` plus `b`, then adding `c`. However, the current syntax also allows adding `a` to the sum of `b` and `c`. So, we need to adjust the syntax rules for layering.
 
@@ -214,12 +214,12 @@ enum Expression {
 
 ### Syntax Parsing
 
-Let's define a syntax parser similar to the previous definitions, except that the input is now a list of tokens instead of a string. Most combinators are like the previous ones and can be implemented similarly. The challenge is how to define mutually recursive syntax parsers since `atomic` references `expression`, and `expression` depends on `combine`, which in turn depends on `atomic`. To solve this problem, we offer two solutions: deferring the definition or recursive functions.
+Let's define a syntax parser similar to the previous definitions, except that the input is now a @immut/list.List of tokens instead of a string. Most combinators are like the previous ones and can be implemented similarly. The challenge is how to define mutually recursive syntax parsers since `atomic` references `expression`, and `expression` depends on `combine`, which in turn depends on `atomic`. To solve this problem, we offer two solutions: deferring the definition or recursive functions.
 
 ```moonbit
-type Parser[V] (List[Token]) -> Option[(V, List[Token])]
+type Parser[V] (@immut/list.List[Token]) -> Option[(V, @immut/list.List[Token])]
 
-fn parse[V](self : Parser[V], tokens : List[Token]) -> Option[(V, List[Token])] {
+fn parse[V](self : Parser[V], tokens : @immut/list.List[Token]) -> Option[(V, @immut/list.List[Token])] {
   (self.0)(tokens)
 }
 ```
@@ -267,14 +267,14 @@ The concept of recursive functions is similar. Our parser is essentially a funct
 fn recursive_parser() -> Parser[Expression] {
   // Define mutually recursive functions
   // atomic = Value / "(" expression ")"
-  fn atomic(tokens: List[Token]) -> Option[(Expression, List[Token])] {
+  fn atomic(tokens: @immut/list.List[Token]) -> Option[(Expression, @immut/list.List[Token])] {
     lparen.and(
       Parser(expression) // Reference function
     ).and(rparen).map(fn { ((_, expr), _) => expr})
       .or(number).parse(tokens)
   }
-  fn combine(tokens: List[Token]) -> Option[(Expression, List[Token])] { ... }
-  fn expression(tokens: List[Token]) -> Option[(Expression, List[Token])] { ... }
+  fn combine(tokens: @immut/list.List[Token]) -> Option[(Expression, @immut/list.List[Token])] { ... }
+  fn expression(tokens: @immut/list.List[Token]) -> Option[(Expression, @immut/list.List[Token])] { ... }
 
   // Return the parser represented by the function
   Parser(expression)
@@ -302,18 +302,18 @@ fn recursive_parser[E : Expr]() -> Parser[E] {
   let number : Parser[E] = ptoken(fn { Value(_) => true; _ => false})
     .map(fn { Value(i) => E::number(i) }) // Use the abstract behavior
 
-  fn atomic(tokens: List[Token]) -> Option[(E, List[Token])] { ... }
+  fn atomic(tokens: @immut/list.List[Token]) -> Option[(E, @immut/list.List[Token])] { ... }
   // Convert to a * b * c * ... and a / b / c / ...
-  fn combine(tokens: List[Token]) -> Option[(E, List[Token])] { ... }
+  fn combine(tokens: @immut/list.List[Token]) -> Option[(E, @immut/list.List[Token])] { ... }
   // Convert to a + b + c + ... and a - b - c - ...
-  fn expression(tokens: List[Token]) -> Option[(E, List[Token])] { ... }
+  fn expression(tokens: @immut/list.List[Token]) -> Option[(E, @immut/list.List[Token])] { ... }
 
   Parser(expression)
 }
 // Put things together
-fn parse_string[E : Expr](str: String) -> Option[(E, String, List[Token])] {
-  let (token_list, rest_string) = tokens.parse(str)?
-  let (expr, rest_token) : (E, List[Token]) = recursive_parser().parse(token_list)?
+fn parse_string[E : Expr](str: String) -> Option[(E, String, @immut/list.List[Token])] {
+  let (token_@immut/list.List, rest_string) = tokens.parse(str)?
+  let (expr, rest_token) : (E, @immut/list.List[Token]) = recursive_parser().parse(token_@immut/list.List)?
   Some(expr, rest_string, rest_token)
 }
 ```
@@ -329,12 +329,12 @@ fn Expression::number(i: Int) -> Expression { Number(i) }
 // Parse
 test {
   inspect((parse_string_tagless_final("1 + 1 * (307 + 7) + 5 - 3 - 2") :
-    Option[(Expression, String, List[Token])]), content=
-    #|Some((Minus(Minus(Plus(Plus(Number(1), Multiply(Number(1), Plus(Number(307), Number(7)))), Number(5)), Number(3)), Number(2)), "", List::[]))
+    Option[(Expression, String, @immut/list.List[Token])]), content=
+    #|Some((Minus(Minus(Plus(Plus(Number(1), Multiply(Number(1), Plus(Number(307), Number(7)))), Number(5)), Number(3)), Number(2)), "", @immut/list.List::[]))
   )? // Get the syntax tree
   inspect((parse_string_tagless_final("1 + 1 * (307 + 7) + 5 - 3 - 2") :
-    Option[(BoxedInt, String, List[Token])]), content=
-    #|Some((BoxedInt(315), "", List::[]))
+    Option[(BoxedInt, String, @immut/list.List[Token])]), content=
+    #|Some((BoxedInt(315), "", @immut/list.List::[]))
   )? // Get the calculation result
   }
 ```
