@@ -187,7 +187,7 @@ fn length[T](self : LinkedList[T]) -> Int {
 
 To address the stack overflow issue, the concept of tail calls and tail recursion is introduced. A tail call is a function call that is the last operation in a function, and tail recursion is a specific case where the function calls itself as the last operation.
 
-The following code is a recursion but not a tail recursion function, so it will get into infinity loops and its memory occupation will getting larger during the time. Finally our program will crash because of memory limit excedeed.
+The following code is a recursion but not a tail recursion function, so it will get into infinity loops and its memory occupation will getting larger during the time. Finally our program will crash because of memory limit exceeded.
 
 ![](/pics/overflow.webp)
 
