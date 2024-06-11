@@ -2,7 +2,7 @@
 
 Now with the basic understanding of the MoonBit programming language, we can explore more complex programs and present some interesting cases. In this lecture, we'll present a parser.
 
-There are various types of languages in the world, including programming languages and other symbolic languages. Let's take the four basic arithmetic operations as an example. For a string like `"(1+ 5) * 7 / 2"`, the first step is to split it into a @immut/list.List of tokens. For instance, we can tokenize it into a left parenthesis, integer 1, plus sign, integer 5, right parenthesis, multiplication sign, integer 7, division sign, and integer 2. Although there is no space between integer 1, the parenthesis, and the plus sign, they should be separated into three tokens to follow the lexical rules. This step is known as lexical analysis.
+There are various types of languages in the world, including programming languages and other symbolic languages. Let's take the four basic arithmetic operations as an example. For a string like `"(1+ 5) * 7 / 2"`, the first step is to split it into a list of tokens. For instance, we can tokenize it into a left parenthesis, integer 1, plus sign, integer 5, right parenthesis, multiplication sign, integer 7, division sign, and integer 2. Although there is no space between integer 1, the parenthesis, and the plus sign, they should be separated into three tokens to follow the lexical rules. This step is known as lexical analysis.
 
 Now with a stream of tokens, we will convert it into an abstract syntax tree (AST) based on syntax/grammar. For example, the sum of integers 1 and 5 should come first, then this sum should be multiplied by 7, and finally, this product should be divided by 2, instead of producing the sum of 1 plus the product of 5 and 7, as this does not follow the syntax rules. This step is known as syntax analysis.
 
@@ -127,7 +127,7 @@ fn or[Value](self : Lexer[Value], parser2 : Lexer[Value]) -> Lexer[Value] {
 } },) }
 ```
 
-For matching zero or more occurrences, we use a loop as shown in lines 5 to 10. We try parsing the remaining input in line 6. If it fails, we exit the loop; otherwise, we add the parsed content to the @immut/list.List and update the remaining input. Ultimately, the parsing always succeeds, so we put the result into `Some`. Note that we're storing values in a @immut/list.List, and a @immut/list.List is a stack, so it needs to be reversed to obtain the correct order.
+For matching zero or more occurrences, we use a loop as shown in lines 5 to 10. We try parsing the remaining input in line 6. If it fails, we exit the loop; otherwise, we add the parsed content to the list and update the remaining input. Ultimately, the parsing always succeeds, so we put the result into `Some`. Note that we're storing values in a list, and a list is a stack, so it needs to be reversed to obtain the correct order.
 
 ```moonbit
 fn many[Value](self : Lexer[Value]) -> Lexer[@immut/list.List[Value]] {
@@ -141,7 +141,7 @@ fn many[Value](self : Lexer[Value]) -> Lexer[@immut/list.List[Value]] {
 },) }
 ```
 
-Lastly, we can build a lexical analyzer for integers. An integer is either zero or starts with a non-zero digit followed by any number of digits. We'll first build three helper parsers. The first parser matches the character `0` and maps it to the number zero. The next two parsers match `1-9` and `0-9`, respectively. Here, we use the ranges of UTF encoding to determine, and since numbers in UTF are ordered from 0 to 9, we calculate the difference between a character's encoding and the encoding of `0` to obtain the corresponding number. Finally, we follow the syntax rules to construct the parser using our combinators. As shown in lines 11 and 12, we mirror the rules exactly. However, a non-zero digit and any number of digits just form a tuple of a digit and a @immut/list.List of digits, so we need one more mapping step. We use `fold_left` to fold it into an integer. Since digits near the head of the @immut/list.List are left digits to the left, multiplying the digit by 10 and adding a right digit forms the final integer, which we then map to an enum.
+Lastly, we can build a lexical analyzer for integers. An integer is either zero or starts with a non-zero digit followed by any number of digits. We'll first build three helper parsers. The first parser matches the character `0` and maps it to the number zero. The next two parsers match `1-9` and `0-9`, respectively. Here, we use the ranges of UTF encoding to determine, and since numbers in UTF are ordered from 0 to 9, we calculate the difference between a character's encoding and the encoding of `0` to obtain the corresponding number. Finally, we follow the syntax rules to construct the parser using our combinators. As shown in lines 11 and 12, we mirror the rules exactly. However, a non-zero digit and any number of digits just form a tuple of a digit and a list of digits, so we need one more mapping step. We use `fold_left` to fold it into an integer. Since digits near the head of the list are left digits to the left, multiplying the digit by 10 and adding a right digit forms the final integer, which we then map to an enum.
 
 ```moonbit
 // Convert characters to integers via encoding
@@ -214,7 +214,7 @@ enum Expression {
 
 ### Syntax Parsing
 
-Let's define a syntax parser similar to the previous definitions, except that the input is now a @immut/list.List of tokens instead of a string. Most combinators are like the previous ones and can be implemented similarly. The challenge is how to define mutually recursive syntax parsers since `atomic` references `expression`, and `expression` depends on `combine`, which in turn depends on `atomic`. To solve this problem, we offer two solutions: deferring the definition or recursive functions.
+Let's define a syntax parser similar to the previous definitions, except that the input is now a list of tokens instead of a string. Most combinators are like the previous ones and can be implemented similarly. The challenge is how to define mutually recursive syntax parsers since `atomic` references `expression`, and `expression` depends on `combine`, which in turn depends on `atomic`. To solve this problem, we offer two solutions: deferring the definition or recursive functions.
 
 ```moonbit
 type Parser[V] (@immut/list.List[Token]) -> Option[(V, @immut/list.List[Token])]
@@ -312,8 +312,8 @@ fn recursive_parser[E : Expr]() -> Parser[E] {
 }
 // Put things together
 fn parse_string[E : Expr](str: String) -> Option[(E, String, @immut/list.List[Token])] {
-  let (token_@immut/list.List, rest_string) = tokens.parse(str)?
-  let (expr, rest_token) : (E, @immut/list.List[Token]) = recursive_parser().parse(token_@immut/list.List)?
+  let (token_list, rest_string) = tokens.parse(str)?
+  let (expr, rest_token) : (E, @immut/list.List[Token]) = recursive_parser().parse(token_list)?
   Some(expr, rest_string, rest_token)
 }
 ```
