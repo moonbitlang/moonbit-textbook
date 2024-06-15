@@ -29,6 +29,7 @@
     "docusaurus-lunr-search": "^3.3.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-icons": "^5.2.1",
     "rehype-mathjax": "^6.0.0",
     "remark-math": "^6.0.0"
   },
