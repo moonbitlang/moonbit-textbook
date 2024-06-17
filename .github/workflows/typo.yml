@@ -10,13 +10,17 @@ jobs:
       FORCE_COLOR: 1
       TYPOS_VERSION: v1.19.0
     steps:
-      - name: download typos
-        run: curl -LsSf https://github.com/crate-ci/typos/releases/download/$TYPOS_VERSION/typos-$TYPOS_VERSION-x86_64-unknown-linux-musl.tar.gz | tar zxf - -C ${CARGO_HOME:-~/.cargo}/bin
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+
       - name: check typos
-        run: typos
+        uses: crate-ci/typos@v1.22.4
+        with:
+          files: ${{ steps.changed-files.outputs.all_changed_files }}
+          config: ./_typos.toml
