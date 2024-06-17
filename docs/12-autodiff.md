@@ -1,32 +1,32 @@
-# Case Study: Automatic Differentiation
+# 12. Case Study: Autodiff
 
-Today, we will talk about another case study on automatic differentiation, while avoiding some of the complex mathematical concepts.
+Today, we will talk about another case study on automatic differentiation (autodiff), while avoiding some of the complex mathematical concepts.
 
 Differentiation is an important operation in computer science. In machine learning, neural networks based on gradient descent apply differentiation to find local minima for training. You might be more familiar with solving functions and approximating zeros using Newton's method. Let's briefly review it. Here, we have plotted a function and set the initial value to 1, which is point A on the number axis. 
 
-![height:600px](../pics/geogebra-export.png)
+![](/pics/geogebra-export-0.webp)
 
-![height:600px](../pics/geogebra-export%20(1).png)
+![](/pics/geogebra-export-1.webp)
 
 We want to approximate the zeros near it. We calculate point B on the function corresponding to the x-coordinate of this point and find the derivative at the point, which is the slope of the tangent line at that point. 
 
-![height:600px](../pics/geogebra-export%20(2).png)
+![](/pics/geogebra-export-2.webp)
 
-![height:600px](../pics/geogebra-export%20(3).png)
+![](/pics/geogebra-export-3.webp)
 
 By finding the intersection of the tangent line and the x-axis, we get a value that approximates zero. 
 
-![height:600px](../pics/geogebra-export%20(4).png)
+![](/pics/geogebra-export-4.webp)
 
 We then repeat the process to find the point corresponding to the function, calculate the derivative, and find the intersection of the tangent line and the x-axis. 
 
-![height:600px](../pics/geogebra-export%20(6).png)
+![](/pics/geogebra-export-5.webp)
 
-![height:600px](../pics/geogebra-export%20(7).png)
+![](/pics/geogebra-export-6.webp)
 
 This way, we can gradually approach zero and get an approximate solution. We will provide the code implementation at the end.
 
-![height:600px](../pics/geogebra-export%20(8).png)
+![](/pics/geogebra-export-7.webp)
 
 Today, we will look at the following simple combination of functions, involving only addition and multiplication. For example, when calculating 5 times $x_0$ squared plus $x_1$, if $x_0$ is 10 and $x_1$ is 100, we need to calculate the value of the function, 600, the partial derivative with respect to $x_0$, 100, and the partial derivative with respect to $x_1$, 1.
 
