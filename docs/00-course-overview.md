@@ -27,7 +27,7 @@ The course is suitable for a wide audience, from programming beginners to experi
 | 9 | [Traits](./traits) | Pending | Pending |  |
 | 10 | [Hash Maps & Closures](./hash-maps-closures) | Pending | Pending |  |
 | 11 | [Case Study: Parser](./parser) | Pending | Pending |  |
-| 12 | Case Study: Autodiff | Pending | Pending |  |
+| 12 | [Case Study: Autodiff](./autodiff) | Pending | Pending |  |
 | 13 | Case Study: Neural Network | Pending | Pending |  |
 | 14 | Case Study: Stack Machine | Pending | Pending |  |
 
