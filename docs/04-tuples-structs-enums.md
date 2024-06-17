@@ -256,27 +256,38 @@ To do this, simply enclose parameters with parentheses and separate them by comm
 Similar to functions, enum constructors also support the use of labeled arguments. This feature is beneficial in simplifying pattern matching patterns. For example:
 
 ```moonbit
-enum Tree[X] {
-  Nil
-  Branch(X, ~left : Tree[X], ~right : Tree[X])
+enum Side {
+  FrenchFries
+  Salad
 }
 
-fn leftmost[X](self : Tree[X]) -> Option[X] {
-  loop self {
-    Nil => None
+enum Drink {
+  Coke
+  Sprite
+  Soup
+}
+
+enum Order {
+  ChickenThigh(~side : Side, ~drink : Drink)
+  KayaToast(~drink : Drink, ~no_kaya : Bool)
+}
+
+fn getSoftDrink(order : Order) -> Option[Drink] {
+  match order {
     // use `label=pattern` to match labeled arguments of constructor
-    Branch(top, left=Nil, right=Nil) => Some(top)
+    ChickenThigh(side=_, drink=Soup) => None
     // `label=label` can be abbreviated as `~label`
-    Branch(_, left=Nil, ~right) => continue right
+    ChickenThigh(side=_, ~drink) => Some(drink)
     // use `..` to ignore all remaining labeled arguments
-    Branch(_, ~left, ..) => continue left
+    KayaToast(drink=Soup, ..) => None
+    KayaToast(~drink, ..) => Some(drink)
   }
 }
 
-fn init  {
+fn init {
   // syntax for creating constructor with labeled arguments is the same as calling labeled function
-  let t: Tree[Int] = Branch(0, right=Nil, left=Branch(1, left=Nil, right=Nil))
-  println(t.leftmost()) // `Some(1)`
+  let order : Order = ChickenThigh(side=Salad, drink=Coke)
+  let _: Option[Drink] = getSoftDrink(order)
 }
 ```
 
