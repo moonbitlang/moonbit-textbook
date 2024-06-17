@@ -1,0 +1,8 @@
+.ShareButtons {
+  float: right;
+}
+
+.ShareButton {
+  padding: var(--ifm-badge-padding-horizontal);
+  color: var(--ifm-font-color-base);
+}
