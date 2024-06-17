@@ -22,9 +22,9 @@ The course is suitable for a wide audience, from programming beginners to experi
 | 4 | [Tuples, Structs & Enums](./tuples-structs-enums) | Pending | Pending |  |
 | 5 | [Trees](./trees) | Pending | Pending |  |
 | 6 | [Generics & Higher-Order Functions](./generics-higher-order-functions) | Pending | Pending |  |
-| 7 | Imperative Programming | Pending | Pending |  |
-| 8 | Queues | Pending | Pending |  |
-| 9 | Traits | Pending | Pending |  |
+| 7 | [Imperative Programming](./imperative-programming) | Pending | Pending |  |
+| 8 | [Queues](./queues) | Pending | Pending |  |
+| 9 | [Traits](./traits) | Pending | Pending |  |
 | 10 | [Hash Maps & Closures](./hash-maps-closures) | Pending | Pending |  |
 | 11 | Case Study: Parser | Pending | Pending |  |
 | 12 | Case Study: Autodiff | Pending | Pending |  |
