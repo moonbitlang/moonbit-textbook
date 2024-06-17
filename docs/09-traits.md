@@ -214,7 +214,7 @@ A map should support the following methods:
 The map can be implemented using a list of pairs.
 
 ```moonbit
-type Map[Key, Value] List[(Key, Value)]
+type Map[Key, Value] @immut/list.List[(Key, Value)]
 ```
 
 The first two basic methods, `make` and `put`, can be easily implemented as follows:
