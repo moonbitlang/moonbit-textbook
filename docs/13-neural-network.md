@@ -219,7 +219,7 @@ The above is the entire structure of this neural network. Now, we will try to im
 ### Basic Operations
 
 First, we define an abstraction for operations. The operations we need to perform include:
-- `constant`: type convertion from `Double` to a certain type;
+- `constant`: type conversion from `Double` to a certain type;
 - `value`: retrieving the intermediate result from that type; and
 - `op_add`, `op_neg`, `op_mul`, `op_div`, `exp`: addition, multiplication, division, negation, and exponential operations.
 
