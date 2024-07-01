@@ -1,82 +1,141 @@
-# Case Study: Stack-based Virtual Machine  
+# 14. Case Study: Stack Machine  
 
-Today, we are going to try to implement a simple stack-based virtual machine, taking the backend Wasm used by Moonbit as an example. In the first part, we will introduce what a stack-based virtual machine is and the instructions we are going to implement.
+In this chapter, we are going to implement a simple stack-based virtual machine based on WebAssembly.
 
-Before explaining the virtual machine, let's explain two concepts: compilation and interpretation. As we all know, the programs we write are in text format. What the computer can really execute are binary formats. So, there is a compilation process in between. Compilation is the use of a compiler to convert the source program, usually the source code, into the target program we want to execute. After that, we can directly execute the binary format of the target program, providing various inputs during its operation, such as command line arguments, command line input, or various files, network resources, to obtain the output we expect. The compiled language you are familiar with may be C language. But sometimes, for some languages, we don't compile and execute directly, but directly input the text format source code to the interpreter, let the interpreter read the program while executing, to get the output we want. Typical ones are generally JavaScript or Python. Broadly speaking, the CPU is also a kind of interpreter.
+## Compilation vs Interpretation
 
-Let's extend the topic a bit. Interested students can search and learn. In fact, the interpreter and the compiler are not completely separate concepts. We can transform the interpreter into a compiler through a two-way mapping. The concept used here is partial computation, which is a program optimization technique, that is, to specialize the computation based on known information. For an extreme example, if your interpreter is a calculator and your program is an arithmetic expression, then you can use these two pieces of information to directly calculate the value corresponding to the program, thus obtaining a target program. This target program is equivalent to the compiled program, and you only need to input data to get the output program.
+Before explaining the idea of a virtual machine, let's explain two concepts: compilation and interpretation. As we all know, the code we write everyday are in text format, while what computers can really execute are binary instructions. There is a compilation process in between. Compilation is the use of a compiler to convert the source code into the target programs, so that we can execute the program with various inputs to obtain the output we expect. Many languages, such as C, are compiled languages. However, for some languages, we don't compile and execute the code directly, but instead input the source code to an interpreter, and let it read the code while simultaneously performing the actions accordingly. Such languages, e.g., JavaScript and Python, are called interpreted languages. Broadly speaking, the CPU is also a kind of interpreter.
 
-In addition to compiling and interpreting execution, another way is to combine the two. A typical example is Java. The Java virtual machine was created to achieve the purpose of writing once and running everywhere, defining an instruction set that is not based on any platform, and then implementing an interpreter on different platforms. So the first step is to compile from the source code to this virtual instruction set, and then the interpreter interprets and executes the instruction set. The interpreter here is also a virtual machine. There are two common types of virtual machines: one is the stack-based virtual machine, where operands are stored on the stack, and data follows the LIFO (Last In First Out) principle. The other is the register-based virtual machine, similar to a normal computer, where operands are stored in registers. The stack-based virtual machine is relatively simple to implement and has a smaller code size, while the register-based virtual machine is closer to the actual computer structure and has higher performance.
+Let's extend the topic a bit for interested students. In fact, the interpreter and the compiler are not completely separate concepts. We can transform the interpreter into a compiler through a two-way mapping. The concept used here is partial computation, which is a program optimization technique, that is, to specialize the computation based on known information. For an extreme example, if your interpreter is a calculator and your program is an arithmetic expression, then you can use these two pieces of information to directly calculate the value corresponding to the program, thus obtaining a target program. This target program is equivalent to the compiled program, and you only need to input data to get the output program.
 
-example: Lua VM Maximize function(register-based)
-```
-MOVE   2 0 0 ; R(2) = R(0)
-LT     0 0 1 ; R(0) < R(1)?
-JMP    1     ; JUMP -> 5 (4 + 1)
-MOVE   2 1 0 ; R(2) = R(1)
-RETURN 2 2 0 ; return R(2)
-RETURN 0 1 0 ; return 
-```
-example: WASM Maximize function(stack-based)
-```wasm
-local.get $a local.set $m                     ;; let mut m = a
-local.get $a local.get $b i32.lt_s            ;; if a < b {
-if local.get $b local.set $m end              ;; m = b }
-local.get $m                                  ;; m
-```
+## Virtual Machines
 
-Now that we have mentioned WebAssembly, let's give it a brief introduction. WebAssembly, as its name suggests, Web+Assembly, is a virtual instruction set. It was initially used on the web and can be used in browsers, but since it is an instruction set, it can be executed on other platforms as long as a virtual machine is implemented, so there are also runtimes like [Wasmtime](https://github.com/bytecodealliance/wasmtime), (WAMR)[https://github.com/bytecodealliance/wasm-micro-runtime], [WasmEdge](https://wasmedge.org/), etc. It is also the first compilation backend of MoonBit. One of its major features is that its instruction set also has a type system, so there is a great guarantee of security. Today we will take a subset of the WebAssembly instruction set as an example.
+In addition to compilation and interpretation, another way is to combine the two. A typical example is Java. The Java Virtual Machine (JVM) was created to achieve the purpose of "writing once and running everywhere". It has a platform-independent instruction set and different interpreters for different platforms. To execute a Java program, the first step is to compile from the source code to the instruction set, and then use the interpreter to interpret the instructions.
 
-The data we consider today is only 32-bit signed integers, that is, Int in Moonbit. To meet the needs of control flow, we use non-zero integers to represent true, and zero to represent false. Our instruction set includes: data operations, data storage, and control flow. On the data side, const can define an integer constant, as well as addition, subtraction, equality judgment, and modulo. Data storage includes fetching and storing operations from local parameters. Control flow includes if-else and function calls.
+There are two common types of virtual machines: one is the stack-based virtual machine, where operands are stored on a stack following the Last-In First-Out (LIFO) principle; the other is the register-based virtual machine, where operands are stored in registers like what actually happens in a normal computer. The stack-based virtual machine is simpler to implement and has a smaller code size, while the register-based virtual machine is closer to the actual computer organization and has higher performance.
 
-[The definition of types in Moonbit](https://www.moonbitlang.com/docs/syntax#built-in-data-structures) is basically a one-to-one copy: data is defined using an enumeration type, although we only have 32-bit signed integers; instructions, as just introduced, include the definition of constants, addition, modulo, equality, and function calls, local fetching and setting values, all identified by strings. Finally, there is conditional judgment, which includes an integer and two instruction lists. The integer represents how many calculation results will be left after this expression block ends, and the two instruction lists correspond to the situations when the condition is true and false, respectively.
+Taking the `max` function as an example,
+- Lua VM (register-based):
+  ```
+  MOVE   2 0 0 ; R(2) = R(0)
+  LT     0 0 1 ; R(0) < R(1)?
+  JMP    1     ; JUMP -> 5 (4 + 1)
+  MOVE   2 1 0 ; R(2) = R(1)
+  RETURN 2 2 0 ; return R(2)
+  RETURN 0 1 0 ; return
+  ```
+- WebAssembly VM (stack-based):
+  ```wasm
+  local.get $a local.set $m                     ;; let mut m = a
+  local.get $a local.get $b i32.lt_s            ;; if a < b {
+  if local.get $b local.set $m end              ;; m = b }
+  local.get $m                                  ;; m
+  ```
 
-The function type definition includes the function name, input parameters, output parameters, local variables, and the function body. Here, since we only have one data type, we only record their respective names and quantities, without considering the specific corresponding types. A complete program includes multiple functions and an optional function as the program entry point.
+## WebAssembly
 
-Let's take a look at the specific operation process of the stack-based virtual machine. First is numerical calculation. Taking 1+2 as an example, we have a stack, which is initially empty. The first thing we need to do is to add data to the stack. Since it is a constant, we use the constant instruction to add 1 and 2. Then, we use the addition instruction. The addition instruction will take the top two values of the stack, add them together, and store the result back on the top of the stack. So, after the operation is completed, the top element of the stack is 3.
+Now, let's give a brief introduction to WebAssembly. As its name suggests, it is a virtual instruction set, which was initially used on the web, but since it is an instruction set, it can also be used on other platforms as long as a virtual machine is implemented, so there are also runtimes like [Wasmtime](https://github.com/bytecodealliance/wasmtime), [WAMR](https://github.com/bytecodealliance/wasm-micro-runtime), [WasmEdge](https://wasmedge.org/), etc. It is also the first backend of MoonBit. One of its major features is that its instruction set also has a type system which guarantees security.
 
-```moonbit no-check
-List::[ Const(1), Const(2), Add ]
-```
+Here, we will only consider a subset of WebAssembly where the only data type is 32-bit signed integers, and we will use non-zero integers to represent `true` and zero to represent `false` in conditional statements. Also, we will only consider very limited subset of instructions as follows:
 
-![](../pics/add.drawio.svg)
+- Create a static constant: `const`
+- Arithmetic operations: `add`, `minus`, `equal`, `modulo`
+- Function call: `call`
+- Get/set the values of local variables: `local.get`, `local.set`
+- Conditional statement: `if/else`
 
-In addition to directly using the constant instruction for definition, we can also use local variables. These variables come from the function's parameters and some defined temporary variables. For example, in this addition, there are parameters a and b available for us to use. We use the fetch instruction to store the corresponding values on the stack, and then perform the calculation. Each local variable can be modified, and can be done through the Set instruction.
-
-```moonbit no-check
-List::[ Local_Get("a"), Local_Get("b"), Add ]
-```
-
-![](../pics/local.drawio.svg)
-
-After that, we can also call other functions for calculation. In this example, we use the addition function for calculation. We still put 1 and 2 on the stack. Then, we call the function. At this time, according to the number of function parameters, the corresponding number of elements on the top of the stack will be taken out, bound to local variables in order, and an element representing the function will be added to the stack. This element separates the original stack data from the function's data, and this element will also record the number of function return values. After the function calculation is finished, according to the number of return values, we take out the top elements of the stack, remove the function's element, and then put the top elements back on the top of the stack, so that we get the calculation result at the place where the function is called.
-
-
-```moonbit no-check
-Lists::[ Const(1), Const(2), Call("add") ]
-```
-
-![](../pics/return.drawio.svg)
-
-As for conditional branching, as we said before, we use whether the 32-bit integer is non-zero to represent true or false. When we execute the IF statement, we take out the top element of the stack, judge according to its value, if it is true, then execute the then branch, if it is false, then execute the else branch. It is worth noting that each code block in Wasm has parameter types and return value types, specifically referring to the number and type of stack top elements involved in the calculation when entering the code block, and the modification of the stack top elements compared to the original calculation environment when exiting the code block. For example, here, when we enter the conditional judgment code block, there is no input, so we assume that the stack is empty when we perform calculations inside the IF code block, no matter what is on the stack originally, it is irrelevant to the current code block. And we declared to return an integer, so when we normally end the execution, there must be and only one integer in the current calculation environment.
-
-```moonbit no-check
-List::[ 
-Const(1), Const(0), Equal,
-If(1, List::[Const(1)], List::[Const(0)])
-]
-```
-
-![](../pics/if.drawio.svg)
-
-We use the content we just described to implement an addition program. The definition of the addition function has been seen before, and we added a test_add as the main entry of the program. The only thing to pay attention to is that after calling the add function, we call the print_int function again. The print_int is a special function. You may have noticed that I did not mention how to define input and output in Wasm, because these functions need to be implemented by external functions, Wasm itself can be considered as a program running in a sandbox.
+They can be represented with MoonBit as follows:
 
 ```moonbit
+enum Value { I32(Int) }
+
+enum Instruction {
+  Const(Value)                         // Create a static constant
+  Add; Sub; Modulo; Equal              // Arithmetic operations
+  Call(String)                         // Function call
+  Local_Get(String); Local_Set(String) // Get/set the values of local variables
+  If(Int, @immut/list.List[Instruction], @immut/list.List[Instruction]) // Conditional statement
+}
+```
+
+The above definition is basically a one-to-one copy from WebAssembly. It is worth noting that `If` takes an integer and two instruction lists as its parameters. The integer represents the number of results to be put on the stack after the `if/else` block ends, and the two instruction lists correspond to the cases when the condition is `true` and `false`, respectively.
+
+Similarly, we can also easily define the structures of functions and programs:
+
+```moonbit
+struct Function {
+  name : String
+  params : @immut/list.List[String]; result : Int; locals : @immut/list.List[String]
+  instructions : @immut/list.List[Instruction]
+}
+
 struct Program {
   functions : @immut/list.List[Function]
   start : Option[String]
 }
 ```
+
+A function has a name, a list of parameters, a result, a list of local variables, and a list of instructions representing the function body. A program includes multiple function definitions and an optional function as the entry point.
+
+### Examples
+
+Now, let's take a look at some examples.
+
+#### Basic Arithmetic Calculations
+
+Taking `1 + 2` as an example, we have a stack which is initially empty. The first thing we need to do is to push the operands as static constants to the stack using the `Const` instruction. Then, we use the `Add` instruction to add them up. It consumes two operands from the top of the stack and stores their sum back to the top of the stack. Thus, after the operation, the top element of the stack is `3`.
+
+```moonbit no-check
+@immut/list.List::[ Const(I32(1)), Const(I32(2)), Add ]
+```
+
+![](/pics/add.drawio.svg)
+
+#### Functions and Local Variables
+
+In a function, we need to get the values of its arguments. The following example is a function that takes two parameters and returns their sum as the result:
+
+```moonbit no-check
+add(a : Int, b : Int) { a + b }
+```
+
+We should use the `Local_Get` instruction to get the values of `a` and `b` and push them to the stack. Then we could use the `Add` instruction to perform the calculation just like what we did in our last example.
+
+```moonbit no-check
+@immut/list.List::[ Local_Get("a"), Local_Get("b"), Add ]
+```
+
+![](/pics/local.drawio.svg)
+
+To set the value of an local variable, we can use the `Local_Set` instruction.
+
+#### Function Calls
+
+After the function `add` is defined, we can call it to perform some calculations. Just like what we did in our first example, we first put `1` and `2` on the stack. Then, instead of using the `Add` instruction, we call the `add` function we defined using the `Call` instruction. At this time, according to the number of function parameters, the corresponding number of elements on the top of the stack will be consumed, bound to local variables in order, and an element representing the function call will be pushed to the stack. It separates the original stack elements from the function's own data, and also records the number of its return values. After the function call is finished, according to the number of return values, we take out the elements from the top of the stack, remove the element for the function call, and then put the original top elements back. After that, that we get the calculation result at the place where the function is called.
+
+
+```moonbit no-check
+@immut/list.Lists::[ Const(I32(1)), Const(I32(2)), Call("add") ]
+```
+
+![](/pics/return.drawio.svg)
+
+#### Conditional Statements
+
+For conditional statements, as we introduced earlier, we use a 32-bit integer to represent `true` or `false`. When we execute the `If` statement, we take out the top element of the stack. If it is non-zero, the `then` branch will be executed; otherwise, the `else` branch will be executed. It is worth noting that each code block in Wasm has parameter types and return value types, corresponding to the elements to be consumed from the top of the stack when entering the code block, and the elements to be put on the top of the stack when exiting the code block. For example, when we enter the `if/else` block, there is no input, so we assume that the stack is empty when we perform calculations inside the block, no matter what is on the stack originally, it is irrelevant to the current code block. And we declared to return an integer, so when we normally end the execution, there must be one and only one integer in the current calculation environment.
+
+```moonbit no-check
+@immut/list.List::[ 
+	Const(I32(1)), Const(I32(0)), Equal,
+	If(1, @immut/list.List::[Const(I32(1))], @immut/list.List::[Const(I32(0))])
+]
+```
+
+![](/pics/if.drawio.svg)
+
+#### A Complete A + B Program
+
+We use the knowledge we just introduced to implement a program that calculates the sum of two integers. The definition of the `add` function has been shown before. Now, we also add a `test_add` function as the main entry of the program, in which the only thing to pay attention to is that after calling the `add` function, we call the `print_int` function. It is a special function and we did not mention how to define input and output in Wasm, because these functions need to be implemented by external functions, and Wasm itself can be considered as a program running in a sandbox.
 
 ```moonbit expr
 let program = Program::{
@@ -91,24 +150,26 @@ let program = Program::{
     },
     Function::{
       name: "test_add", // calculate add and output
-      params: @immut/list.List::[], result: 0, locals: @immut/list.List::[], // entry function with no input or output
-      // “print_int" is a special function
-      instructions: @immut/list.List::[Const(0), Const(1), Call("add"), Call("print_int")],
+      params: @immut/list.List::[], result: 0, locals: @immut/list.List::[], // no input or output
+      // "print_int" is a special function
+      instructions: @immut/list.List::[Const(I32(0)), Const(I32(1)), Call("add"), Call("print_int")],
     },
   ],
 }
 ```
 
-output program
+## Implementing a Compiler
+
+The following is the target program in WebAssembly we want to obtain.
+
 ```wasm
 ;; Multiple functions
-;; WASM itself only defines operations; interaction depends on external functions
+;; Wasm itself only defines operations; interaction depends on external functions
 (func $print_int (import "spectest" "print_int") (param i32))
 
 (func $add (export "add") ;; Export function to be directly used by runtime
   (param $a i32) (param $b i32) (result i32 ) ;; (a : Int, b : Int) -> Int
   local.get $a local.get $b i32.add ;;
-
 )
 
 (func $test_add (export "test_add") (result ) ;; Entry function with no input or output
@@ -118,46 +179,116 @@ output program
 (start $test_add)
 ```
 
-Finally, we will show the target program we hope to obtain. You can compare it with the program defined in Moonbit before, and you will find that it is almost one-to-one. The next thing we need to do is to write a compiler. The compiler here is relatively simple because our data definition is a one-to-one copy of the Wasm instruction. What we need to do is to convert strings. It should be noted that when I implemented the compiler, we did not directly use string concatenation here, but used the way of modifying the Buffer. The Buffer will allocate additional memory, so when adding new content, it does not necessarily need to allocate additional memory, compared with simple string concatenation, the memory allocation operation can be reduced. As shown in the example code, we directly add strings to the buffer. Of course, Wasm is not only in text format, it also has a binary format. What is now presented to everyone is the binary corresponding to each instruction. Those who are interested can check the WebAssembly standard document.
+You can compare it with the program written in MoonBit before, and you will find that the correspondence is almost one-to-one.
 
-Recall the previous lessons where we introduced the syntax parser. At that time, we used it to parse integer addition, subtraction, multiplication, and division, and performed calculations. The examples at that time were relatively simple, just addition, subtraction, multiplication, and division, which could be completely constant-folded, meaning the calculations were completed directly during compilation. However, for a program, constant folding for the entire program is obviously not the norm; it must be compiled to a backend for execution. Now, after introducing WebAssembly, we can fill in the last piece of the puzzle. We start with strings, perform lexical analysis to obtain a stream of tokens. Then we use the syntax parser to obtain an abstract syntax tree. From this step, we compile to the WebAssembly instruction set. Finally, we can feed it to various runtime environments for execution. Of course, due to the `Tagless Final` technique we introduced in the last class, the abstract syntax tree can also be omitted. Here, let's recall the syntax book from the last lesson, which includes an integer and addition, subtraction, and multiplication, and division.
+The next thing we need to do is to write a compiler, which should be simple because the instructions we defined with MoonBit is almost a one-to-one copy of WebAssembly instructions.
 
-So we can use a simple recursive function. This function performs pattern matching on the abstract syntax tree and translates it into the corresponding sequence of WebAssembly instructions. For example, an integer is translated into a single constant instruction, while addition and the like require recursive translation of two parameters. After that, since WebAssembly is a stack-based virtual machine, we link them together and add an addition instruction at the end. It can be seen that we also utilized the operator overloading feature of Moonbit here.
+| Instruction                                 | WebAssembly Instruction                            |
+| ------------------------------------------- | -------------------------------------------------- |
+| `Const(I32(0))`                             | `i32.const 0`                                      |
+| `Add`                                       | `i32.add`                                          |
+| `Local_Get("a")`                            | `local.get $a`                                     |
+| `Local_Set("a")`                            | `local.set $a`                                     |
+| `Call("add")`                               | `call $add`                                        |
+| `If(1, @immut/list.List::[Const(I32(0))], @immut/list.List::[Const(I32(1))])` | `if (result i32) i32.const 0 else i32.const 1 end` |
 
-After introducing compilation, let's take a look at interpretation. We build an interpreter here to directly interpret our previous program. To execute, we need two data structures: an operand stack and an instruction queue. On the operand stack, in addition to storing the values involved in the calculation, as previously defined, we also store the variables stored in the environment before the function runs. The instruction queue stores the currently executing instructions. We expand on the original instructions, adding some control instructions, such as the return when the function ends.
+What we need to do is simply string conversion. However, it should be noted that when implementing the compiler, we should not directly use string concatenation, but make use of the built-in `Buffer` data structure. When adding new content to it, we do not need to allocate new memory every time. Thus, compared with naive string concatenation, the memory allocation operation can be reduced.
 
-# Type Definitions
-
-- Data
-
-```moonbit
-enum Value { I32(Int) } // Only considering 32-bit signed integers
-```
-
-- Instructions
-
-```moonbit
-enum Instruction {
-  Const(Int)                           // Constant
-  Add; Sub; Modulo; Equal              // Add, Subtract, Modulo, Equal
-  Call(String)                         // Function call
-  Local_Get(String); Local_Set(String) // Get value, Set value
-  If(Int, @immut/list.List[Instruction], @immut/list.List[Instruction]) // Conditional statement
+```moonbit no-check
+fn Function::to_wasm(self : Function, buffer : Buffer) -> Unit
+fn Program::to_wasm(self : Program, buffer : Buffer) -> Unit
+fn Instruction::to_wasm(self : Instruction, buffer : Buffer) -> Unit {
+  match self {
+    Add => buffer.write_string("i32.add ")
+    Local_Get(val) => buffer.write_string("local.get $\(val) ")
+    _ => buffer.write_string("...")
+  }
 }
 ```
 
-- Functions
+Of course, WebAssembly not only has a text format (WAT), but also has a binary format. [Here](https://webassembly.github.io/wabt/demo/wat2wasm/) is a useful tool that converts WAT to binary WASM. Those who are interested can also check the [WebAssembly Specification](https://webassembly.github.io/spec/core/index.html).
+
+| Text Format   | Binary Format                                          |
+| ------------- | ------------------------------------------------------ |
+| `i32.const`   | 0x41                                                   |
+| `i32.add`     | 0x6A                                                   |
+| `local.get`   | 0x20                                                   |
+| `local.set`   | 0x21                                                   |
+| `call $add`   | 0x10                                                   |
+| `if else end` | 0x04 (vec[instructions]) 0x05 (vec[instructions]) 0x0B |
+
+### Multi-Level Compilation
+
+In [Chapter 11](./parser), we introduced the syntax parser. At that time, we used it to parse basic arithmetic expressions, which were so simple that with constant folding, they can be entirely completed during compilation. However, for a program, constant folding is obviously not the norm, and it must be compiled to a backend for execution. Now, after introducing WebAssembly, we can fill in the last piece of the puzzle. We start with strings, perform lexical analysis to obtain a token stream. Then we use the syntax parser to obtain an abstract syntax tree. From this step, we compile to the WebAssembly instruction set. Finally, we can feed it to various runtime environments for execution. Of course, thanks to the "tagless final" technique we introduced, the abstract syntax tree may also be simplified.
+
+<center><p>String → Token Stream → (Abstract Syntax Tree) → Wasm IR → Compile/Run</p></center>
+
+The following is the definition of the syntax trees for basic arithmetic expressions adopted from [Chapter 11](./parser).
 
 ```moonbit
-struct Function {
-  name : String
-  // Only considering one data type, so omit the type of each data, only keep the name and quantity
-  params : @immut/list.List[String]; result : Int; locals : @immut/list.List[String]
-  instructions : @immut/list.List[Instruction]
+enum Expression {
+  Number(Int)
+  Plus(Expression, Expression)
+  Minus(Expression, Expression)
+  Multiply(Expression, Expression)
+  Divide(Expression, Expression)
 }
 ```
 
-What you see now is our type definition. When expanding instructions, our function end instruction has an integer parameter. What is actually referred to here is the information of the function's return value. Since we only have integers here, we only store the last few values returned. The entire program environment includes the program definition, as well as the operand stack, instruction queue, and local variables in the current calculation environment. All data structures are immutable, and what we need to do is calculate the next state based on the previous state, including the current instruction to be executed, etc. Since errors may occur, after all, we have not verified the code, the returned state is defined by `Option`.
+Therefore, we can use a simple recursive function that performs pattern matching on the AST and translates it into the corresponding sequence of WebAssembly instructions. For example, an integer is translated into a single constant instruction, and binary operations require recursive translation of the two operands followed by the instruction for the operation itself. It can be seen that we have used the operator overloading feature of MoonBit here.
+
+```moonbit
+fn compile_expression(expression : Expression) -> @immut/list.List[Instruction] {
+  match expression {
+      Number(i) => @immut/list.List::[Const(I32(i))]
+      Plus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.List::[Add]
+      Minus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.List::[Sub]
+      _ => @immut/list.List::[]
+  }
+}
+```
+
+## Implementing an Interpreter
+
+Now, let's take a look at interpretation. We will build an interpreter to directly interpret our previous program. Here, we need two data structures: an operand stack and an instruction queue. On the operand stack, in addition to storing the values involved in the calculation, we also store the variables stored in the environment before the function is called. The instruction queue stores to instructions to be executed. We will also expand on the original instruction set with some control instructions, such as the `EndOfFrame` instruction.
+
+The `EndOfFrame` instruction has an integer parameter for the return values of the function. Since we only have integers as our basic data type, we only need to know the the number of return values. The entire program environment includes the program definition, as well as the operand stack, instruction queue, and local variables in the current environment.
+
+```moonbit
+enum StackValue {
+  Val(Value) // Ordinary value
+  Func(@immut/hashmap.Map[String, Value]) // Function stack, stores previous local variables
+}
+enum AdministrativeInstruction {
+  Plain(Instruction) // Ordinary instruction
+  EndOfFrame(Int) // Function end instruction
+}
+struct State {
+  program : Program
+  stack : @immut/list.List[StackValue]
+  locals : @immut/hashmap.Map[String, Value]
+  instructions : @immut/list.List[AdministrativeInstruction]
+}
+```
+
+What we need to do now is calculate the next state based on the previous state by pattern matching on the current instruction and data stack. Since errors may occur, the returned state should be wrapped by `Option`. If the match is successful, like the `Add` instruction here, there should be two consecutive integers representing the operands at the top of the stack, then we can calculate the next state. If all matches fail, it means something went wrong, and we use a wildcard to handle such cases and return a `None`.
+
+
+```moonbit
+fn evaluate(state : State, stdout : Buffer) -> Option[State] {
+  match (state.instructions, state.stack) {
+    (Cons(Plain(Add), tl), Cons(Val(I32(b)), Cons(Val(I32(a)), rest))) =>
+      Some(
+        State::{ ..state, instructions: tl, stack: Cons(Val(I32(a + b)), rest) },
+      )
+    _ => None
+  }
+}
+```
+
+![](/pics/interp_add.drawio.svg)
+
+For conditional statement, we need to take out the code of the corresponding branch from the stack and add it to the instruction queue. It should be noted that the stored instructions should not be not expanded, so we perform a mapping here.
 
 ```moonbit no-check
 (Cons(Plain(If(_, then, else_)), tl), Cons(Val(I32(i)), rest)) =>
@@ -168,18 +299,33 @@ What you see now is our type definition. When expanding instructions, our functi
       ).concat(tl)})
 ```
 
-![](../pics/interp_if.drawio.svg)
+![](/pics/interp_if.drawio.svg)
 
-After that, we implement our interpreter. What we need to do is to match the current instruction and data stack. If the match is successful, like the addition instruction here, there should be two consecutive integers at the top of the stack, then we calculate the next state. If all matches fail, it means something went wrong, and we use a wildcard to directly return `None`.
+Next is the function call. As we mentioned earlier, without external APIs, WebAssembly cannot perform input and output. To solve this problem, we specially handle the function calls for `print_int`. If a call is detected, we directly output its value to our cache.
 
-For conditional judgment, we need to take out the corresponding branch code from the stack and add it to the instruction queue. It should be noted that the stored instructions are not expanded, so we perform a mapping here.
+```moonbit no-check
+(Cons(Plain(Call("print_int")), tl), Cons(Val(I32(i)), rest)) => {
+  stdout.write_string(i.to_string())
+  Some(State::{ ..state, stack: rest, instructions: tl })
+}
+```
 
-Next is the function call. As we mentioned earlier, without an external interface, WebAssembly can only perform calculations silently and cannot perform input and output, unless it uses memory, which is another topic. To solve this problem, we specially judge the function named `print_int` here. If a call is detected, we directly output its value to our cache.
+![](/pics/interp_print_int.drawio.svg)
 
-![](../pics/interp_end_call.drawio.svg)
+For ordinary function calls, we need to save the current environment and then enter the new environment for the call. That is why we need to add the `EndOfFrame` instruction. In terms of data, we need to take a certain number of elements from the top of the current stack according to the number of function parameters to become the new function call environment. After that, we add a function stack on the stack, which stores the current environment variables.
 
-For ordinary function calls, we need to save the current environment and then enter the called environment. In terms of instructions, we need to add a function return instruction, and then expand the corresponding function instructions found in the program above. In terms of data, we need to take a certain number of elements from the top of the current stack according to the number of function parameters to become the new function call environment. After that, we add a function stack on the stack, which stores the current environment variables.
+![](/pics/interp_call.drawio.svg)
 
-After execution, theoretically, it should be encountering the control instruction to return the function at this time. We take out the elements from the top of the stack according to the number of return values stored in the instruction, clear the current calculation environment, until the function stack that was previously stored. We restore the original calculation environment from it, and then continue to calculate.
+After execution, it should be encountering the control instruction to return the function at this time. We take out the elements from the top of the stack according to the number of return values stored in the instruction, clear the current environment, until the function stack that was previously stored. We restore the original environment from it, and then continue the calculation.
 
-So the above is the interpreter introduced in this lesson. Interested students can expand the function definition in the syntax parser according to our instruction set. Or you can also add an early return instruction `return` to the instruction set.
+![](/pics/interp_end_call.drawio.svg)
+
+## Summary
+
+In this chapter we
+  - Learned the structure of a stack-based virtual machine
+  - Introduced a subset of the WebAssembly instruction set
+  - Implemented a compiler
+  - Implemented an interpreter
+
+Interested readers may try to expand the definition of functions in the syntax parser, or add the `return` instruction to the instruction set.
