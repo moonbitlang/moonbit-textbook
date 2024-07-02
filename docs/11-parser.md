@@ -63,11 +63,11 @@ fn pchar(predicate : (Char) -> Bool) -> Lexer[Char] {
 } },) }
 
 test {
-  inspect(pchar(fn { ch => ch == 'a' }).parse("asdf"), content="Some((a, sdf))")?
+  inspect(pchar(fn { ch => ch == 'a' }).parse("asdf"), content="Some((a, sdf))")!
   inspect(pchar(fn {
     'a' => true
     _ => false
-  },).parse("sdf"),content="None",)?
+  },).parse("sdf"),content="None",)!
 }
 ```
 
@@ -169,7 +169,7 @@ let tokens : Lexer[@immut/list.List[Token]] =
     .many()
 
 test{
-  inspect(tokens.parse("-10123+-+523 103    ( 5) )  "), content="Some((List::[Minus, Value(10123), Plus, Minus, Plus, Value(523), Value(103), LParen, Value(5), RParen, RParen], ))")?
+  inspect(tokens.parse("-10123+-+523 103    ( 5) )  "), content="Some((List::[Minus, Value(10123), Plus, Minus, Plus, Value(523), Value(103), LParen, Value(5), RParen, RParen], ))")!
 }
 ```
 

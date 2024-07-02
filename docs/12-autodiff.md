@@ -108,11 +108,11 @@ fn example() -> Symbol {
 test "Symbolic differentiation" {
   let input : Array[Double] = [10.0, 100.0]
   let symbol : Symbol = example() // Abstract syntax tree of the function
-  @assertion.assert_eq(symbol.compute(input), 600.0)?
+  @test.eq(symbol.compute(input), 600.0)!
   // Expression of df/dx
   inspect(symbol.differentiate(0), 
-  content="Add(Add(Mul(Mul(Constant(5.0), Var(0)), Constant(1.0)), Mul(Add(Mul(Constant(5.0), Constant(1.0)), Mul(Constant(0.0), Var(0))), Var(0))), Constant(0.0))")?
-  @assertion.assert_eq(symbol.differentiate(0).compute(input), 100.0)?
+  content="Add(Add(Mul(Mul(Constant(5.0), Var(0)), Constant(1.0)), Mul(Add(Mul(Constant(5.0), Constant(1.0)), Mul(Constant(0.0), Var(0))), Var(0))), Constant(0.0))")!
+  @test.eq(symbol.differentiate(0).compute(input), 100.0)!
 }
 ```
 
@@ -216,10 +216,10 @@ Finally, we use the previously defined example with conditionals to calculate de
 ```moonbit
 test "Forward differentiation" {
 // Forward differentiation with abstraction
-  inspect(relu(Forward::var(10.0, true)), content="{value: 10.0, derivative: 1.0}")? 
-  inspect(relu(Forward::var(-10.0, true)), content="{value: 0.0, derivative: 0.0}")?
+  inspect(relu(Forward::var(10.0, true)), content="{value: 10.0, derivative: 1.0}")! 
+  inspect(relu(Forward::var(-10.0, true)), content="{value: 0.0, derivative: 0.0}")!
 // f(x, y) = x * y => df/dy(10, 100)
-inspect(Forward::var(10.0, false) * Forward::var(100.0, true), ~content="{value: 1000.0, derivative: 10.0}")?
+inspect(Forward::var(10.0, false) * Forward::var(100.0, true), ~content="{value: 1000.0, derivative: 10.0}")!
 }
 ```
 
@@ -286,8 +286,8 @@ test "Backward differentiation" {
   let x = Backward::var(10.0, diff_x)
   let y = Backward::var(100.0, diff_y)
   (x * y).backward(1.0) // df / df = 1
-  inspect(diff_x, content="{val: 100.0}")?
-  inspect(diff_y, content="{val: 10.0}")?
+  inspect(diff_x, content="{val: 100.0}")!
+  inspect(diff_y, content="{val: 10.0}")!
 }
 ```
 
@@ -325,7 +325,7 @@ test "Newton's method" {
       }
       continue Forward::var(x.value - value / derivative, true)
     }
-  } |> @assertion.assert_eq(0.37851665401644224))?
+  } |> @test.eq(0.37851665401644224))!
 }
 ```
 
