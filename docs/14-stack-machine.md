@@ -89,7 +89,7 @@ Taking `1 + 2` as an example, we have a stack which is initially empty. The firs
 @immut/list.List::[ Const(I32(1)), Const(I32(2)), Add ]
 ```
 
-![](/pics/add.drawio.svg)
+![](/pics/add.drawio.webp)
 
 #### Functions and Local Variables
 
@@ -105,7 +105,7 @@ We should use the `Local_Get` instruction to get the values of `a` and `b` and p
 @immut/list.List::[ Local_Get("a"), Local_Get("b"), Add ]
 ```
 
-![](/pics/local.drawio.svg)
+![](/pics/local.drawio.webp)
 
 To set the value of an local variable, we can use the `Local_Set` instruction.
 
@@ -118,7 +118,7 @@ After the function `add` is defined, we can call it to perform some calculations
 @immut/list.Lists::[ Const(I32(1)), Const(I32(2)), Call("add") ]
 ```
 
-![](/pics/return.drawio.svg)
+![](/pics/return.drawio.webp)
 
 #### Conditional Statements
 
@@ -131,7 +131,7 @@ For conditional statements, as we introduced earlier, we use a 32-bit integer to
 ]
 ```
 
-![](/pics/if.drawio.svg)
+![](/pics/if.drawio.webp)
 
 #### A Complete A + B Program
 
@@ -286,7 +286,7 @@ fn evaluate(state : State, stdout : Buffer) -> Option[State] {
 }
 ```
 
-![](/pics/interp_add.drawio.svg)
+![](/pics/interp_add.drawio.webp)
 
 For conditional statement, we need to take out the code of the corresponding branch from the stack and add it to the instruction queue. It should be noted that the stored instructions should not be not expanded, so we perform a mapping here.
 
@@ -299,7 +299,7 @@ For conditional statement, we need to take out the code of the corresponding bra
       ).concat(tl)})
 ```
 
-![](/pics/interp_if.drawio.svg)
+![](/pics/interp_if.drawio.webp)
 
 Next is the function call. As we mentioned earlier, without external APIs, WebAssembly cannot perform input and output. To solve this problem, we specially handle the function calls for `print_int`. If a call is detected, we directly output its value to our cache.
 
@@ -310,15 +310,15 @@ Next is the function call. As we mentioned earlier, without external APIs, WebAs
 }
 ```
 
-![](/pics/interp_print_int.drawio.svg)
+![](/pics/interp_print_int.drawio.webp)
 
 For ordinary function calls, we need to save the current environment and then enter the new environment for the call. That is why we need to add the `EndOfFrame` instruction. In terms of data, we need to take a certain number of elements from the top of the current stack according to the number of function parameters to become the new function call environment. After that, we add a function stack on the stack, which stores the current environment variables.
 
-![](/pics/interp_call.drawio.svg)
+![](/pics/interp_call.drawio.webp)
 
 After execution, it should be encountering the control instruction to return the function at this time. We take out the elements from the top of the stack according to the number of return values stored in the instruction, clear the current environment, until the function stack that was previously stored. We restore the original environment from it, and then continue the calculation.
 
-![](/pics/interp_end_call.drawio.svg)
+![](/pics/interp_end_call.drawio.webp)
 
 ## Summary
 

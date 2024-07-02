@@ -93,7 +93,7 @@ The distinction between mutable and immutable data is important because it affec
 - In the second diagram, we use `let` to bind the identifier `ref` to a struct. Thus, the box contains a reference to the struct. When we modify the value in the struct using `ref`, we are updating the value stored in the struct which it points to. The reference itself does not change because it still points to the same struct.
 - In the third diagram, when we define a mutable `ref` and modify it, we are creating a new box and updating the reference to point to the new box.
 
-![](/pics/ref.drawio.svg)
+![](/pics/ref.drawio.webp)
 
 ### Aliases
 
@@ -115,7 +115,7 @@ fn init {
 }
 ```
 
-![](/pics/alias.drawio.svg)
+![](/pics/alias.drawio.webp)
 
 ## Loops
 
