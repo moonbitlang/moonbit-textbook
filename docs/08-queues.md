@@ -39,11 +39,11 @@ When implementing a circular queue, we keep track of the `start` and `end` indic
 
 The following diagram is a demonstration of these operations. First, we create an empty queue by calling `make()`. At this point, the `start` and `end` indices both point to the first element. Then, we push an element into the queue by calling `push(1)`. The element `1` is then added to the position pointed to by `end`, and the `end` index is updated. Afterwards, we call `push(2)` to push another element into the queue, and finally call `pop()` to pop out the first element we have pushed.
 
-![](/pics/circle_list.drawio.svg)
+![](/pics/circle_list.drawio.webp)
 
 Now, let's take a look at another situation when we are close to the end of the array. At this point, `end` points to the position of the last element of the array. When we push an element, `end` cannot move forward, so we wrap it back to the beginning of the array. Then, we perform two `pop` operations. Similarly, when `start` exceeds the length of the array, it returns to the beginning of the list.
 
-![](/pics/circle_list_back.drawio.svg)
+![](/pics/circle_list_back.drawio.webp)
 
 With the above basic ideas in mind, we can easily define the `Queue` struct and implement the `push` operation as follows:
 
@@ -180,9 +180,9 @@ fn push[T](self: LinkedList[T], value: T) -> LinkedList[T] {
 
 The following diagram is a simple demonstration. When we create a linked list by calling `make()`, both the `head` and `tail` are empty. When we push an element using `push(1)`, we create a new node and point both the `head` and `tail` to this node. When we push more elements, say `push(2)` and then `push(3)`, we need to update the `next` field of the current `tail` node to point to the new node. The `tail` node of the linked list should always point to the latest node. 
 
-![](/pics/linked_list.drawio.svg)
+![](/pics/linked_list.drawio.webp)
 
-![](/pics/linked_list_2.drawio.svg)
+![](/pics/linked_list_2.drawio.webp)
 
 To get the length of the list, we can either record it in the struct as we did for circular queues, or we can use a naive recursive function to calculate it.
 

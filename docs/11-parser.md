@@ -27,7 +27,7 @@ Whitespace = " "
 
 Let's take integers and the plus sign for examples. Each line in the lexical rules corresponds to a pattern-matching rule. Content within quotes means matching a string of the same content. Rule `a b` means matching rule `a` first, and if it succeeds, continue to pattern match rule `b`. Rule `a / b` means matching rule `a` or `b`, try matching `a` first, and then try matching rule `b` if it fails. Rule `*a ` with an asterisk in front refers to zero or more matches. Lastly, `%x` means matching a UTF-encoded character, where `x` indicates it's in hexadecimal. For example, `0x30` corresponds to the 48th character `0`, and it is `30` in hexadecimal. With this understanding, let's examine the definition rules. Plus is straightforward, representing the plus sign. Number corresponds to zero or a character from 1-9 followed by zero or more characters from 0-9.
 
-![](/pics/lex_rail.drawio.svg)
+![](/pics/lex_rail.drawio.webp)
 
 In MoonBit, we define tokens as enums, and tokens can be values containing integers or operators and parentheses. Whitespaces are simply discarded.
 
@@ -183,7 +183,7 @@ expression =/ expression "+" expression / expression "-" expression
 expression =/ expression "*" expression / expression "/" expression
 ```
 
-![](/pics/ast-example.drawio.svg)
+![](/pics/ast-example.drawio.webp)
 
 However, our syntax rules have some issues since it doesn't differentiate the precedence levels. For instance, `a + b * c` should be interpreted as `a` plus the product of `b` and `c`, but according to the current syntax rules, the sum of `a` and `b` multiplied by `c` is also valid, which introduces ambiguity. It also doesn't show associativity. Arithmetic operators should be left-associative, meaning `a + b + c` should be interpreted as `a` plus `b`, then adding `c`. However, the current syntax also allows adding `a` to the sum of `b` and `c`. So, we need to adjust the syntax rules for layering.
 

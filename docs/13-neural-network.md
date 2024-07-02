@@ -196,7 +196,7 @@ Machine learning is a vast and complex field, and the knowledge related to neura
 
 Neural networks are a subtype of machine learning. As the name suggests, they simulate the neural structure of the human brain. A classic neural network usually consists of multiple layers and interconnected neurons. A neuron typically has multiple inputs, a single output, and weights to calculate the output signal based on the input signals. A neuron typically activates once it reaches a certain threshold.
 
-![](/pics/neural_network.drawio.svg)
+![](/pics/neural_network.drawio.webp)
 
 The above diagram an illustration of a neural network. Each node represents a neuron. The yellow neuron receives inputs from the four neurons in the left layer and passes its output to the neurons in the right layer.
 
