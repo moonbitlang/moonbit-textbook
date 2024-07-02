@@ -3,5 +3,5 @@
 ot = "ot"
 
 [type.po]
-extend-glob = ["*.webp"]
+extend-glob = ["*.svg", "*.webp"]
 check-file = false
