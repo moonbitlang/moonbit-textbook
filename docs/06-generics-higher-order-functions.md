@@ -195,7 +195,7 @@ Here is the code for the queue. You can see that we extensively apply generics, 
 This section continues to focus on how to use the features provided by MoonBit to reduce repetitive code and enhance code reusability. So, let’s start with an example.
 
 ```moonbit
-fn sum(list: List[Int]) -> Int {
+fn sum(list: @immut/list.List[Int]) -> Int {
   match list {
     Nil => 0
     Cons(hd, tl) => hd + sum(tl)
@@ -206,7 +206,7 @@ fn sum(list: List[Int]) -> Int {
 Consider some operations on lists. For instance, to sum an integer list, we use structural recursion with the following code: if empty, the sum is 0; otherwise, the sum is the current value plus the sum of the remaining list elements.
 
 ```moonbit
-fn length[T](list: List[T]) -> Int {
+fn length[T](list: @immut/list.List[T]) -> Int {
   match list {
     Nil => 0
     Cons(hd, tl) => 1 + length(tl)
@@ -223,7 +223,7 @@ Notice that these two structures have considerable similarities: both are struct
 This brings us to the point that in MoonBit, functions are first-class citizens. This means that functions can be passed as parameters and can also be stored as results. For instance, the structure we just described can be defined as the function shown below, where `f` is passed as a parameter and used in line four for calculation.
 
 ```moonbit
-fn fold_right[A, B](list: List[A], f: (A, B) -> B, b: B) -> B {
+fn fold_right[A, B](list: @immut/list.List[A], f: (A, B) -> B, b: B) -> B {
   match list {
     Nil => b
     Cons(hd, tl) => f(hd, fold_right(tl, f, b))
@@ -284,7 +284,7 @@ For example, the function type from integer to integer, would be `(Int) -> Int`.
 Here are a few more common applications of higher-order functions. Higher-order functions are functions that accept functions. `fold_right`, which we just saw, is a common example. Below, we draw its expression tree. 
 
 ```moonbit no-check
-fn fold_right[A, B](list: List[A], f: (A, B) -> B, b: B) -> B {
+fn fold_right[A, B](list: @immut/list.List[A], f: (A, B) -> B, b: B) -> B {
   match list {
     Nil => b
     Cons(hd, tl) => f(hd, fold_right(tl, f, b))
@@ -297,7 +297,7 @@ fn fold_right[A, B](list: List[A], f: (A, B) -> B, b: B) -> B {
 You can see that for a list from 1 to 3, `f` is applied to the current element and the result of the remaining elements each time, thus it looks like we're building a fold from right to left, one by one, to finally get a result. Therefore, this function is called `fold_right`. If we change the direction, folding the list from left to right, then we get `fold_left`. 
 
 ```moonbit
-fn fold_left[A, B](list: List[A], f: (B, A) -> B, b: B) -> B {
+fn fold_left[A, B](list: @immut/list.List[A], f: (B, A) -> B, b: B) -> B {
   match list {
     Nil => b
     Cons(hd, tl) => fold_left(tl, f, f(b, hd))
@@ -315,20 +315,20 @@ Another common application of higher-order functions is to map each element of a
 
 ```moonbit no-check
 struct PersonalInfo { name: String; age: Int }
-fn map[A, B](self: List[A], f: (A) -> B) -> List[B] {
+fn map[A, B](self: @immut/list.List[A], f: (A) -> B) -> @immut/list.List[B] {
   match list {
     Nil => Nil
     Cons(hd, tl) => Cons(f(hd), map(tl, f))
   }
 }
-let infos: List[PersonalInfo] = ???
-let names: List[String] = infos.map(fn (info) { info.name })
+let infos: @immut/list.List[PersonalInfo] = ???
+let names: @immut/list.List[String] = infos.map(fn (info) { info.name })
 ```
 
 For example, if we have some people's information and we only need their names, then we can use the mapping function `map`, which accepts `f` as a parameter, to map each element in the list one by one, finally obtaining a new list where the type of elements has become `B`. This function's implementation is very simple. What we need is also structural recursion. The last application is as shown in line 8. Maybe you feel like you've seen this `map` structure before: structural recursion, a default value for the empty case, and a binary operation processing the current value combined with the recursive result when not empty. Indeed, `map` can be entirely implemented using `fold_right`, where the default value is an empty list, and the binary operation is the `Cons` constructor. 
 
 ```moonbit 
-fn map[A, B](list: List[A], f: (A) -> B) -> List[B] {
+fn map[A, B](list: @immut/list.List[A], f: (A) -> B) -> @immut/list.List[B] {
   fold_right(list, fn (value, cumulator) { Cons(f(value), cumulator) }, Nil)
 }
 ```
