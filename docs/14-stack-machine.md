@@ -257,7 +257,7 @@ The `EndOfFrame` instruction has an integer parameter for the return values of t
 ```moonbit
 enum StackValue {
   Val(Value) // Ordinary value
-  Func(@immut/hashmap.Map[String, Value]) // Function stack, stores previous local variables
+  Func(@immut/hashmap.T[String, Value]) // Function stack, stores previous local variables
 }
 enum AdministrativeInstruction {
   Plain(Instruction) // Ordinary instruction
@@ -266,7 +266,7 @@ enum AdministrativeInstruction {
 struct State {
   program : Program
   stack : @immut/list.T[StackValue]
-  locals : @immut/hashmap.Map[String, Value]
+  locals : @immut/hashmap.T[String, Value]
   instructions : @immut/list.T[AdministrativeInstruction]
 }
 ```
