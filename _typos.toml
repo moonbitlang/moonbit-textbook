@@ -1,5 +1,6 @@
 [default.extend-words]
 # **W**ine **I**s **N**ot an **E**mulator
+ine = "ine"
 ot = "ot"
 
 [type.po]
