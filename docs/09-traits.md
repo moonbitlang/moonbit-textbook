@@ -299,7 +299,6 @@ fn init {
   let empty : Map[Int, Int] = make()
   let one = {
     empty[1] = 1
-    empty
   }
   match one {
     { 2? : Some(y) } => println(y)
