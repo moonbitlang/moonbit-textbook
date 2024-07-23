@@ -65,8 +65,8 @@ The process of writing test cases not only helps in validating the solution but 
 
 ```moonbit
 test {
-  @test.eq(num_water_bottles(9, 3), 13)! // 9 + 3 + 1 = 13
-  @test.eq(num_water_bottles(15, 4), 19)!
+  @test.eq!(num_water_bottles(9, 3), 13) // 9 + 3 + 1 = 13
+  @test.eq!(num_water_bottles(15, 4), 19)
 }
 ```
 
@@ -91,12 +91,12 @@ fn num_water_bottles(num_bottles: Int, num_exchange: Int) -> Int {
 }
 
 test {
-  @test.eq(num_water_bottles(9, 3), 13)! // 9 + 3 + 1 = 13
-  @test.eq(num_water_bottles(15, 4), 19)!
+  @test.eq!(num_water_bottles(9, 3), 13) // 9 + 3 + 1 = 13
+  @test.eq!(num_water_bottles(15, 4), 19)
 }
 ```
 
-The program can be verified by executing it [here](https://try.moonbitlang.com/#f9b7f68d). If there is no output, it indicates that the program has performed as expected. Alternatively, if we modify the test cases and then rerun the program, an error might be observed.
+The program can be verified by executing it [here](https://try.moonbitlang.com/#79f7b666). If there is no output, it indicates that the program has performed as expected. Alternatively, if we modify the test cases and then rerun the program, an error might be observed.
 
 ### Summary
 
