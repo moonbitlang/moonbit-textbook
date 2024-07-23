@@ -25,7 +25,7 @@ Hash maps use this mechanism to efficiently handle data by mapping the data to a
 
 ```moonbit no-check
 // For a: Array[(Key, Value)], key: Key, value: Value
-let index = key.hash().mod_u(a.length()) // key value--hashing-->hash value--modulo operation-->index in array
+let index = key.hash() % a.length() // key value--hashing-->hash value--modulo operation-->index in array
 a[ index ] = value // add or update data
 let value = a[ index ] // look up data
 ```
@@ -76,7 +76,7 @@ let load = 0.75
 fn resize() -> Unit {} // placeholder for resize implementation
 
 fn put[K : Hash + Eq, V](map : HT_bucket[K, V], key : K, value : V) -> Unit {
-  let index = key.hash().mod_u(map.length) // Calculate the index
+  let index = key.hash() % map.length // Calculate the index
   let mut bucket = map.values[index] // Get the corresponding data structure
   while true {
     match bucket.val {
@@ -104,7 +104,7 @@ Next, let's briefly go over the remove operation. Similar to the add/update oper
 
 ```moonbit
 fn remove[K : Hash + Eq, V](map : HT_bucket[K, V], key : K) -> Unit {
-  let index = key.hash().mod_u(map.length) // Calculate the index
+  let index = key.hash() % map.length // Calculate the index
   let mut bucket = map.values[index] // Get the corresponding data structure
   while true {
     match bucket.val {
@@ -150,12 +150,12 @@ We can define a helper method to check if a key already exists. If so, we direct
 // Probe to the right of the index of the original hash, return the index of the first empty slot
 fn find_slot[K : Hash + Eq, V](map : HT_open[K, V], key : K) -> Int {
   let hash = key.hash() // Hash value of the key
-  let mut i = hash.mod_u(map.length) // Index to be stored at if there's no hash collision
+  let mut i = hash % map.length // Index to be stored at if there's no hash collision
   while map.occupied[i] {
     if map.values[i].key == key { // If a key already exists, return its index
       return i
     }
-    i = (i + 1).mod_u(map.length)
+    i = (i + 1) % map.length
   }
   return i // Otherwise, return when an empty slot occurs
 }
@@ -208,7 +208,7 @@ Let's also update the helper function so that during key or empty slot lookup, w
 ```moonbit
 // Probe to the right of the index of the original hash, return the index of the first empty slot
 fn find_slot[K : Hash + Eq, V](map : HT_open[K, V], key : K) -> Int {
-  let index = key.hash().mod_u(map.length)
+  let index = key.hash() % map.length
   let mut i = index
   let mut empty = -1 // Record the first empty slot occurred: status Empty or Deleted
   while (physical_equal(map.occupied[i], Empty)).not() {
@@ -218,7 +218,7 @@ fn find_slot[K : Hash + Eq, V](map : HT_open[K, V], key : K) -> Int {
     if physical_equal(map.occupied[i], Deleted) && empty != -1 { // Update empty slot
       empty = i
     }
-    i = (i + 1).mod_u(map.length)
+    i = (i + 1) % map.length
   }
   return if empty == -1 { i } else { empty } // Return the first empty slot
 }
