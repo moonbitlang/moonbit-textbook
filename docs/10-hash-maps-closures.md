@@ -253,19 +253,19 @@ Now, the invariant holds again: there should be no empty slots between the origi
 
 ## Closure
 
-It's time for the last topic in this lecture! What is a closure? A closure is the combination of a function bundled together with references to its surrounding state. Its surrounding state is determined by the lexical environment. For example, in the following code, when we define the function at line 3, the `i` here corresponds to the `i` at line 2. Therefore, when we call `debug_i` later at line 3, it outputs the value of `i` from line 2. Then we update `i` at line 4, and the output will also be updated accordingly. 
+It's time for the last topic in this lecture! What is a closure? A closure is the combination of a function bundled together with references to its surrounding state. Its surrounding state is determined by the lexical environment. For example, in the following code, when we define the function at line 3, the `i` here corresponds to the `i` at line 2. Therefore, when we call `println_i` later at line 3, it outputs the value of `i` from line 2. Then we update `i` at line 4, and the output will also be updated accordingly. 
 
 However, when we introduce another `i` at line 7, although the variable names are the same, the new variable `i` has nothing to do with our closure, so the output at line 8 will not change. The environment captured by the closure corresponds to the program structure and is determined at code definition, but not runtime.
 
 ```moonbit
 fn init {
   let mut i = 2
-  fn debug_i() { debug(i) } // Capturing i
+  fn println_i() { println(i) } // Capturing i
   i = 3
-  debug_i() // Output 3
+  println_i() // Output 3
   {
     let i = 4 // A different i variable
-    debug_i() // Output 3
+    println_i() // Output 3
   }
 }
 ```
@@ -288,9 +288,9 @@ fn natural_number_get_and_set()
 fn init {
   let (get, set) = natural_number_get_and_set()
   set(10)
-  debug(get()) // 10
+  println(get()) // 10
   set(-100)
-  debug(get()) // 10
+  println(get()) // 10
 }
 ```
 
@@ -318,7 +318,7 @@ fn init {
   let map : Map[Int, Int] = Map::hash_bucket()
   // let map : Map[Int, Int] = Map::hash_open_address()
   (map.put)(1, 1)
-  debug((map.size)())
+  println((map.size)())
 }
 ```
 
@@ -362,8 +362,8 @@ fn Map::contains[K, V](map : Map[K, V], key : K) -> Bool {
 ```moonbit no-check
 fn init {
   let map : Map[Int, Int] = Map::hash_bucket()
-  debug(map.is_empty()) // true
-  debug(map.contains(1)) // false
+  println(map.is_empty()) // true
+  println(map.contains(1)) // false
 }
 ```
 
