@@ -296,16 +296,20 @@ With the implementation of `op_get`, we can introduce pattern matching support t
 
 ```moonbit
 fn init {
-  let empty: Map[Int, Int] = make()
-  let one = { empty[1] = 1 }
+  let empty : Map[Int, Int] = Map::new()
+  let one = {
+    empty[1] = 1
+    empty
+  }
   match one {
-    { 2 : Some(y) } => println(y)
-    { 2 : None, 1 : Some(k) } => println(k)
+    { 2? : Some(y) } => println(y)
+    { 2? : None, 1? : Some(k) } => println(k)
+    { 2? : None, 1? : None } => println("empty")
   }
 }
 ```
 
-When matching, it is important to note that the key needs to be a literal value. In `{ "key": pat }`, the type of the pattern `pat` should be `Option[T]`. It is worth mentioning that the key-value pair pattern is open, meaning that any unmatched keys will be ignored even if they exist. Additionally, the code generated for key-value pair patterns is optimized, ensuring that each key is only queried at most once.
+When matching, it is important to note that the key needs to be a literal value. In `{ "key"?: pat }`, the type of the pattern `pat` should be `Option[T]`. It is worth mentioning that the key-value pair pattern is open, meaning that any unmatched keys will be ignored even if they exist. Additionally, the code generated for key-value pair patterns is optimized, ensuring that each key is only queried at most once.
 
 ## Summary
 
