@@ -110,8 +110,8 @@ fn pop[T](q: Queue[T]) -> (Option[T], Queue[T])
 
 ```moonbit
 struct Queue[T] {
-  front:@immut/list.List[T]
-  back:@immut/list.List[T]
+  front:@immut/list.T[T]
+  back:@immut/list.T[T]
 }
 
 /// `Queue::default[T]()`
@@ -125,10 +125,10 @@ fn empty[T]() -> Queue[T] {
   Queue::default()
 }
 
-/// `from_list[T](front: @immut/list.List[T])`
+/// `from_list[T](front: @immut/list.T[T])`
 ///
 /// Create queue from a list 从列表创建队列
-fn Queue::from_list[T](front: @immut/list.List[T]) -> Queue[T] {
+fn Queue::from_list[T](front: @immut/list.T[T]) -> Queue[T] {
   { front:front, back:Nil }
 }
 
@@ -142,14 +142,14 @@ fn Queue::is_empty[T](q: Queue[T]) -> Bool {
   }
 }
 
-/// `list_rev[T](xs: @immut/list.List[T])`
+/// `list_rev[T](xs: @immut/list.T[T])`
 ///
 /// Reverse a list with tail recursion 基于尾递归的列表反转
-fn list_rev[T](xs: @immut/list.List[T]) -> @immut/list.List[T] {
-  fn go(acc, xs: @immut/list.List[T]) {
+fn list_rev[T](xs: @immut/list.T[T]) -> @immut/list.T[T] {
+  fn go(acc, xs: @immut/list.T[T]) {
     match xs {
       Nil => acc
-      Cons(x, rest) => go((Cons(x, acc) : @immut/list.List[T]), rest)
+      Cons(x, rest) => go((Cons(x, acc) : @immut/list.T[T]), rest)
     }
   }
 

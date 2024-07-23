@@ -54,7 +54,7 @@ enum Instruction {
   Add; Sub; Modulo; Equal              // Arithmetic operations
   Call(String)                         // Function call
   Local_Get(String); Local_Set(String) // Get/set the values of local variables
-  If(Int, @immut/list.List[Instruction], @immut/list.List[Instruction]) // Conditional statement
+  If(Int, @immut/list.T[Instruction], @immut/list.T[Instruction]) // Conditional statement
 }
 ```
 
@@ -65,12 +65,12 @@ Similarly, we can also easily define the structures of functions and programs:
 ```moonbit
 struct Function {
   name : String
-  params : @immut/list.List[String]; result : Int; locals : @immut/list.List[String]
-  instructions : @immut/list.List[Instruction]
+  params : @immut/list.T[String]; result : Int; locals : @immut/list.T[String]
+  instructions : @immut/list.T[Instruction]
 }
 
 struct Program {
-  functions : @immut/list.List[Function]
+  functions : @immut/list.T[Function]
   start : Option[String]
 }
 ```
@@ -86,7 +86,7 @@ Now, let's take a look at some examples.
 Taking `1 + 2` as an example, we have a stack which is initially empty. The first thing we need to do is to push the operands as static constants to the stack using the `Const` instruction. Then, we use the `Add` instruction to add them up. It consumes two operands from the top of the stack and stores their sum back to the top of the stack. Thus, after the operation, the top element of the stack is `3`.
 
 ```moonbit no-check
-@immut/list.List::[ Const(I32(1)), Const(I32(2)), Add ]
+@immut/list.T::[ Const(I32(1)), Const(I32(2)), Add ]
 ```
 
 ![](/pics/add.drawio.webp)
@@ -102,7 +102,7 @@ add(a : Int, b : Int) { a + b }
 We should use the `Local_Get` instruction to get the values of `a` and `b` and push them to the stack. Then we could use the `Add` instruction to perform the calculation just like what we did in our last example.
 
 ```moonbit no-check
-@immut/list.List::[ Local_Get("a"), Local_Get("b"), Add ]
+@immut/list.T::[ Local_Get("a"), Local_Get("b"), Add ]
 ```
 
 ![](/pics/local.drawio.webp)
@@ -115,7 +115,7 @@ After the function `add` is defined, we can call it to perform some calculations
 
 
 ```moonbit no-check
-@immut/list.Lists::[ Const(I32(1)), Const(I32(2)), Call("add") ]
+@immut/list.Ts::[ Const(I32(1)), Const(I32(2)), Call("add") ]
 ```
 
 ![](/pics/return.drawio.webp)
@@ -125,9 +125,9 @@ After the function `add` is defined, we can call it to perform some calculations
 For conditional statements, as we introduced earlier, we use a 32-bit integer to represent `true` or `false`. When we execute the `If` statement, we take out the top element of the stack. If it is non-zero, the `then` branch will be executed; otherwise, the `else` branch will be executed. It is worth noting that each code block in Wasm has parameter types and return value types, corresponding to the elements to be consumed from the top of the stack when entering the code block, and the elements to be put on the top of the stack when exiting the code block. For example, when we enter the `if/else` block, there is no input, so we assume that the stack is empty when we perform calculations inside the block, no matter what is on the stack originally, it is irrelevant to the current code block. And we declared to return an integer, so when we normally end the execution, there must be one and only one integer in the current calculation environment.
 
 ```moonbit no-check
-@immut/list.List::[ 
+@immut/list.T::[ 
 	Const(I32(1)), Const(I32(0)), Equal,
-	If(1, @immut/list.List::[Const(I32(1))], @immut/list.List::[Const(I32(0))])
+	If(1, @immut/list.T::[Const(I32(1))], @immut/list.T::[Const(I32(0))])
 ]
 ```
 
@@ -142,17 +142,17 @@ let program = Program::{
 
   start: Some("test_add"), // Program entry point
 
-  functions: @immut/list.List::[
+  functions: @immut/list.T::[
     Function::{
       name: "add", // Addition function
-      params: @immut/list.List::["a", "b"], result: 1, locals: @immut/list.List::[],
-      instructions: @immut/list.List::[Local_Get("a"), Local_Get("b"), Add],
+      params: @immut/list.T::["a", "b"], result: 1, locals: @immut/list.T::[],
+      instructions: @immut/list.T::[Local_Get("a"), Local_Get("b"), Add],
     },
     Function::{
       name: "test_add", // calculate add and output
-      params: @immut/list.List::[], result: 0, locals: @immut/list.List::[], // no input or output
+      params: @immut/list.T::[], result: 0, locals: @immut/list.T::[], // no input or output
       // "print_int" is a special function
-      instructions: @immut/list.List::[Const(I32(0)), Const(I32(1)), Call("add"), Call("print_int")],
+      instructions: @immut/list.T::[Const(I32(0)), Const(I32(1)), Call("add"), Call("print_int")],
     },
   ],
 }
@@ -190,7 +190,7 @@ The next thing we need to do is to write a compiler, which should be simple beca
 | `Local_Get("a")`                            | `local.get $a`                                     |
 | `Local_Set("a")`                            | `local.set $a`                                     |
 | `Call("add")`                               | `call $add`                                        |
-| `If(1, @immut/list.List::[Const(I32(0))], @immut/list.List::[Const(I32(1))])` | `if (result i32) i32.const 0 else i32.const 1 end` |
+| `If(1, @immut/list.T::[Const(I32(0))], @immut/list.T::[Const(I32(1))])` | `if (result i32) i32.const 0 else i32.const 1 end` |
 
 What we need to do is simply string conversion. However, it should be noted that when implementing the compiler, we should not directly use string concatenation, but make use of the built-in `Buffer` data structure. When adding new content to it, we do not need to allocate new memory every time. Thus, compared with naive string concatenation, the memory allocation operation can be reduced.
 
@@ -238,12 +238,12 @@ enum Expression {
 Therefore, we can use a simple recursive function that performs pattern matching on the AST and translates it into the corresponding sequence of WebAssembly instructions. For example, an integer is translated into a single constant instruction, and binary operations require recursive translation of the two operands followed by the instruction for the operation itself. It can be seen that we have used the operator overloading feature of MoonBit here.
 
 ```moonbit
-fn compile_expression(expression : Expression) -> @immut/list.List[Instruction] {
+fn compile_expression(expression : Expression) -> @immut/list.T[Instruction] {
   match expression {
-      Number(i) => @immut/list.List::[Const(I32(i))]
-      Plus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.List::[Add]
-      Minus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.List::[Sub]
-      _ => @immut/list.List::[]
+      Number(i) => @immut/list.T::[Const(I32(i))]
+      Plus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.T::[Add]
+      Minus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.T::[Sub]
+      _ => @immut/list.T::[]
   }
 }
 ```
@@ -265,9 +265,9 @@ enum AdministrativeInstruction {
 }
 struct State {
   program : Program
-  stack : @immut/list.List[StackValue]
+  stack : @immut/list.T[StackValue]
   locals : @immut/hashmap.Map[String, Value]
-  instructions : @immut/list.List[AdministrativeInstruction]
+  instructions : @immut/list.T[AdministrativeInstruction]
 }
 ```
 

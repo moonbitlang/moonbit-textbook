@@ -130,9 +130,9 @@ fn or[Value](self : Lexer[Value], parser2 : Lexer[Value]) -> Lexer[Value] {
 For matching zero or more occurrences, we use a loop as shown in lines 5 to 10. We try parsing the remaining input in line 6. If it fails, we exit the loop; otherwise, we add the parsed content to the list and update the remaining input. Ultimately, the parsing always succeeds, so we put the result into `Some`. Note that we're storing values in a list, and a list is a stack, so it needs to be reversed to obtain the correct order.
 
 ```moonbit
-fn many[Value](self : Lexer[Value]) -> Lexer[@immut/list.List[Value]] {
+fn many[Value](self : Lexer[Value]) -> Lexer[@immut/list.T[Value]] {
   Lexer(fn(input) {
-   loop input, @immut/list.List::Nil {
+   loop input, @immut/list.T::Nil {
       rest, cumul => match self.parse(rest) {
         None => Some((cumul.reverse(), rest))
         Some((value, rest)) => continue rest, Cons(value, cumul)
@@ -154,7 +154,7 @@ let zero_to_nine: Lexer[Int] =
 
 // number = %x30 / (%x31-39) *(%x30-39)  
 let value : Lexer[Token] = zero.or(
-  one_to_nine.and(zero_to_nine.many()).map( // (Int, @immut/list.List[Int])
+  one_to_nine.and(zero_to_nine.many()).map( // (Int, @immut/list.T[Int])
     fn { (i, ls) => ls.fold_left(fn { i, j => i * 10 + j }, init=i) },
   ),
 ).map(Token::Value)
@@ -163,7 +163,7 @@ let value : Lexer[Token] = zero.or(
 We're now just one step away from finishing lexical analysis: analyzing the entire input stream. There may be whitespaces in between tokens, so we allow arbitrary lengths of whitespaces after defining the number or symbol in line 2. We map and discard the second value in the tuple representing spaces, and may repeat the entire parser an arbitrary number of times. Finally, we can split a string into minus signs, numbers, plus signs, parentheses, etc. However, this output stream doesn't follow the syntax rules of arithmetic expressions. For this, we will need syntax analysis.
 
 ```moonbit
-let tokens : Lexer[@immut/list.List[Token]] = 
+let tokens : Lexer[@immut/list.T[Token]] = 
   value.or(symbol).and(whitespace.many())
     .map(fn { (symbols, _) => symbols },) // Ignore whitespaces
     .many()
@@ -217,9 +217,9 @@ enum Expression {
 Let's define a syntax parser similar to the previous definitions, except that the input is now a list of tokens instead of a string. Most combinators are like the previous ones and can be implemented similarly. The challenge is how to define mutually recursive syntax parsers since `atomic` references `expression`, and `expression` depends on `combine`, which in turn depends on `atomic`. To solve this problem, we offer two solutions: deferring the definition or recursive functions.
 
 ```moonbit
-type Parser[V] (@immut/list.List[Token]) -> Option[(V, @immut/list.List[Token])]
+type Parser[V] (@immut/list.T[Token]) -> Option[(V, @immut/list.T[Token])]
 
-fn parse[V](self : Parser[V], tokens : @immut/list.List[Token]) -> Option[(V, @immut/list.List[Token])] {
+fn parse[V](self : Parser[V], tokens : @immut/list.T[Token]) -> Option[(V, @immut/list.T[Token])] {
   (self.0)(tokens)
 }
 ```
@@ -267,14 +267,14 @@ The concept of recursive functions is similar. Our parser is essentially a funct
 fn recursive_parser() -> Parser[Expression] {
   // Define mutually recursive functions
   // atomic = Value / "(" expression ")"
-  fn atomic(tokens: @immut/list.List[Token]) -> Option[(Expression, @immut/list.List[Token])] {
+  fn atomic(tokens: @immut/list.T[Token]) -> Option[(Expression, @immut/list.T[Token])] {
     lparen.and(
       Parser(expression) // Reference function
     ).and(rparen).map(fn { ((_, expr), _) => expr})
       .or(number).parse(tokens)
   }
-  fn combine(tokens: @immut/list.List[Token]) -> Option[(Expression, @immut/list.List[Token])] { ... }
-  fn expression(tokens: @immut/list.List[Token]) -> Option[(Expression, @immut/list.List[Token])] { ... }
+  fn combine(tokens: @immut/list.T[Token]) -> Option[(Expression, @immut/list.T[Token])] { ... }
+  fn expression(tokens: @immut/list.T[Token]) -> Option[(Expression, @immut/list.T[Token])] { ... }
 
   // Return the parser represented by the function
   Parser(expression)
@@ -302,18 +302,18 @@ fn recursive_parser[E : Expr]() -> Parser[E] {
   let number : Parser[E] = ptoken(fn { Value(_) => true; _ => false})
     .map(fn { Value(i) => E::number(i) }) // Use the abstract behavior
 
-  fn atomic(tokens: @immut/list.List[Token]) -> Option[(E, @immut/list.List[Token])] { ... }
+  fn atomic(tokens: @immut/list.T[Token]) -> Option[(E, @immut/list.T[Token])] { ... }
   // Convert to a * b * c * ... and a / b / c / ...
-  fn combine(tokens: @immut/list.List[Token]) -> Option[(E, @immut/list.List[Token])] { ... }
+  fn combine(tokens: @immut/list.T[Token]) -> Option[(E, @immut/list.T[Token])] { ... }
   // Convert to a + b + c + ... and a - b - c - ...
-  fn expression(tokens: @immut/list.List[Token]) -> Option[(E, @immut/list.List[Token])] { ... }
+  fn expression(tokens: @immut/list.T[Token]) -> Option[(E, @immut/list.T[Token])] { ... }
 
   Parser(expression)
 }
 // Put things together
-fn parse_string[E : Expr](str: String) -> Option[(E, String, @immut/list.List[Token])] {
+fn parse_string[E : Expr](str: String) -> Option[(E, String, @immut/list.T[Token])] {
   let (token_list, rest_string) = tokens.parse(str)?
-  let (expr, rest_token) : (E, @immut/list.List[Token]) = recursive_parser().parse(token_list)?
+  let (expr, rest_token) : (E, @immut/list.T[Token]) = recursive_parser().parse(token_list)?
   Some(expr, rest_string, rest_token)
 }
 ```
@@ -329,12 +329,12 @@ fn Expression::number(i: Int) -> Expression { Number(i) }
 // Parse
 test {
   inspect((parse_string_tagless_final("1 + 1 * (307 + 7) + 5 - 3 - 2") :
-    Option[(Expression, String, @immut/list.List[Token])]), content=
-    #|Some((Minus(Minus(Plus(Plus(Number(1), Multiply(Number(1), Plus(Number(307), Number(7)))), Number(5)), Number(3)), Number(2)), "", @immut/list.List::[]))
+    Option[(Expression, String, @immut/list.T[Token])]), content=
+    #|Some((Minus(Minus(Plus(Plus(Number(1), Multiply(Number(1), Plus(Number(307), Number(7)))), Number(5)), Number(3)), Number(2)), "", @immut/list.T::[]))
   )? // Get the syntax tree
   inspect((parse_string_tagless_final("1 + 1 * (307 + 7) + 5 - 3 - 2") :
-    Option[(BoxedInt, String, @immut/list.List[Token])]), content=
-    #|Some((BoxedInt(315), "", @immut/list.List::[]))
+    Option[(BoxedInt, String, @immut/list.T[Token])]), content=
+    #|Some((BoxedInt(315), "", @immut/list.T::[]))
   )? // Get the calculation result
   }
 ```
