@@ -134,7 +134,7 @@ fn many[Value](self : Lexer[Value]) -> Lexer[@immut/list.T[Value]] {
   Lexer(fn(input) {
    loop input, @immut/list.T::Nil {
       rest, cumul => match self.parse(rest) {
-        None => Some((cumul.reverse(), rest))
+        None => Some((cumul.rev(), rest))
         Some((value, rest)) => continue rest, Cons(value, cumul)
       }
     }
