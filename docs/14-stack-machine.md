@@ -86,7 +86,7 @@ Now, let's take a look at some examples.
 Taking `1 + 2` as an example, we have a stack which is initially empty. The first thing we need to do is to push the operands as static constants to the stack using the `Const` instruction. Then, we use the `Add` instruction to add them up. It consumes two operands from the top of the stack and stores their sum back to the top of the stack. Thus, after the operation, the top element of the stack is `3`.
 
 ```moonbit no-check
-@immut/list.T::[ Const(I32(1)), Const(I32(2)), Add ]
+@immut/list.of([ Const(I32(1)), Const(I32(2)), Add ])
 ```
 
 ![](/pics/add.drawio.webp)
@@ -102,7 +102,7 @@ add(a : Int, b : Int) { a + b }
 We should use the `Local_Get` instruction to get the values of `a` and `b` and push them to the stack. Then we could use the `Add` instruction to perform the calculation just like what we did in our last example.
 
 ```moonbit no-check
-@immut/list.T::[ Local_Get("a"), Local_Get("b"), Add ]
+@immut/list.of([ Local_Get("a"), Local_Get("b"), Add ])
 ```
 
 ![](/pics/local.drawio.webp)
@@ -125,10 +125,10 @@ After the function `add` is defined, we can call it to perform some calculations
 For conditional statements, as we introduced earlier, we use a 32-bit integer to represent `true` or `false`. When we execute the `If` statement, we take out the top element of the stack. If it is non-zero, the `then` branch will be executed; otherwise, the `else` branch will be executed. It is worth noting that each code block in Wasm has parameter types and return value types, corresponding to the elements to be consumed from the top of the stack when entering the code block, and the elements to be put on the top of the stack when exiting the code block. For example, when we enter the `if/else` block, there is no input, so we assume that the stack is empty when we perform calculations inside the block, no matter what is on the stack originally, it is irrelevant to the current code block. And we declared to return an integer, so when we normally end the execution, there must be one and only one integer in the current calculation environment.
 
 ```moonbit no-check
-@immut/list.T::[ 
+@immut/list.of([ 
 	Const(I32(1)), Const(I32(0)), Equal,
-	If(1, @immut/list.T::[Const(I32(1))], @immut/list.T::[Const(I32(0))])
-]
+	If(1, @immut/list.of([Const(I32(1))]), @immut/list.of([Const(I32(0))]))
+])
 ```
 
 ![](/pics/if.drawio.webp)
@@ -142,19 +142,19 @@ let program = Program::{
 
   start: Some("test_add"), // Program entry point
 
-  functions: @immut/list.T::[
+  functions: @immut/list.of([
     Function::{
       name: "add", // Addition function
-      params: @immut/list.T::["a", "b"], result: 1, locals: @immut/list.T::[],
-      instructions: @immut/list.T::[Local_Get("a"), Local_Get("b"), Add],
+      params: @immut/list.of(["a", "b"]), result: 1, locals: @immut/list.of([]),
+      instructions: @immut/list.of([Local_Get("a"), Local_Get("b"), Add]),
     },
     Function::{
       name: "test_add", // calculate add and output
-      params: @immut/list.T::[], result: 0, locals: @immut/list.T::[], // no input or output
+      params: @immut/list.of([]), result: 0, locals: @immut/list.of([]), // no input or output
       // "print_int" is a special function
-      instructions: @immut/list.T::[Const(I32(0)), Const(I32(1)), Call("add"), Call("print_int")],
+      instructions: @immut/list.of([Const(I32(0)), Const(I32(1)), Call("add"), Call("print_int")]),
     },
-  ],
+  ]),
 }
 ```
 
@@ -190,7 +190,7 @@ The next thing we need to do is to write a compiler, which should be simple beca
 | `Local_Get("a")`                            | `local.get $a`                                     |
 | `Local_Set("a")`                            | `local.set $a`                                     |
 | `Call("add")`                               | `call $add`                                        |
-| `If(1, @immut/list.T::[Const(I32(0))], @immut/list.T::[Const(I32(1))])` | `if (result i32) i32.const 0 else i32.const 1 end` |
+| `If(1, @immut/list.of([Const(I32(0))]), @immut/list.of([Const(I32(1))]))` | `if (result i32) i32.const 0 else i32.const 1 end` |
 
 What we need to do is simply string conversion. However, it should be noted that when implementing the compiler, we should not directly use string concatenation, but make use of the built-in `Buffer` data structure. When adding new content to it, we do not need to allocate new memory every time. Thus, compared with naive string concatenation, the memory allocation operation can be reduced.
 
@@ -240,10 +240,10 @@ Therefore, we can use a simple recursive function that performs pattern matching
 ```moonbit
 fn compile_expression(expression : Expression) -> @immut/list.T[Instruction] {
   match expression {
-      Number(i) => @immut/list.T::[Const(I32(i))]
-      Plus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.T::[Add]
-      Minus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.T::[Sub]
-      _ => @immut/list.T::[]
+      Number(i) => @immut/list.of([Const(I32(i))])
+      Plus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.of([Add])
+      Minus(a, b) => compile_expression(a) + compile_expression(b) + @immut/list.of([Sub])
+      _ => @immut/list.of([])
   }
 }
 ```
