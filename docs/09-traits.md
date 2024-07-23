@@ -296,7 +296,7 @@ With the implementation of `op_get`, we can introduce pattern matching support t
 
 ```moonbit
 fn init {
-  let empty : Map[Int, Int] = Map::new()
+  let empty : Map[Int, Int] = make()
   let one = {
     empty[1] = 1
     empty
