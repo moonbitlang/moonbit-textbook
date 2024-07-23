@@ -59,7 +59,7 @@ enum Symbol {
   Var(Int)
   Add(Symbol, Symbol)
   Mul(Symbol, Symbol)
-} derive(Debug, Show)
+} derive(Show)
 
 // Define simple constructors and overload operators
 fn Symbol::constant(d : Double) -> Symbol { Constant(d) }
@@ -186,7 +186,7 @@ We will start with forward differentiation. It is relatively straightforward tha
 struct Forward {
   value : Double      // Current node value f
   derivative : Double // Current node derivative f'
-} derive(Debug, Show)
+} derive(Show)
 
 fn Forward::constant(d : Double) -> Forward { { value: d, derivative: 0.0 } }
 fn Forward::value(f : Forward) -> Double { f.value }
@@ -243,7 +243,7 @@ Here we demonstrate an implementation in MoonBit. The backward differentiation n
 struct Backward {
   value : Double              // Current node value
   backward : (Double) -> Unit // Update the partial derivative of the current path
-} derive(Debug, Show)
+} derive(Show)
 
 fn Backward::var(value : Double, diff : Ref[Double]) -> Backward {
   // Update the partial derivative along a computation path df / dvi * dvi / dx

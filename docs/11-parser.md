@@ -34,7 +34,7 @@ In MoonBit, we define tokens as enums, and tokens can be values containing integ
 ```moonbit
 enum Token {
   Value(Int); LParen; RParen; Plus; Minus; Multiply; Divide
-} derive(Debug, Show)
+} derive(Show)
 ```
 
 ### Parser Combinator
@@ -321,8 +321,8 @@ fn parse_string[E : Expr](str: String) -> Option[(E, String, @immut/list.List[To
 Thus, we only need to define different implementations and specify which one to use in MoonBit. The former involves defining different methods for the data structure to meet the requirements of the interface, such as the `number` method in lines 4 and 5. The latter specifies the return type of functions to indicate the specific type parameter, as shown in lines 8 and 10. In line 8, we will obtain the expression tree constructed from enums, while in line 10 we can directly obtain the result. You can also add other interpretations, like converting an expression into a formatted string by removing extra parentheses and whitespaces.
 
 ```moonbit no-check
-enum Expression { ... } derive(Debug) // Implementation of syntax tree
-type BoxedInt Int derive(Debug) // Implementation of integer
+enum Expression { ... } derive(Show) // Implementation of syntax tree
+type BoxedInt Int derive(Show) // Implementation of integer
 // Other interface implementation methods omitted
 fn BoxedInt::number(i: Int) -> BoxedInt { BoxedInt(i) }
 fn Expression::number(i: Int) -> Expression { Number(i) }
