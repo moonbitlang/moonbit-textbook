@@ -84,13 +84,16 @@ let symbol: Lexer[Char] = pchar(fn{
 let whitespace : Lexer[Char] = pchar(fn{ ch => ch == ' ' })
 ```
 
-The `map` function can convert the result upon successful parsing. Its parameters include the parser itself and a transformation function. At the end of line 3, we use the question mark operator `?`. If parsing succeeds and the value is non-empty, the operator allows us to directly access the tuple containing the value and remaining string; otherwise, it returns the empty value in advance. After obtaining the value, we apply the transformation function. Utilizing this, we can map the characters corresponding to arithmetic operators and parentheses into their corresponding enum values.
+The `map` function can convert the result upon successful parsing. Its parameters include the parser itself and a transformation function. After obtaining the value, we apply the transformation function. Utilizing this, we can map the characters corresponding to arithmetic operators and parentheses into their corresponding enum values.
 
 ```moonbit
 fn map[I, O](self : Lexer[I], f : (I) -> O) -> Lexer[O] {
   Lexer(fn(input) {
     // Non-empty value v is in Some(v), empty value None is directly returned
-    let (value, rest) = self.parse(input)?
+    let (value, rest) = match self.parse(input) {
+      Some(v) => v
+      None => return None
+    }
     Some((f(value), rest))
 },) }
 
@@ -109,13 +112,19 @@ let symbol : Lexer[Token] = pchar(
 },)
 ```
 
-Let's look at other combinators. We've seen other pattern matching rules like matching `a` followed by `b`, `a` or `b`, zero or more occurrences of `a`, etc. Each combinator is simple to implement, and let's do it one by one. For matching `a` and then `b`, we first use `self` for parsing, as shown in line 3. After obtaining the value and the remaining string with the question mark operator `?`, we use another parser to parse the remaining string, as shown in line 4. The two outputs are returned as a tuple. Then, for matching `a` or `b`, we will pattern match the result of parsing using `self`. If empty, we use the result of another parser; otherwise, we return the current result.
+Let's look at other combinators. We've seen other pattern matching rules like matching `a` followed by `b`, `a` or `b`, zero or more occurrences of `a`, etc. Each combinator is simple to implement, and let's do it one by one. For matching `a` and then `b`, we first use `self` for parsing, as shown in line 3. After obtaining the value and the remaining string, we use another parser to parse the remaining string, as shown in line 7. The two outputs are returned as a tuple. Then, for matching `a` or `b`, we will pattern match the result of parsing using `self`. If empty, we use the result of another parser; otherwise, we return the current result.
 
 ```moonbit
 fn and[V1, V2](self : Lexer[V1], parser2 : Lexer[V2]) -> Lexer[(V1, V2)] {
   Lexer(fn(input) {
-    let (value, rest) = self.parse(input)?
-    let (value2, rest2) = parser2.parse(rest)?
+    let (value, rest) = match self.parse(input) {
+      Some(v) => v
+      None => return None
+    }
+    let (value2, rest2) = match parser2.parse(rest) {
+      Some(v) => v
+      None => return None
+    }
     Some(((value, value2), rest2))
 },) }
 
@@ -312,13 +321,19 @@ fn recursive_parser[E : Expr]() -> Parser[E] {
 }
 // Put things together
 fn parse_string[E : Expr](str: String) -> Option[(E, String, @immut/list.T[Token])] {
-  let (token_list, rest_string) = tokens.parse(str)?
-  let (expr, rest_token) : (E, @immut/list.T[Token]) = recursive_parser().parse(token_list)?
+  let (token_list, rest_string) = match tokens.parse(str) {
+    Some(v) => v
+    None => return None
+  }
+  let (expr, rest_token) : (E, @immut/list.T[Token]) = match recursive_parser().parse(token_list) {
+    Some(v) => v
+    None => return None
+  }
   Some(expr, rest_string, rest_token)
 }
 ```
 
-Thus, we only need to define different implementations and specify which one to use in MoonBit. The former involves defining different methods for the data structure to meet the requirements of the interface, such as the `number` method in lines 4 and 5. The latter specifies the return type of functions to indicate the specific type parameter, as shown in lines 8 and 10. In line 8, we will obtain the expression tree constructed from enums, while in line 10 we can directly obtain the result. You can also add other interpretations, like converting an expression into a formatted string by removing extra parentheses and whitespaces.
+Thus, we only need to define different implementations and specify which one to use in MoonBit. The former involves defining different methods for the data structure to meet the requirements of the interface, such as the `number` method in lines 4 and 5. The latter specifies the return type of functions to indicate the specific type parameter, as shown in lines 8 and 12. In line 8, we will obtain the expression tree constructed from enums, while in line 12 we can directly obtain the result. You can also add other interpretations, like converting an expression into a formatted string by removing extra parentheses and whitespaces.
 
 ```moonbit no-check
 enum Expression { ... } derive(Show) // Implementation of syntax tree
@@ -328,14 +343,14 @@ fn BoxedInt::number(i: Int) -> BoxedInt { BoxedInt(i) }
 fn Expression::number(i: Int) -> Expression { Number(i) }
 // Parse
 test {
-  inspect((parse_string_tagless_final("1 + 1 * (307 + 7) + 5 - 3 - 2") :
+  inspect!((parse_string("1 + 1 * (307 + 7) + 5 - 3 - 2") :
     Option[(Expression, String, @immut/list.T[Token])]), content=
     #|Some((Minus(Minus(Plus(Plus(Number(1), Multiply(Number(1), Plus(Number(307), Number(7)))), Number(5)), Number(3)), Number(2)), "", @immut/list.T::[]))
-  )? // Get the syntax tree
-  inspect((parse_string_tagless_final("1 + 1 * (307 + 7) + 5 - 3 - 2") :
+  ) // Get the syntax tree
+  inspect!((parse_string("1 + 1 * (307 + 7) + 5 - 3 - 2") :
     Option[(BoxedInt, String, @immut/list.T[Token])]), content=
     #|Some((BoxedInt(315), "", @immut/list.T::[]))
-  )? // Get the calculation result
+  ) // Get the calculation result
   }
 ```
 
