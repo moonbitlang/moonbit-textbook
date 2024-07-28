@@ -193,42 +193,42 @@ Now, let's proceed to implement a generic map using traits.
 A map is a collection of key-value pairs, where each key is associated with a value. It is possible for different keys to correspond to the same value. For instance, in the map `{ 0 -> "a", 5 -> "Hello", 7 -> "a"}`, the key `5` corresponds to the value `"Hello"`, while both keys `0` and `7` correspond to the value `"a"`.
 
 ```moonbit no-check
-type Map[Key, Value]
+type MyMap[Key, Value]
 ```
 
 A map should support the following methods:
 - Create a map.
   ```moonbit no-check
-  fn make[Key, Value]() -> Map[Key, Value]
+  fn make[Key, Value]() -> MyMap[Key, Value]
   ```
 - Add a key-value pair, or update the corresponding value of a key.
   ```moonbit no-check
-  fn put[Key, Value](map: Map[Key, Value], key: Key, value: Value) -> Map[Key, Value]
+  fn put[Key, Value](map: MyMap[Key, Value], key: Key, value: Value) -> MyMap[Key, Value]
   ```
 - Get the corresponding value of a key.
   ```moonbit no-check
-  fn get[Key, Value](map: Map[Key, Value], key: Key) -> Option[Value]
+  fn get[Key, Value](map: MyMap[Key, Value], key: Key) -> Option[Value]
   ```
   Since such a key-value pair may not exist in the map, the return value is wrapped in `Option`.
 
 The map can be implemented using a list of pairs.
 
 ```moonbit
-type Map[Key, Value] @immut/list.T[(Key, Value)]
+type MyMap[Key, Value] @immut/list.T[(Key, Value)]
 ```
 
 The first two basic methods, `make` and `put`, can be easily implemented as follows:
 - Create a map by creating an empty list.
   ```moonbit
-  fn make[Key, Value]() -> Map[Key, Value] { 
-    Map(Nil)
+  fn make[Key, Value]() -> MyMap[Key, Value] { 
+    MyMap(Nil)
   }
   ```
 - Add/update a key-value pair by inserting the pair to the beginning of the list.
   ```moonbit
-  fn put[Key, Value](map: Map[Key, Value], key: Key, value: Value) -> Map[Key, Value] { 
-    let Map(original_map) = map
-    Map( Cons( (key, value), original_map ) )
+  fn put[Key, Value](map: MyMap[Key, Value], key: Key, value: Value) -> MyMap[Key, Value] { 
+    let MyMap(original_map) = map
+    MyMap( Cons( (key, value), original_map ) )
   }
   ```
 
@@ -240,7 +240,7 @@ In such an implementation of the `get` function, we need to compare the key we a
 The complete implementation of `get` is as follows:
 
 ```moonbit
-fn get[Key: Eq, Value](map : Map[Key, Value], key : Key) -> Option[Value] {
+fn get[Key: Eq, Value](map : MyMap[Key, Value], key : Key) -> Option[Value] {
   loop map.0 {
     Nil => None
     Cons((k, v), tl) => if k == key {
@@ -273,30 +273,30 @@ fn init {
 }
 ```
 
-In the previous example, we used the `get` and `set` functions to access and update data in the map. However, it is also possible to use custom operators to achieve the same functionality. By defining the `op_get` and `op_set` methods for the `Map` type, we can use the `map[k]` syntax to retrieve the value corresponding to `k`, and use `map[k] = v` to update the value associated with `k` to `v`.
+In the previous example, we used the `get` and `set` functions to access and update data in the map. However, it is also possible to use custom operators to achieve the same functionality. By defining the `op_get` and `op_set` methods for the `MyMap` type, we can use the `map[k]` syntax to retrieve the value corresponding to `k`, and use `map[k] = v` to update the value associated with `k` to `v`.
 
 ```moonbit
-fn Map::op_get[Key: Eq, Value](map: Map[Key, Value], key: Key) -> Option[Value] {
+fn MyMap::op_get[Key: Eq, Value](map: MyMap[Key, Value], key: Key) -> Option[Value] {
   get(map, key)
 }
-fn Map::op_set[Key: Eq, Value](map: Map[Key, Value], key: Key, value: Value) -> Map[Key, Value] {
+fn MyMap::op_set[Key: Eq, Value](map: MyMap[Key, Value], key: Key, value: Value) -> MyMap[Key, Value] {
   put(map, key, value)
 }
 
 fn init {
-  let empty: Map[Int, Int] = make()
-  let one = { empty[1] = 1 } // let one = Map::op_set(empty, 1, 1)
-  let _ = one[1] // let _ = Map::op_get(one, 1)
+  let empty: MyMap[Int, Int] = make()
+  let one = { empty[1] = 1 } // let one = MyMap::op_set(empty, 1, 1)
+  let _ = one[1] // let _ = MyMap::op_get(one, 1)
 }
 ```
 
 In the previous example, the assignment statement is essentially an expression, and the return value is determined by the `op_get` method. We can use this method to retrieve the updated value. For mutable data structures, we also have the option to modify them in place without returning any value.
 
-With the implementation of `op_get`, we can introduce pattern matching support to `Map`. This feature is applicable when the key is a native type and the value is an `Option[T]`.
+With the implementation of `op_get`, we can introduce pattern matching support to `MyMap`. This feature is applicable when the key is a native type and the value is an `Option[T]`.
 
 ```moonbit
 fn init {
-  let empty : Map[Int, Int] = make()
+  let empty : MyMap[Int, Int] = make()
   let one = {
     empty[1] = 1
   }
