@@ -295,11 +295,11 @@ fn init {
 ```
 
 We can also use closures with structs to encapsulate the hash map behavior and define an abstract data structure. We previously showed implementations of open addressing and direct addressing, but this does not matter for users as they have the same effect.
-In this case, we can define a struct `Map` that has four functions, which all capture the same hash map and allow modifications. Then, we provide two functions to construct this struct, offering implementations of both open addressing and direct addressing. As an exercise, think about how we can implement it with a simple list or tree, etc. 
+In this case, we can define a struct `MyMap` that has four functions, which all capture the same hash map and allow modifications. Then, we provide two functions to construct this struct, offering implementations of both open addressing and direct addressing. As an exercise, think about how we can implement it with a simple list or tree, etc. 
 Lastly, let's use this struct. We only need to replace the initialization function, and the rest of the code remains unchanged when using different implementations. 
 
 ```moonbit
-struct Map[K, V] {
+struct MyMap[K, V] {
   get : (K) -> Option[V]
   put : (K, V) -> Unit
   remove : (K) -> Unit
@@ -308,15 +308,15 @@ struct Map[K, V] {
 ```
 ```moonbit no-check
 // Implementation of open addressing
-fn Map::hash_open_address[K : Hash + Eq + Default, V : Default]() -> Map[K, V] { ... }
+fn MyMap::hash_open_address[K : Hash + Eq + Default, V : Default]() -> MyMap[K, V] { ... }
 // Implementation of direct addressing
-fn Map::hash_bucket[K : Hash + Eq, V]() -> Map[K, V] { ... }
+fn MyMap::hash_bucket[K : Hash + Eq, V]() -> MyMap[K, V] { ... }
 // Implementation with a simple list or tree, etc.
 
 fn init {
   // Replace the initialization function, rest of the code unchanged
-  let map : Map[Int, Int] = Map::hash_bucket()
-  // let map : Map[Int, Int] = Map::hash_open_address()
+  let map : MyMap[Int, Int] = MyMap::hash_bucket()
+  // let map : MyMap[Int, Int] = MyMap::hash_open_address()
   (map.put)(1, 1)
   println((map.size)())
 }
@@ -325,7 +325,7 @@ fn init {
 Here is the main code snippet. We implement the `map` table inside `hash_bucket`, then capture it in multiple functions, store these functions in a struct, and return it. 
 
 ```moonbit no-check
-fn Map::hash_bucket[K : Hash + Eq, V]() -> Map[K, V] {
+fn MyMap::hash_bucket[K : Hash + Eq, V]() -> MyMap[K, V] {
   let initial_length = 10
   let load = 0.75
   let map = {
@@ -348,11 +348,11 @@ fn Map::hash_bucket[K : Hash + Eq, V]() -> Map[K, V] {
 Moreover, we can extend and build more methods based on the struct for convenience to use. For example, if the struct provides a function to get the number of key-value pairs, we can additionally determine if the hash map is empty. If the struct provides a function to get the value, we can use it to determine if the hash map contains the corresponding key, etc. In this way, we can add the same logic to different implementations at once.
 
 ```moonbit
-fn Map::is_empty[K, V](map : Map[K, V]) -> Bool {
+fn MyMap::is_empty[K, V](map : MyMap[K, V]) -> Bool {
   (map.size)() == 0
 }
 
-fn Map::contains[K, V](map : Map[K, V], key : K) -> Bool {
+fn MyMap::contains[K, V](map : MyMap[K, V], key : K) -> Bool {
   match (map.get)(key) {
     Some(_) => true
     None => false
@@ -361,7 +361,7 @@ fn Map::contains[K, V](map : Map[K, V], key : K) -> Bool {
 ```
 ```moonbit no-check
 fn init {
-  let map : Map[Int, Int] = Map::hash_bucket()
+  let map : MyMap[Int, Int] = MyMap::hash_bucket()
   println(map.is_empty()) // true
   println(map.contains(1)) // false
 }
