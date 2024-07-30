@@ -325,7 +325,7 @@ test "Newton's method" {
       }
       continue Forward::var(x.value - value / derivative, true)
     }
-  } |> @test.eq(0.37851665401644224))!
+  } |> @test.eq!(0.37851665401644224))
 }
 ```
 
