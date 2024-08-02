@@ -25,7 +25,7 @@ Hash maps use this mechanism to efficiently handle data by mapping the data to a
 
 ```moonbit no-check
 // For a: Array[(Key, Value)], key: Key, value: Value
-let index = key.hash().mod_u(a.length()) // key value--hashing-->hash value--modulo operation-->index in array
+let index = key.hash() % a.length() // key value--hashing-->hash value--modulo operation-->index in array
 a[ index ] = value // add or update data
 let value = a[ index ] // look up data
 ```
@@ -76,7 +76,7 @@ let load = 0.75
 fn resize() -> Unit {} // placeholder for resize implementation
 
 fn put[K : Hash + Eq, V](map : HT_bucket[K, V], key : K, value : V) -> Unit {
-  let index = key.hash().mod_u(map.length) // Calculate the index
+  let index = key.hash() % map.length // Calculate the index
   let mut bucket = map.values[index] // Get the corresponding data structure
   while true {
     match bucket.val {
@@ -104,7 +104,7 @@ Next, let's briefly go over the remove operation. Similar to the add/update oper
 
 ```moonbit
 fn remove[K : Hash + Eq, V](map : HT_bucket[K, V], key : K) -> Unit {
-  let index = key.hash().mod_u(map.length) // Calculate the index
+  let index = key.hash() % map.length // Calculate the index
   let mut bucket = map.values[index] // Get the corresponding data structure
   while true {
     match bucket.val {
@@ -150,12 +150,12 @@ We can define a helper method to check if a key already exists. If so, we direct
 // Probe to the right of the index of the original hash, return the index of the first empty slot
 fn find_slot[K : Hash + Eq, V](map : HT_open[K, V], key : K) -> Int {
   let hash = key.hash() // Hash value of the key
-  let mut i = hash.mod_u(map.length) // Index to be stored at if there's no hash collision
+  let mut i = hash % map.length // Index to be stored at if there's no hash collision
   while map.occupied[i] {
     if map.values[i].key == key { // If a key already exists, return its index
       return i
     }
-    i = (i + 1).mod_u(map.length)
+    i = (i + 1) % map.length
   }
   return i // Otherwise, return when an empty slot occurs
 }
@@ -208,7 +208,7 @@ Let's also update the helper function so that during key or empty slot lookup, w
 ```moonbit
 // Probe to the right of the index of the original hash, return the index of the first empty slot
 fn find_slot[K : Hash + Eq, V](map : HT_open[K, V], key : K) -> Int {
-  let index = key.hash().mod_u(map.length)
+  let index = key.hash() % map.length
   let mut i = index
   let mut empty = -1 // Record the first empty slot occurred: status Empty or Deleted
   while (physical_equal(map.occupied[i], Empty)).not() {
@@ -218,7 +218,7 @@ fn find_slot[K : Hash + Eq, V](map : HT_open[K, V], key : K) -> Int {
     if physical_equal(map.occupied[i], Deleted) && empty != -1 { // Update empty slot
       empty = i
     }
-    i = (i + 1).mod_u(map.length)
+    i = (i + 1) % map.length
   }
   return if empty == -1 { i } else { empty } // Return the first empty slot
 }
@@ -253,19 +253,19 @@ Now, the invariant holds again: there should be no empty slots between the origi
 
 ## Closure
 
-It's time for the last topic in this lecture! What is a closure? A closure is the combination of a function bundled together with references to its surrounding state. Its surrounding state is determined by the lexical environment. For example, in the following code, when we define the function at line 3, the `i` here corresponds to the `i` at line 2. Therefore, when we call `debug_i` later at line 3, it outputs the value of `i` from line 2. Then we update `i` at line 4, and the output will also be updated accordingly. 
+It's time for the last topic in this lecture! What is a closure? A closure is the combination of a function bundled together with references to its surrounding state. Its surrounding state is determined by the lexical environment. For example, in the following code, when we define the function at line 3, the `i` here corresponds to the `i` at line 2. Therefore, when we call `println_i` later at line 3, it outputs the value of `i` from line 2. Then we update `i` at line 4, and the output will also be updated accordingly. 
 
 However, when we introduce another `i` at line 7, although the variable names are the same, the new variable `i` has nothing to do with our closure, so the output at line 8 will not change. The environment captured by the closure corresponds to the program structure and is determined at code definition, but not runtime.
 
 ```moonbit
 fn init {
   let mut i = 2
-  fn debug_i() { debug(i) } // Capturing i
+  fn println_i() { println(i) } // Capturing i
   i = 3
-  debug_i() // Output 3
+  println_i() // Output 3
   {
     let i = 4 // A different i variable
-    debug_i() // Output 3
+    println_i() // Output 3
   }
 }
 ```
@@ -288,18 +288,18 @@ fn natural_number_get_and_set()
 fn init {
   let (get, set) = natural_number_get_and_set()
   set(10)
-  debug(get()) // 10
+  println(get()) // 10
   set(-100)
-  debug(get()) // 10
+  println(get()) // 10
 }
 ```
 
 We can also use closures with structs to encapsulate the hash map behavior and define an abstract data structure. We previously showed implementations of open addressing and direct addressing, but this does not matter for users as they have the same effect.
-In this case, we can define a struct `Map` that has four functions, which all capture the same hash map and allow modifications. Then, we provide two functions to construct this struct, offering implementations of both open addressing and direct addressing. As an exercise, think about how we can implement it with a simple list or tree, etc. 
+In this case, we can define a struct `MyMap` that has four functions, which all capture the same hash map and allow modifications. Then, we provide two functions to construct this struct, offering implementations of both open addressing and direct addressing. As an exercise, think about how we can implement it with a simple list or tree, etc. 
 Lastly, let's use this struct. We only need to replace the initialization function, and the rest of the code remains unchanged when using different implementations. 
 
 ```moonbit
-struct Map[K, V] {
+struct MyMap[K, V] {
   get : (K) -> Option[V]
   put : (K, V) -> Unit
   remove : (K) -> Unit
@@ -308,24 +308,24 @@ struct Map[K, V] {
 ```
 ```moonbit no-check
 // Implementation of open addressing
-fn Map::hash_open_address[K : Hash + Eq + Default, V : Default]() -> Map[K, V] { ... }
+fn MyMap::hash_open_address[K : Hash + Eq + Default, V : Default]() -> MyMap[K, V] { ... }
 // Implementation of direct addressing
-fn Map::hash_bucket[K : Hash + Eq, V]() -> Map[K, V] { ... }
+fn MyMap::hash_bucket[K : Hash + Eq, V]() -> MyMap[K, V] { ... }
 // Implementation with a simple list or tree, etc.
 
 fn init {
   // Replace the initialization function, rest of the code unchanged
-  let map : Map[Int, Int] = Map::hash_bucket()
-  // let map : Map[Int, Int] = Map::hash_open_address()
+  let map : MyMap[Int, Int] = MyMap::hash_bucket()
+  // let map : MyMap[Int, Int] = MyMap::hash_open_address()
   (map.put)(1, 1)
-  debug((map.size)())
+  println((map.size)())
 }
 ```
 
 Here is the main code snippet. We implement the `map` table inside `hash_bucket`, then capture it in multiple functions, store these functions in a struct, and return it. 
 
 ```moonbit no-check
-fn Map::hash_bucket[K : Hash + Eq, V]() -> Map[K, V] {
+fn MyMap::hash_bucket[K : Hash + Eq, V]() -> MyMap[K, V] {
   let initial_length = 10
   let load = 0.75
   let map = {
@@ -348,11 +348,11 @@ fn Map::hash_bucket[K : Hash + Eq, V]() -> Map[K, V] {
 Moreover, we can extend and build more methods based on the struct for convenience to use. For example, if the struct provides a function to get the number of key-value pairs, we can additionally determine if the hash map is empty. If the struct provides a function to get the value, we can use it to determine if the hash map contains the corresponding key, etc. In this way, we can add the same logic to different implementations at once.
 
 ```moonbit
-fn Map::is_empty[K, V](map : Map[K, V]) -> Bool {
+fn MyMap::is_empty[K, V](map : MyMap[K, V]) -> Bool {
   (map.size)() == 0
 }
 
-fn Map::contains[K, V](map : Map[K, V], key : K) -> Bool {
+fn MyMap::contains[K, V](map : MyMap[K, V], key : K) -> Bool {
   match (map.get)(key) {
     Some(_) => true
     None => false
@@ -361,9 +361,9 @@ fn Map::contains[K, V](map : Map[K, V], key : K) -> Bool {
 ```
 ```moonbit no-check
 fn init {
-  let map : Map[Int, Int] = Map::hash_bucket()
-  debug(map.is_empty()) // true
-  debug(map.contains(1)) // false
+  let map : MyMap[Int, Int] = MyMap::hash_bucket()
+  println(map.is_empty()) // true
+  println(map.contains(1)) // false
 }
 ```
 

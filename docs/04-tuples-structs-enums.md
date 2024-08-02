@@ -109,7 +109,7 @@ let accepted: Bool = accept(({other: 2, val: 1}: A))
 Pattern matching is another way to access tuples and structures.
 
 ```moonbit
-fn head_opt(list: @immut/list.List[Int]) -> Option[Int] {
+fn head_opt(list: @immut/list.T[Int]) -> Option[Int] {
   match list {
     Nil => None
     Cons(head, tail) => Some(head)
@@ -140,7 +140,7 @@ fn is_zero(i: Int) -> Bool {
 In the examples above, we matched numbers. Here we use the pipe symbol (the `or` pattern) to simultaneously match multiple possible values. The underscore (`_`) is the wildcard to match all remaining cases. We can nest patterns in constructors, or bind corresponding structures with identifiers.
 
 ```moonbit
-fn contains_zero(l: @immut/list.List[Int]) -> Bool {
+fn contains_zero(l: @immut/list.T[Int]) -> Bool {
   match l {
     Nil => false
     Cons(0, _) => true
@@ -177,7 +177,7 @@ Tuples' patterns are just like their definitions, enclosed in parentheses and se
 Here is another example for better understanding how to use nested patterns. The `zip` function combines two lists into a new list of pairs like a zipper. The length of the resulting list is the minimum of the lengths of the input lists. Given the lists `[1, 2, 3]` and `['a', 'b', 'c', 'd']`, the zipped list would be `[(1, 'a'), (2, 'b'), (3, 'c')]`.
 
 ```moonbit
-fn zip(l1: @immut/list.List[Int], l2: @immut/list.List[Char]) -> @immut/list.List[(Int, Char)] {
+fn zip(l1: @immut/list.T[Int], l2: @immut/list.T[Char]) -> @immut/list.T[(Int, Char)] {
   match (l1, l2) {
     (Cons(hd, tl), Cons(hd2, tl2)) => Cons((hd, hd2), zip(tl, tl2))
     _ => Nil

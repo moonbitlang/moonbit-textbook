@@ -4,15 +4,15 @@
 ```moonbit
 let pi = 3.1415
 
-fn put(map: @immut/sorted_map.Map[Int, Int64], num: Int, result: Int64) -> @immut/sorted_map.Map[Int, Int64] {
+fn put(map: @immut/sorted_map.T[Int, Int64], num: Int, result: Int64) -> @immut/sorted_map.T[Int, Int64] {
   map.insert(num, result)
 }
 
-fn get(map: @immut/sorted_map.Map[Int, Int64], num: Int) -> Option[Int64] {
+fn get(map: @immut/sorted_map.T[Int, Int64], num: Int) -> Option[Int64] {
   map.lookup(num)
 }
 
-fn make() -> @immut/sorted_map.Map[Int, Int64] {
+fn make() -> @immut/sorted_map.T[Int, Int64] {
   @immut/sorted_map.empty()
 }
 
@@ -593,13 +593,13 @@ fn get(map: IntMap, num: Int) -> Option[Int64]        // Retrieve
 
 In other words, we should be able to perform the following operations using an `IntMap`: create an empty map, insert a key-value pair into it, and look up the value corresponding to a given key.
 
-Thanks to our paradigm of modular programming, we only need to care about the interfaces rather than the specific implementation. Therefore, there are many suitable data structures in MoonBit's standard library. In this example, we will use `@immut/sorted_map.Map[Int, Int64]`, but we can easily replace it with another data structure, as long as it implements the interfaces we need.
+Thanks to our paradigm of modular programming, we only need to care about the interfaces rather than the specific implementation. Therefore, there are many suitable data structures in MoonBit's standard library. In this example, we will use `@immut/sorted_map.T[Int, Int64]`, but we can easily replace it with another data structure, as long as it implements the interfaces we need.
 
 In the top-down implementation, before each computation, we first check if our desired result has been cached: if it does, we can simply use the result; if it doesn't, we calculate the result and store it in the data structure.
 
 ```moonbit expr
 fn fib1(num: Int) -> Int64 {
-  fn aux(num: Int, map: @immut/sorted_map.Map[Int, Int64]) -> (Int64, @immut/sorted_map.Map[Int, Int64]) {
+  fn aux(num: Int, map: @immut/sorted_map.T[Int, Int64]) -> (Int64, @immut/sorted_map.T[Int, Int64]) {
     match get(map, num) {
       Some(result) => (result, map)
       None => {
@@ -646,7 +646,7 @@ In the bottom-up implementation, we typically start from the smallest subproblem
 
 ```moonbit expr
 fn fib2(num: Int) -> Int64 {
-  fn aux(n: Int, map: @immut/sorted_map.Map[Int, Int64]) -> Int64 {
+  fn aux(n: Int, map: @immut/sorted_map.T[Int, Int64]) -> Int64 {
     let result = get_or_else(get(map, n - 1), 1L) + 
       get_or_else(get(map, n - 2), 1L)
     if n == num { result } 

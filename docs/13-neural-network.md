@@ -161,21 +161,21 @@ fn Backward::log(b : Backward) -> Backward {
 
 // Implementation for Double
 
-fn Base::constant(d : Double) -> Double {
+impl Base for Double with constant(d : Double) -> Double {
   d
 }
 
-fn Base::value(d : Double) -> Double {
+impl Base for Double with value(d : Double) -> Double {
   d
 }
 
-fn Base::exp(x : Double) -> Double {
+impl Base for Double with exp(x : Double) -> Double {
   x |> exp_ffi
 }
 
 fn exp_ffi(x : Double) -> Double = "math" "exp"
 
-fn Log::log(x : Double) -> Double {
+impl Log for Double with log(x : Double) -> Double {
   x |> log_ffi
 }
 
