@@ -171,7 +171,7 @@ It is not uncommon to encounter difficulties recalling the order of parameters w
 
 ```moonbit
 fn greeting1(~name: String, ~location: String) -> Unit {
-  println("Hi, \(name) from \(location)!")
+  println("Hi, \{name} from \{location}!")
 }
 
 fn init {
@@ -190,8 +190,8 @@ Consider the following example:
 ```moonbit
 fn greeting2(~name: String, ~location: Option[String] = None) -> Unit {
   match location {
-    Some(location) => println("Hi, \(name)!")
-    None => println("Hi, \(name) from \(location)!")
+    Some(location) => println("Hi, \{name}!")
+    None => println("Hi, \{name} from \{location}!")
   }
 }
 
