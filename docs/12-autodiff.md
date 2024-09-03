@@ -108,11 +108,11 @@ fn example() -> Symbol {
 test "Symbolic differentiation" {
   let input : Array[Double] = [10.0, 100.0]
   let symbol : Symbol = example() // Abstract syntax tree of the function
-  @test.eq!(symbol.compute(input), 600.0)
+  assert_eq!(symbol.compute(input), 600.0)
   // Expression of df/dx
   inspect!(symbol.differentiate(0), 
   content="Add(Add(Mul(Mul(Constant(5.0), Var(0)), Constant(1.0)), Mul(Add(Mul(Constant(5.0), Constant(1.0)), Mul(Constant(0.0), Var(0))), Var(0))), Constant(0.0))")
-  @test.eq!(symbol.differentiate(0).compute(input), 100.0)
+  assert_eq!(symbol.differentiate(0).compute(input), 100.0)
 }
 ```
 
@@ -325,7 +325,7 @@ test "Newton's method" {
       }
       continue Forward::var(x.value - value / derivative, true)
     }
-  } |> @test.eq!(0.37851665401644224))
+  } |> assert_eq!(0.37851665401644224))
 }
 ```
 

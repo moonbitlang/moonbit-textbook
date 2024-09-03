@@ -58,8 +58,8 @@ fn num_water_bottles(num_bottles: Int, num_exchange: Int) -> Int {
 // test block
 test {
   // statements
-  @test.eq!(num_water_bottles(9, 3), 13)
-  @test.eq!(num_water_bottles(15, 4), 19)
+  assert_eq!(num_water_bottles(9, 3), 13)
+  assert_eq!(num_water_bottles(15, 4), 19)
 }
 ```
 

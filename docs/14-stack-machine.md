@@ -200,7 +200,7 @@ fn Program::to_wasm(self : Program, buffer : Buffer) -> Unit
 fn Instruction::to_wasm(self : Instruction, buffer : Buffer) -> Unit {
   match self {
     Add => buffer.write_string("i32.add ")
-    Local_Get(val) => buffer.write_string("local.get $\(val) ")
+    Local_Get(val) => buffer.write_string("local.get $\{val} ")
     _ => buffer.write_string("...")
   }
 }
