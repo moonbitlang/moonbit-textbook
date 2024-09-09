@@ -14,22 +14,22 @@ The course is suitable for a wide audience, from programming beginners to experi
 
 ## Course Outline
 
-| Chapter | Topic | Slides | Video | Code Repository |
-| :-: | :- | :-: | :-: | :-: |
-| 1 | [Program Design](./program-design) | Pending | Pending |  |
-| 2 | [Development Environments & Expressions](./development-environments-expressions) | Pending | Pending |  |
-| 3 | [Functions, Lists & Recursion](./functions-lists-recursion) | Pending | Pending |  |
-| 4 | [Tuples, Structs & Enums](./tuples-structs-enums) | Pending | Pending |  |
-| 5 | [Trees](./trees) | Pending | Pending |  |
-| 6 | [Generics & Higher-Order Functions](./generics-higher-order-functions) | Pending | Pending |  |
-| 7 | [Imperative Programming](./imperative-programming) | Pending | Pending |  |
-| 8 | [Queues](./queues) | Pending | Pending |  |
-| 9 | [Traits](./traits) | Pending | Pending |  |
-| 10 | [Hash Maps & Closures](./hash-maps-closures) | Pending | Pending |  |
-| 11 | [Case Study: Parser](./parser) | Pending | Pending |  |
-| 12 | [Case Study: Autodiff](./autodiff) | Pending | Pending |  |
-| 13 | [Case Study: Neural Network](./neural-network) | Pending | Pending |  |
-| 14 | [Case Study: Stack Machine](./stack-machine) | Pending | Pending |  |
+| Chapter | Topic                                                                            | Slides  |  Video  | Code Repository |
+| :-----: | :------------------------------------------------------------------------------- | :-----: | :-----: | :-------------: |
+|    1    | [Program Design](./program-design)                                               | Pending | Pending |                 |
+|    2    | [Development Environments & Expressions](./development-environments-expressions) | Pending | Pending |                 |
+|    3    | [Functions, Lists & Recursion](./functions-lists-recursion)                      | Pending | Pending |                 |
+|    4    | [Tuples, Structs & Enums](./tuples-structs-enums)                                | Pending | Pending |                 |
+|    5    | [Trees](./trees)                                                                 | Pending | Pending |                 |
+|    6    | [Generics & Higher-Order Functions](./generics-higher-order-functions)           | Pending | Pending |                 |
+|    7    | [Imperative Programming](./imperative-programming)                               | Pending | Pending |                 |
+|    8    | [Queues](./queues)                                                               | Pending | Pending |                 |
+|    9    | [Traits](./traits)                                                               | Pending | Pending |                 |
+|   10    | [Hash Maps & Closures](./hash-maps-closures)                                     | Pending | Pending |                 |
+|   11    | [Case Study: Parser](./parser)                                                   | Pending | Pending |                 |
+|   12    | [Case Study: Autodiff](./autodiff)                                               | Pending | Pending |                 |
+|   13    | [Case Study: Neural Network](./neural-network)                                   | Pending | Pending |                 |
+|   14    | [Case Study: Stack Machine](./stack-machine)                                     | Pending | Pending |                 |
 
 Chapters 1 to 6 focus on functional programming, where we will learn about basic data structures and algorithms, and then delve into advanced topics such as higher-order functions and interfaces. Starting from Chapter 7, we will move on to imperative programming, where we will work with mutable data. Finally, we will conclude our study with an introduction to object-oriented programming. In the last few chapters, we will present some case studies to demonstrate how to use MoonBit to develop complex programs.
 

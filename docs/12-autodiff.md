@@ -2,23 +2,23 @@
 
 Today, we will talk about another case study on automatic differentiation (autodiff), while avoiding some of the complex mathematical concepts.
 
-Differentiation is an important operation in computer science. In machine learning, neural networks based on gradient descent apply differentiation to find local minima for training. You might be more familiar with solving functions and approximating zeros using Newton's method. Let's briefly review it. Here, we have plotted a function and set the initial value to 1, which is point A on the number axis. 
+Differentiation is an important operation in computer science. In machine learning, neural networks based on gradient descent apply differentiation to find local minima for training. You might be more familiar with solving functions and approximating zeros using Newton's method. Let's briefly review it. Here, we have plotted a function and set the initial value to 1, which is point A on the number axis.
 
 ![](/pics/geogebra-export-0.webp)
 
 ![](/pics/geogebra-export-1.webp)
 
-We want to approximate the zeros near it. We calculate point B on the function corresponding to the x-coordinate of this point and find the derivative at the point, which is the slope of the tangent line at that point. 
+We want to approximate the zeros near it. We calculate point B on the function corresponding to the x-coordinate of this point and find the derivative at the point, which is the slope of the tangent line at that point.
 
 ![](/pics/geogebra-export-2.webp)
 
 ![](/pics/geogebra-export-3.webp)
 
-By finding the intersection of the tangent line and the x-axis, we get a value that approximates zero. 
+By finding the intersection of the tangent line and the x-axis, we get a value that approximates zero.
 
 ![](/pics/geogebra-export-4.webp)
 
-We then repeat the process to find the point corresponding to the function, calculate the derivative, and find the intersection of the tangent line and the x-axis. 
+We then repeat the process to find the point corresponding to the function, calculate the derivative, and find the intersection of the tangent line and the x-axis.
 
 ![](/pics/geogebra-export-5.webp)
 
@@ -36,14 +36,14 @@ Today, we will look at the following simple combination of functions, involving 
 - $\frac{\partial f}{\partial x_0}(10, 100) = 100$
 - $\frac{\partial f}{\partial x_1}(10, 100) = 1$
 
-# Differentiation
+## Differentiation
 
-There are several ways to differentiate a function. The first method is manual differentiation where we use a piece of paper and a pen as a natural calculator. The drawback is that it's easy to make mistakes with complex expressions and we can't just manually calculate 24 hours a day. The second method is numerical differentiation: $\frac{ \texttt{f}(x + \delta x) - \texttt{f}(x) }{ \delta x }$, where we add a small value (approaching zero) to the point we want to differentiate, calculate the difference, and divide it by the small value. The issue here is that computers cannot accurately represent decimals, and the larger the absolute value, the less accurate it is. Also, we cannot fully solve infinite series. The third method is symbolic differentiation, where we convert the function into an expression tree and then operate on the tree to get the derivative. Take $\textit{Mul(Const(2), Var(1))} \to \textit{Const(2)}$ for example: here the differentiation result of constant 2 multiplied by x will be constant 2. The problem with symbolic differentiation is that the calculation results may not be simplified enough, and there may be redundant calculations. In addition, it's hard to directly use native control flow like conditionals and loops. If we want to define a function to find the larger value, we have to define an operator instead of simply comparing the current values. 
+There are several ways to differentiate a function. The first method is manual differentiation where we use a piece of paper and a pen as a natural calculator. The drawback is that it's easy to make mistakes with complex expressions and we can't just manually calculate 24 hours a day. The second method is numerical differentiation: $\frac{ \texttt{f}(x + \delta x) - \texttt{f}(x) }{ \delta x }$, where we add a small value (approaching zero) to the point we want to differentiate, calculate the difference, and divide it by the small value. The issue here is that computers cannot accurately represent decimals, and the larger the absolute value, the less accurate it is. Also, we cannot fully solve infinite series. The third method is symbolic differentiation, where we convert the function into an expression tree and then operate on the tree to get the derivative. Take $\textit{Mul(Const(2), Var(1))} \to \textit{Const(2)}$ for example: here the differentiation result of constant 2 multiplied by x will be constant 2. The problem with symbolic differentiation is that the calculation results may not be simplified enough, and there may be redundant calculations. In addition, it's hard to directly use native control flow like conditionals and loops. If we want to define a function to find the larger value, we have to define an operator instead of simply comparing the current values.
 
 ```moonbit no-check
 // Need to define additional native operators for the same effect
 fn max[N : Number](x : N, y : N) -> N {
-	if x.value() > y.value() { x } else { y }
+ if x.value() > y.value() { x } else { y }
 }
 ```
 
@@ -68,13 +68,13 @@ fn Symbol::op_add(f1 : Symbol, f2 : Symbol) -> Symbol { Add(f1, f2) }
 fn Symbol::op_mul(f1 : Symbol, f2 : Symbol) -> Symbol { Mul(f1, f2) }
 
 // Compute function values
-fn Symbol::compute(self : Symbol, input : Array[Double]) -> Double { 
+fn Symbol::compute(self : Symbol, input : Array[Double]) -> Double {
   match self {
     Constant(d) => d
     Var(i) => input[i] // get value following index
     Add(f1, f2) => f1.compute(input) + f2.compute(input)
     Mul(f1, f2) => f1.compute(input) * f2.compute(input)
-    } 
+    }
 }
 ```
 
@@ -85,7 +85,7 @@ Let's review the derivative rules for any constant function, any variable partia
 - $\frac{\partial (f + g)}{\partial x_i} = \frac{\partial f}{\partial x_i} + \frac{\partial g}{\partial x_i}$
 - $\frac{\partial (f \times g)}{\partial x_i} = \frac{\partial f}{\partial x_i} \times g + f \times \frac{\partial g}{\partial x_i}$
 
-We'll use the previous definition to construct our example function. As we can see, the multiplication and addition operations look very natural because MoonBit allows us to overload some operators. 
+We'll use the previous definition to construct our example function. As we can see, the multiplication and addition operations look very natural because MoonBit allows us to overload some operators.
 
 ```moonbit
 fn differentiate(self : Symbol, val : Int) -> Symbol {
@@ -110,7 +110,7 @@ test "Symbolic differentiation" {
   let symbol : Symbol = example() // Abstract syntax tree of the function
   assert_eq!(symbol.compute(input), 600.0)
   // Expression of df/dx
-  inspect!(symbol.differentiate(0), 
+  inspect!(symbol.differentiate(0),
   content="Add(Add(Mul(Mul(Constant(5.0), Var(0)), Constant(1.0)), Mul(Add(Mul(Constant(5.0), Constant(1.0)), Mul(Constant(0.0), Var(0))), Var(0))), Constant(0.0))")
   assert_eq!(symbol.differentiate(0).compute(input), 100.0)
 }
@@ -155,7 +155,7 @@ let diff_0_simplified : Symbol = Mul(Constant(5.0), Var(0))
 
 ## Automatic Differentiation
 
-Now, let's take a look at automatic differentiation. We first define the operations we want to implement through an interface, which includes constant constructor, addition, and multiplication. We also want to get the value of the current computation. 
+Now, let's take a look at automatic differentiation. We first define the operations we want to implement through an interface, which includes constant constructor, addition, and multiplication. We also want to get the value of the current computation.
 
 ```moonbit
 trait Number  {
@@ -225,9 +225,9 @@ test "Forward differentiation" {
 
 ### Backward Differentiation
 
-Backward differentiation utilizes the chain rule for calculation. Suppose we have a function $w$ of $x$, $ y$, $z$, etc., and $x$, $y$, $z$, etc. are functions of $t$. Then the partial derivative of $w$ with respect to $t$ is the partial derivative of $w$ with respect to $x$ times the partial derivative of $x$ with respect to $t$, plus the partial derivative of $w$ with respect to $y$ times the partial derivative of $y$ with respect to $t$, plus the partial derivative of $w$ with respect to $z$ times the partial derivative of $z$ with respect to $t$, and so on. 
+Backward differentiation utilizes the chain rule for calculation. Suppose we have a function $w$ of $x$, $ y$, $z$, etc., and $x$, $y$, $z$, etc. are functions of $t$. Then the partial derivative of $w$ with respect to $t$ is the partial derivative of $w$ with respect to $x$ times the partial derivative of $x$ with respect to $t$, plus the partial derivative of $w$ with respect to $y$ times the partial derivative of $y$ with respect to $t$, plus the partial derivative of $w$ with respect to $z$ times the partial derivative of $z$ with respect to $t$, and so on.
 
-- Given $w = f(x, y, z, \cdots), x = x(t), y = y(t), z = z(t), \cdots$  
+- Given $w = f(x, y, z, \cdots), x = x(t), y = y(t), z = z(t), \cdots$
   $\frac{\partial w}{\partial t} = \frac{\partial w}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial w}{\partial y} \frac{\partial y}{\partial t} + \frac{\partial w}{\partial z} \frac{\partial z}{\partial t} + \cdots$
 
 For example, for $f(x_0, x_1) = x_0 ^ 2 \times x_1$, we can consider $f$ as a function of $g$ and $h$, where $g$ and $h$ are $x_0 ^ 2$ and $x_1$ respectively. We differentiate each component: the partial derivative of $f$ with respect to $g$ is $h$;  the partial derivative of $f$ with respect to $h$ is $g$;  the partial derivative of $g$ with respect to $x_0$ is $2x_0$, and the partial derivative of $h$ with respect to $x_0$ is 0. Lastly, we combine them using the chain rule to get the result $2x_0x_1$. Backward differentiation is the process where we start with the partial derivative of $f$ with respect to $f$, followed by calculating the partial derivatives of $f$ with respect to the intermediate functions and their partial derivatives with respect to the intermediate functions, until we reach the partial derivatives with respect to the input parameters. This way, by tracing backward and creating the computation graph of $f$ in reverse order, we can compute the derivative of each input node. This is suitable for cases where there are more input parameters than output parameters.
@@ -247,7 +247,7 @@ struct Backward {
 
 fn Backward::var(value : Double, diff : Ref[Double]) -> Backward {
   // Update the partial derivative along a computation path df / dvi * dvi / dx
-  { value, backward: fn { d => diff.val = diff.val + d } } 
+  { value, backward: fn { d => diff.val = diff.val + d } }
 }
 
 fn Backward::constant(d : Double) -> Backward {
@@ -303,7 +303,7 @@ Then, we'll use Newton's method to find the value. Since there is only one param
   }
   ```
 
-To approximate zeros with Newton's method:  
+To approximate zeros with Newton's method:
 
 - First, define $x$ as the iteration variable with an initial value of 1.0. Since $x$ is the variable with respect to which we are differentiating, we'll set the second parameter to be true.
 - Second, define an infinite loop.
@@ -329,8 +329,6 @@ test "Newton's method" {
 }
 ```
 
-# Summary
+## Summary
 
 To summarize, in this lecture we introduced the concept of automatic differentiation. We presented symbolic differentiation and two different implementations of automatic differentiation. For students interested in learning more, we recommend the *3Blue1Brown* series on deep learning (including topics like [gradient descent](https://www.youtube.com/watch?v=IHZwWFHWa-w), [backpropagation algorithms](https://www.youtube.com/watch?v=Ilg3gGewQ5U)), and try to write your own neural network.
-
-

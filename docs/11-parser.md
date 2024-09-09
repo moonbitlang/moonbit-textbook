@@ -25,7 +25,7 @@ Divide     = "/"
 Whitespace = " "
 ```
 
-Let's take integers and the plus sign for examples. Each line in the lexical rules corresponds to a pattern-matching rule. Content within quotes means matching a string of the same content. Rule `a b` means matching rule `a` first, and if it succeeds, continue to pattern match rule `b`. Rule `a / b` means matching rule `a` or `b`, try matching `a` first, and then try matching rule `b` if it fails. Rule `*a ` with an asterisk in front refers to zero or more matches. Lastly, `%x` means matching a UTF-encoded character, where `x` indicates it's in hexadecimal. For example, `0x30` corresponds to the 48th character `0`, and it is `30` in hexadecimal. With this understanding, let's examine the definition rules. Plus is straightforward, representing the plus sign. Number corresponds to zero or a character from 1-9 followed by zero or more characters from 0-9.
+Let's take integers and the plus sign for examples. Each line in the lexical rules corresponds to a pattern-matching rule. Content within quotes means matching a string of the same content. Rule `a b` means matching rule `a` first, and if it succeeds, continue to pattern match rule `b`. Rule `a / b` means matching rule `a` or `b`, try matching `a` first, and then try matching rule `b` if it fails. Rule `*a` with an asterisk in front refers to zero or more matches. Lastly, `%x` means matching a UTF-encoded character, where `x` indicates it's in hexadecimal. For example, `0x30` corresponds to the 48th character `0`, and it is `30` in hexadecimal. With this understanding, let's examine the definition rules. Plus is straightforward, representing the plus sign. Number corresponds to zero or a character from 1-9 followed by zero or more characters from 0-9.
 
 ![](/pics/lex_rail.drawio.webp)
 
@@ -74,13 +74,13 @@ test {
 With this simple parser, we can already handle most tokens, including parentheses, arithmetic operators, and whitespaces. Here, we also define them using anonymous functions and directly try pattern matching all possibilities. It returns `true` if the character is something we want to match; otherwise, it returns `false`. It's the same for whitespaces. However, simply parsing the input into characters isn't enough since we want to obtain more specific enum values, so we'll need to define a mapping function.
 
 ```moonbit expr
-let symbol: Lexer[Char] = pchar(fn{  
+let symbol: Lexer[Char] = pchar(fn{
   '+' | '-' | '*' | '/' | '(' | ')' => true
   _ => false
 })
 ```
 
-```moonbit 
+```moonbit
 let whitespace : Lexer[Char] = pchar(fn{ ch => ch == ' ' })
 ```
 
@@ -154,14 +154,14 @@ Lastly, we can build a lexical analyzer for integers. An integer is either zero 
 
 ```moonbit
 // Convert characters to integers via encoding
-let zero: Lexer[Int] = 
+let zero: Lexer[Int] =
   pchar(fn { ch => ch == '0' }).map(fn { _ => 0 })
-let one_to_nine: Lexer[Int] = 
+let one_to_nine: Lexer[Int] =
   pchar(fn { ch => ch.to_int() >= 0x31 && ch.to_int() <= 0x39 },).map(fn { ch => ch.to_int() - 0x30 })
-let zero_to_nine: Lexer[Int] = 
+let zero_to_nine: Lexer[Int] =
   pchar(fn { ch => ch.to_int() >= 0x30 && ch.to_int() <= 0x39 },).map(fn { ch => ch.to_int() - 0x30 })
 
-// number = %x30 / (%x31-39) *(%x30-39)  
+// number = %x30 / (%x31-39) *(%x30-39)
 let value : Lexer[Token] = zero.or(
   one_to_nine.and(zero_to_nine.many()).map( // (Int, @immut/list.T[Int])
     fn { (i, ls) => ls.fold_left(fn { i, j => i * 10 + j }, init=i) },
@@ -172,7 +172,7 @@ let value : Lexer[Token] = zero.or(
 We're now just one step away from finishing lexical analysis: analyzing the entire input stream. There may be whitespaces in between tokens, so we allow arbitrary lengths of whitespaces after defining the number or symbol in line 2. We map and discard the second value in the tuple representing spaces, and may repeat the entire parser an arbitrary number of times. Finally, we can split a string into minus signs, numbers, plus signs, parentheses, etc. However, this output stream doesn't follow the syntax rules of arithmetic expressions. For this, we will need syntax analysis.
 
 ```moonbit
-let tokens : Lexer[@immut/list.T[Token]] = 
+let tokens : Lexer[@immut/list.T[Token]] =
   value.or(symbol).and(whitespace.many())
     .map(fn { (symbols, _) => symbols },) // Ignore whitespaces
     .many()
@@ -184,11 +184,11 @@ test{
 
 ## Syntax Analysis
 
-In the last example, we converted a string into a stream of tokens, discarded unimportant whitespaces, and split the string into meaningful enums. Now we will analyze whether the token stream is syntactically valid in terms of arithmetic expressions. As a simple example, the parentheses in an expression should be paired and should close in the correct order. We defined a simple syntax rule in the following code snippet. An arithmetic expression can be a single number, two arithmetic expressions carrying out an operation, or an expression surrounded by parentheses. We aim to convert a token stream into an abstract syntax tree like the one shown below. For the expression `1 + (1 - 5)`, the root node is a plus sign, representing the last operation executed. It means adding 1 to the expression on the right side. The right subtree contains a minus sign with integers 1 and 5, meaning 1 minus 5. The parentheses mean that it is executed earlier, so it's deeper down in the expression tree. Similarly, for the expression `(1 - 5) * 5`, the first calculation executed is the subtraction inside the parentheses, and then the multiplication. 
+In the last example, we converted a string into a stream of tokens, discarded unimportant whitespaces, and split the string into meaningful enums. Now we will analyze whether the token stream is syntactically valid in terms of arithmetic expressions. As a simple example, the parentheses in an expression should be paired and should close in the correct order. We defined a simple syntax rule in the following code snippet. An arithmetic expression can be a single number, two arithmetic expressions carrying out an operation, or an expression surrounded by parentheses. We aim to convert a token stream into an abstract syntax tree like the one shown below. For the expression `1 + (1 - 5)`, the root node is a plus sign, representing the last operation executed. It means adding 1 to the expression on the right side. The right subtree contains a minus sign with integers 1 and 5, meaning 1 minus 5. The parentheses mean that it is executed earlier, so it's deeper down in the expression tree. Similarly, for the expression `(1 - 5) * 5`, the first calculation executed is the subtraction inside the parentheses, and then the multiplication.
 
 ```abnf
 expression = Value / "(" expression ")"
-expression =/ expression "+" expression / expression "-" expression 
+expression =/ expression "+" expression / expression "-" expression
 expression =/ expression "*" expression / expression "/" expression
 ```
 
@@ -200,7 +200,7 @@ The modified syntax rules are split into three parts. The first one is `atomic`,
 
 ```abnf
 atomic     = Value / "(" expression ")"
-combine    = atomic  /    combine "*" atomic  /    combine "/" atomic 
+combine    = atomic  /    combine "*" atomic  /    combine "/" atomic
 expression = combine / expression "+" combine / expression "-" combine
 ```
 
@@ -211,6 +211,7 @@ atomic     = Value / "(" expression ")"
 combine    = atomic  *( ("*" / "/") atomic)
 expression = combine *( ("+" / "-") combine)
 ```
+
 ```moonbit
 enum Expression {
   Number(Int)

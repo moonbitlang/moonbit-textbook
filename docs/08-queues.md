@@ -178,7 +178,7 @@ fn push[T](self: LinkedList[T], value: T) -> LinkedList[T] {
 }
 ```
 
-The following diagram is a simple demonstration. When we create a linked list by calling `make()`, both the `head` and `tail` are empty. When we push an element using `push(1)`, we create a new node and point both the `head` and `tail` to this node. When we push more elements, say `push(2)` and then `push(3)`, we need to update the `next` field of the current `tail` node to point to the new node. The `tail` node of the linked list should always point to the latest node. 
+The following diagram is a simple demonstration. When we create a linked list by calling `make()`, both the `head` and `tail` are empty. When we push an element using `push(1)`, we create a new node and point both the `head` and `tail` to this node. When we push more elements, say `push(2)` and then `push(3)`, we need to update the `next` field of the current `tail` node to point to the new node. The `tail` node of the linked list should always point to the latest node.
 
 ![](/pics/linked_list.drawio.webp)
 

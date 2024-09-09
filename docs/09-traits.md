@@ -28,7 +28,6 @@ fn make[T]() -> Queue[T] {
 
 In fact, we have already encountered a similar situation in Chapter 6. When implementing a generic binary search tree, we need a comparison function to determine the order of values. As illustrated in the code below, we can pass the comparison function as a parameter. While this approach is effective, it can become cumbersome when dealing with more intricate type requirements.
 
-
 ```moonbit no-check
 enum Tree[T] {
   Empty
@@ -42,6 +41,7 @@ fn delete[T](self: Tree[T], value: T, compare: (T, T) -> Int) -> Tree[T]
 ```
 
 The above examples share a common characteristic, that is, the functions are associated with the type `T`. For instance, we might require the following functions for `T`:
+
 - Compare two `T` values: `fn T::compare(self: T, other: T) -> Int`
 - Get the default value of `T`: `fn T::default() -> T`
 - Get the string representation of a `T` value: `fn T::to_string(self: T) -> String`
@@ -70,10 +70,10 @@ In generic functions, we use traits as bounds to specify what methods a type sup
 
 ```moonbit no-check
 fn make[T: Default]() -> Queue[T] { // `T` should support the `default` method.
-  { 
+  {
     array: Array::make(5, T::default()), // The return type of `default` is `T`.
-    start: 0,  end: 0,  length: 0 
-  } 
+    start: 0,  end: 0,  length: 0
+  }
 }
 ```
 
@@ -87,8 +87,8 @@ Using the same approach, we can reimplement the `insert` method for `Tree`. In p
 fn insert[T : Compare](tree : Tree[T], value : T) -> Tree[T] {
   // Since `T` is bound by `Compare`, it should support the `compare` method.
   match tree {
-    Empty => Node(value, Empty, Empty) 
-    Node(v, left, right) =>  
+    Empty => Node(value, Empty, Empty)
+    Node(v, left, right) =>
       if T::compare(value, v) == 0 { // We can call `compare` here.
         tree
       } else if T::compare(value, v) < 0 { // We can call `compare` here.
@@ -175,7 +175,7 @@ fn BoxedInt::plus_one(b: BoxedInt) -> BoxedInt {
   { value : b.value + 1 }
 }
 // `<type>::` can be omitted when the first parameter is named `self`.
-fn plus_two(self: BoxedInt) -> BoxedInt {  
+fn plus_two(self: BoxedInt) -> BoxedInt {
   { value : self.value + 2}
 }
 
@@ -197,18 +197,25 @@ type MyMap[Key, Value]
 ```
 
 A map should support the following methods:
+
 - Create a map.
+
   ```moonbit no-check
   fn make[Key, Value]() -> MyMap[Key, Value]
   ```
+
 - Add a key-value pair, or update the corresponding value of a key.
+
   ```moonbit no-check
   fn put[Key, Value](map: MyMap[Key, Value], key: Key, value: Value) -> MyMap[Key, Value]
   ```
+
 - Get the corresponding value of a key.
+
   ```moonbit no-check
   fn get[Key, Value](map: MyMap[Key, Value], key: Key) -> Option[Value]
   ```
+
   Since such a key-value pair may not exist in the map, the return value is wrapped in `Option`.
 
 The map can be implemented using a list of pairs.
@@ -218,21 +225,26 @@ type MyMap[Key, Value] @immut/list.T[(Key, Value)]
 ```
 
 The first two basic methods, `make` and `put`, can be easily implemented as follows:
+
 - Create a map by creating an empty list.
+
   ```moonbit
-  fn make[Key, Value]() -> MyMap[Key, Value] { 
+  fn make[Key, Value]() -> MyMap[Key, Value] {
     MyMap(Nil)
   }
   ```
+
 - Add/update a key-value pair by inserting the pair to the beginning of the list.
+
   ```moonbit
-  fn put[Key, Value](map: MyMap[Key, Value], key: Key, value: Value) -> MyMap[Key, Value] { 
+  fn put[Key, Value](map: MyMap[Key, Value], key: Key, value: Value) -> MyMap[Key, Value] {
     let MyMap(original_map) = map
     MyMap( Cons( (key, value), original_map ) )
   }
   ```
 
 The third method, `get`, is also easy to describe in prose:
+
 - Search the list from the beginning until the first matching key is found.
 
 In such an implementation of the `get` function, we need to compare the key we are searching for with the keys stored in the map to determine if they are equal. As a result, the `Key` type must implement the `Eq` trait. That is, we need to modify the previous declaration of `get` so that `Key` is bound by `Eq`.
@@ -313,6 +325,7 @@ When matching, it is important to note that the key needs to be a literal value.
 ## Summary
 
 In this chapter, we learned how to
+
 - Define traits and use them to bound type parameters
 - Implement traits implicitly or explicitly
 - Implement custom operators

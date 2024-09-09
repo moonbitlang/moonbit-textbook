@@ -4,13 +4,13 @@
 
 A map or table is a collection of key-value pairs that bind keys to values, where each key is unique. A simple implementation of a map is a list of tuples, where each tuple is a key-value pair. We add a new key-value pair to the head of the list, and traverse from the head of the list for lookup operations.
 
-Another implementation is based on the balanced binary tree (BBT) we introduced in [Chapter 5](./trees). We just need to modify the BBT so that each node now stores a key-value pair. In tree operations, we compare the first parameter of the key-value pair with the key we want to operate on. 
+Another implementation is based on the balanced binary tree (BBT) we introduced in [Chapter 5](./trees). We just need to modify the BBT so that each node now stores a key-value pair. In tree operations, we compare the first parameter of the key-value pair with the key we want to operate on.
 
 ## Hash Maps
 
 ### Hash Function
 
-First, what is a hash function or hashing? A hash function maps or binds data of arbitrary length to data of fixed length. For example, you may have heard of the MD5 algorithm, which maps files of any size or format to a short 128-bit digest (compressed data representation). 
+First, what is a hash function or hashing? A hash function maps or binds data of arbitrary length to data of fixed length. For example, you may have heard of the MD5 algorithm, which maps files of any size or format to a short 128-bit digest (compressed data representation).
 
 For the `Hash` interface in MoonBit, data is mapped to values in the range of integers.  For example,  the string "ThisIsAVeryVeryLongString" will be mapped to the integer -321605584.
 
@@ -19,7 +19,7 @@ trait Hash { hash(Self) -> Int }
 "ThisIsAVeryVeryLongString".hash() == -321605584
 ```
 
-### Hash Maps
+### Hash Maps Data Structure
 
 Hash maps use this mechanism to efficiently handle data by mapping the data to a hash value, and then the hash value to an array index. This makes adding, looking up, and updating data fast because random access to arrays is the most efficient operation in modern computers. Hash map operations are ideally in constant time, which means the running time does not increase as the data input size grows (independent of the input size). However, operations on balanced binary trees are in logarithmic time. Here's the example pseudocode snippet demonstrating the mapping mechanism in a hash map:
 
@@ -30,11 +30,11 @@ a[ index ] = value // add or update data
 let value = a[ index ] // look up data
 ```
 
-Suppose we have an array of key-value pairs and want to add, update, or look up data. We first calculate the hash value based on the key. Since hash values can be any integer, we use modulo to map a hash value to an array index and then look up or update data with the corresponding array index. However, as mentioned earlier, this is the ideal scenario because hash collisions may occur. 
+Suppose we have an array of key-value pairs and want to add, update, or look up data. We first calculate the hash value based on the key. Since hash values can be any integer, we use modulo to map a hash value to an array index and then look up or update data with the corresponding array index. However, as mentioned earlier, this is the ideal scenario because hash collisions may occur.
 
 ## Hash Collision
 
-According to the [pigeonhole principle](https://en.wikipedia.org/wiki/Pigeonhole_principle) or [birthday problem](https://en.wikipedia.org/wiki/Birthday_problem), the amount of data we map may exceed the range of integers, and the hash value may far exceed the valid array indices. For example, we obviously can't directly allocate an array with 2.1 billion slots, and then collisions will occur where multiple data have the same array index (different pieces of data may have the same hash value, and different hash values may be mapped to the same index in an array). There are several ways to handle hash collisions. 
+According to the [pigeonhole principle](https://en.wikipedia.org/wiki/Pigeonhole_principle) or [birthday problem](https://en.wikipedia.org/wiki/Birthday_problem), the amount of data we map may exceed the range of integers, and the hash value may far exceed the valid array indices. For example, we obviously can't directly allocate an array with 2.1 billion slots, and then collisions will occur where multiple data have the same array index (different pieces of data may have the same hash value, and different hash values may be mapped to the same index in an array). There are several ways to handle hash collisions.
 
 One approach is **direct addressing**. When data must be stored in the slot corresponding to the array index we calculated, different pieces of data might be stored in the same slot causing issues. So, we use another data structure in each slot to store items hashed to the same index. Possible data structures include lists, balanced binary trees, and the original array turns into an array of lists or trees.
 
@@ -72,7 +72,7 @@ For the add/update operation, we first calculate the position to store the key b
 The following code demonstrates adding and updating data. We first calculate the hash value of the key at line 2 with the hash interface specified in `K : Hash` at line 1. Then we find and traverse the corresponding data structure. We're using a mutable data structure with an infinite while loop at line 4. We break out of the loop if we find the key already exists or reach the end of the list. If the key is found, we update the data in place. Otherwise, we update the bucket to be the remaining list so the loop terminates. When we reach the end of the list and haven't found the key, we add a new pair of data at the end of the list. At last, we check if it needs resizing based on the current load factor.
 
 ```moonbit
-let load = 0.75 
+let load = 0.75
 fn resize() -> Unit {} // placeholder for resize implementation
 
 fn put[K : Hash + Eq, V](map : HT_bucket[K, V], key : K, value : V) -> Unit {
@@ -144,7 +144,7 @@ struct HT_open[K, V] {
 
 For the add/update operation, we calculate the index to add/update data based on the hash value of the key. If the slot is not empty, we further check if it's the key we're looking for. If so, we update the value; otherwise, we keep probing backward and store the key-value pair once we find an empty slot. Here, we can assume an empty slot exists as we resize the array when needed. Note that the "backward" traversal here is the same as that in a circular queue. If the index exceeds the length of the array, we go back to the beginning of the array.
 
-We can define a helper method to check if a key already exists. If so, we directly return its index; otherwise we return the index of the next empty slot. 
+We can define a helper method to check if a key already exists. If so, we directly return its index; otherwise we return the index of the next empty slot.
 
 ```moonbit no-check
 // Probe to the right of the index of the original hash, return the index of the first empty slot
@@ -180,13 +180,13 @@ fn put[K : Hash + Eq + Default, V : Default](map : HT_open[K, V], key : K, value
 }
 ```
 
-The remove operation is more complicated. Recall that we have an invariant to maintain: there should be no empty slots between the original slot and the slot where the key-value pair is actually stored. As shown below, if we add 0, 1, 5, and 3 sequentially and then remove 1, there will be a gap between 0 and the position of 5 which violates the invariant and we won't be able to correctly look up 5. 
+The remove operation is more complicated. Recall that we have an invariant to maintain: there should be no empty slots between the original slot and the slot where the key-value pair is actually stored. As shown below, if we add 0, 1, 5, and 3 sequentially and then remove 1, there will be a gap between 0 and the position of 5 which violates the invariant and we won't be able to correctly look up 5.
 
-A simple solution is to define a special state that marks a slot as "deleted"  to ensure subsequent data can still be reached and found. Another solution is to check if any element from the slot of data removal to the next empty slot needs to move location so as to maintain the invariant. Here we demonstrate the simpler marking method, also known as "tombstone". 
+A simple solution is to define a special state that marks a slot as "deleted"  to ensure subsequent data can still be reached and found. Another solution is to check if any element from the slot of data removal to the next empty slot needs to move location so as to maintain the invariant. Here we demonstrate the simpler marking method, also known as "tombstone".
 
 ![height:320px](/pics/open_address_delete_en.drawio.webp)
 
-We define a new `Status` enum consisting of `Empty`, `Occupied` and `Deleted`, and update the type of the occupied array from boolean value to Status. 
+We define a new `Status` enum consisting of `Empty`, `Occupied` and `Deleted`, and update the type of the occupied array from boolean value to Status.
 
 ```moonbit
 enum Status {
@@ -203,7 +203,7 @@ struct HT_open[K, V] {
 }
 ```
 
-Let's also update the helper function so that during key or empty slot lookup, we record the first empty slot that can be denoted by status `Empty` or `Deleted` to reuse the slot after data removal. However, we still need to find the next Empty slot to determine if the key does not exist. We use a simple variable named `empty` to record this. A negative value means we haven't found an empty slot yet, and we update the value to the index of the next empty slot if we find one. It also means we've encountered an empty slot if the loop ends, and then we decide what to return based on the variable `empty`. 
+Let's also update the helper function so that during key or empty slot lookup, we record the first empty slot that can be denoted by status `Empty` or `Deleted` to reuse the slot after data removal. However, we still need to find the next Empty slot to determine if the key does not exist. We use a simple variable named `empty` to record this. A negative value means we haven't found an empty slot yet, and we update the value to the index of the next empty slot if we find one. It also means we've encountered an empty slot if the loop ends, and then we decide what to return based on the variable `empty`.
 
 ```moonbit
 // Probe to the right of the index of the original hash, return the index of the first empty slot
@@ -237,15 +237,15 @@ fn remove[K : Hash + Eq + Default, V : Default](map : HT_open[K, V], key : K) ->
 }
 ```
 
-Next, let's introduce another implementation of open addressing: rearrange elements after each removal to compress the lookup path. Suppose we still add 0, 1, 5, 3 sequentially and then remove 1, we can see that the invariant holds for elements before 1, but cannot be sure if it also holds for elements after it. These elements might have been originally stored here or stored here due to the original slot was occupied and this is the next empty slot. Therefore, a check is required. 
+Next, let's introduce another implementation of open addressing: rearrange elements after each removal to compress the lookup path. Suppose we still add 0, 1, 5, 3 sequentially and then remove 1, we can see that the invariant holds for elements before 1, but cannot be sure if it also holds for elements after it. These elements might have been originally stored here or stored here due to the original slot was occupied and this is the next empty slot. Therefore, a check is required.
 
 First, we check element 5 and notice that 5 should be mapped to index 0, but is stored in the current slot to handle hash collision. Now that element 1 has been removed, the invariant no longer holds as there's an empty slot between indices 0 and 2. To solve this, we need to move element 5 forward to the index previously storing element 1. Then we check element 3 and it's in the slot it should be mapped to, so we do not move it. We encounter an empty slot after element 3. The elements after the empty spot won't be affected, so we stop checking.
 
 ![](/pics/rearrange_en.drawio.webp)
 
-Let's look at another example as follows: we have an array of size 10, so a number that ends in *n* will be mapped to index *n* with modulo, like the index for element 0 is 0, for element 11 is 1, for element 13 is 3, etc. We will remove the data at index 1 and rearrange the elements in the hash map. We check the elements at index 1 to 5 and: 
+Let's look at another example as follows: we have an array of size 10, so a number that ends in *n* will be mapped to index *n* with modulo, like the index for element 0 is 0, for element 11 is 1, for element 13 is 3, etc. We will remove the data at index 1 and rearrange the elements in the hash map. We check the elements at index 1 to 5 and:
 
-We find element 11 should be stored at index 1 if there were no hash collision. After removing the data at index 1, we now have an empty slot at index 1 and can move element 11 to it. Then we check element 3 and it's already in the slot it should be mapped to. Next, we check element 21 which should be stored at index 1, but now we see a gap between slot 1 to the actual slot element 21 is stored. This is caused by moving element 11 earlier, so also move element 21 forward. Lastly, we check element 13 which should be stored at index 3. Now there's a gap after moving element 21, so we move element 13 forward as well. 
+We find element 11 should be stored at index 1 if there were no hash collision. After removing the data at index 1, we now have an empty slot at index 1 and can move element 11 to it. Then we check element 3 and it's already in the slot it should be mapped to. Next, we check element 21 which should be stored at index 1, but now we see a gap between slot 1 to the actual slot element 21 is stored. This is caused by moving element 11 earlier, so also move element 21 forward. Lastly, we check element 13 which should be stored at index 3. Now there's a gap after moving element 21, so we move element 13 forward as well.
 
 Now, the invariant holds again: there should be no empty slots between the original slot and the slot where the key-value pair is actually stored. The detailed implementation is left as an exercise and feel free to give it a try!
 
@@ -253,7 +253,7 @@ Now, the invariant holds again: there should be no empty slots between the origi
 
 ## Closure
 
-It's time for the last topic in this lecture! What is a closure? A closure is the combination of a function bundled together with references to its surrounding state. Its surrounding state is determined by the lexical environment. For example, in the following code, when we define the function at line 3, the `i` here corresponds to the `i` at line 2. Therefore, when we call `println_i` later at line 3, it outputs the value of `i` from line 2. Then we update `i` at line 4, and the output will also be updated accordingly. 
+It's time for the last topic in this lecture! What is a closure? A closure is the combination of a function bundled together with references to its surrounding state. Its surrounding state is determined by the lexical environment. For example, in the following code, when we define the function at line 3, the `i` here corresponds to the `i` at line 2. Therefore, when we call `println_i` later at line 3, it outputs the value of `i` from line 2. Then we update `i` at line 4, and the output will also be updated accordingly.
 
 However, when we introduce another `i` at line 7, although the variable names are the same, the new variable `i` has nothing to do with our closure, so the output at line 8 will not change. The environment captured by the closure corresponds to the program structure and is determined at code definition, but not runtime.
 
@@ -272,7 +272,7 @@ fn init {
 
 ### Data Encapsulation
 
-We can use closures to encapsulate data and behavior. Variables defined inside a function cannot be accessed from anywhere outside the function, because it's only in the scope of the function. Let's define two functions that capture the value as return value, enabling users to get and set value as shown at lines 4 and 5. 
+We can use closures to encapsulate data and behavior. Variables defined inside a function cannot be accessed from anywhere outside the function, because it's only in the scope of the function. Let's define two functions that capture the value as return value, enabling users to get and set value as shown at lines 4 and 5.
 Also, we can add data validation in the functions. User operation is unrestricted if we directly define a mutable field in a structure, but now with validation we can filter illegitimate input.
 Lastly, we return these two functions. From the results of `get()` we can see that a legitimate input will update the value of the captured variable via the function, while illegitimate input is filtered out.
 
@@ -295,8 +295,8 @@ fn init {
 ```
 
 We can also use closures with structs to encapsulate the hash map behavior and define an abstract data structure. We previously showed implementations of open addressing and direct addressing, but this does not matter for users as they have the same effect.
-In this case, we can define a struct `MyMap` that has four functions, which all capture the same hash map and allow modifications. Then, we provide two functions to construct this struct, offering implementations of both open addressing and direct addressing. As an exercise, think about how we can implement it with a simple list or tree, etc. 
-Lastly, let's use this struct. We only need to replace the initialization function, and the rest of the code remains unchanged when using different implementations. 
+In this case, we can define a struct `MyMap` that has four functions, which all capture the same hash map and allow modifications. Then, we provide two functions to construct this struct, offering implementations of both open addressing and direct addressing. As an exercise, think about how we can implement it with a simple list or tree, etc.
+Lastly, let's use this struct. We only need to replace the initialization function, and the rest of the code remains unchanged when using different implementations.
 
 ```moonbit
 struct MyMap[K, V] {
@@ -306,6 +306,7 @@ struct MyMap[K, V] {
   size : () -> Int
 }
 ```
+
 ```moonbit no-check
 // Implementation of open addressing
 fn MyMap::hash_open_address[K : Hash + Eq + Default, V : Default]() -> MyMap[K, V] { ... }
@@ -322,7 +323,7 @@ fn init {
 }
 ```
 
-Here is the main code snippet. We implement the `map` table inside `hash_bucket`, then capture it in multiple functions, store these functions in a struct, and return it. 
+Here is the main code snippet. We implement the `map` table inside `hash_bucket`, then capture it in multiple functions, store these functions in a struct, and return it.
 
 ```moonbit no-check
 fn MyMap::hash_bucket[K : Hash + Eq, V]() -> MyMap[K, V] {
@@ -359,6 +360,7 @@ fn MyMap::contains[K, V](map : MyMap[K, V], key : K) -> Bool {
   }
 }
 ```
+
 ```moonbit no-check
 fn init {
   let map : MyMap[Int, Int] = MyMap::hash_bucket()
@@ -370,5 +372,6 @@ fn init {
 ## Summary
 
 We introduced two ways to implement a hash map with direct addressing and open addressing. Meanwhile, we talked about the concept of a closure and how to use it for encapsulation. To better understand the algorithms, the following readings are recommended:
-- _**Introduction to Algorithms**_: Chapter 11 - Hash Tables; or
-- _**Algorithms**_: Section 3.4 - Hash Tables
+
+- ***Introduction to Algorithms***: Chapter 11 - Hash Tables; or
+- ***Algorithms***: Section 3.4 - Hash Tables
