@@ -263,7 +263,7 @@ By utilizing variable binding effectively, you can avoid complex nesting of expr
 
 In MoonBit, expression blocks can be defined using the syntax
 
-```
+```text
 {
   Variable bindings
   Variable bindings
@@ -375,7 +375,7 @@ Conditional expressions enable you to obtain different values ​​based on spe
 
 In MoonBit, its syntax is:
 
-```
+```text
 if condition
   expression block｜if condition is true
 else

@@ -19,7 +19,7 @@ trait Hash { hash(Self) -> Int }
 "ThisIsAVeryVeryLongString".hash() == -321605584
 ```
 
-### Hash Maps
+### Hash Maps Data Structure
 
 Hash maps use this mechanism to efficiently handle data by mapping the data to a hash value, and then the hash value to an array index. This makes adding, looking up, and updating data fast because random access to arrays is the most efficient operation in modern computers. Hash map operations are ideally in constant time, which means the running time does not increase as the data input size grows (independent of the input size). However, operations on balanced binary trees are in logarithmic time. Here's the example pseudocode snippet demonstrating the mapping mechanism in a hash map:
 

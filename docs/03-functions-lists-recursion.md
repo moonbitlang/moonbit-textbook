@@ -47,7 +47,7 @@ let result = (area(1.0), area(2.0), area(3.0))
 
 Recall that a function is called a top-level function if it is defined outside of any expression block. In MoonBit, they can be defined using the following syntax:
 
-```
+```text
 fn <func name> (<param name>: <type>, <param name>: <type>, ...) -> <type> <expr block>
 ```
 
@@ -158,7 +158,7 @@ In MoonBit, functions are considered "first-class citizens", i.e., they can be u
 
 In MoonBit, function types have the following form:
 
-```
+```text
 (<param type>, <param type>, <param type>, ...) -> <return type>
 ```
 
@@ -318,7 +318,7 @@ Like `Option[T]`, the list type `List[T]` is also generic.
 
 To perform calculations on a list, we can use pattern matching to examine the internal structure of the list and handle different cases accordingly.
 
-```
+```text
 match <expr> {
   <pattern 1> => <expr>
   <pattern 2> => <expr>

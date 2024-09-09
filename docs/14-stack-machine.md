@@ -18,7 +18,7 @@ Taking the `max` function as an example,
 
 - Lua VM (register-based):
 
-  ```
+  ```text
   MOVE   2 0 0 ; R(2) = R(0)
   LT     0 0 1 ; R(0) < R(1)?
   JMP    1     ; JUMP -> 5 (4 + 1)

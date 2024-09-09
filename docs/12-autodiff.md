@@ -36,7 +36,7 @@ Today, we will look at the following simple combination of functions, involving 
 - $\frac{\partial f}{\partial x_0}(10, 100) = 100$
 - $\frac{\partial f}{\partial x_1}(10, 100) = 1$
 
-# Differentiation
+## Differentiation
 
 There are several ways to differentiate a function. The first method is manual differentiation where we use a piece of paper and a pen as a natural calculator. The drawback is that it's easy to make mistakes with complex expressions and we can't just manually calculate 24 hours a day. The second method is numerical differentiation: $\frac{ \texttt{f}(x + \delta x) - \texttt{f}(x) }{ \delta x }$, where we add a small value (approaching zero) to the point we want to differentiate, calculate the difference, and divide it by the small value. The issue here is that computers cannot accurately represent decimals, and the larger the absolute value, the less accurate it is. Also, we cannot fully solve infinite series. The third method is symbolic differentiation, where we convert the function into an expression tree and then operate on the tree to get the derivative. Take $\textit{Mul(Const(2), Var(1))} \to \textit{Const(2)}$ for example: here the differentiation result of constant 2 multiplied by x will be constant 2. The problem with symbolic differentiation is that the calculation results may not be simplified enough, and there may be redundant calculations. In addition, it's hard to directly use native control flow like conditionals and loops. If we want to define a function to find the larger value, we have to define an operator instead of simply comparing the current values.
 
@@ -329,6 +329,6 @@ test "Newton's method" {
 }
 ```
 
-# Summary
+## Summary
 
 To summarize, in this lecture we introduced the concept of automatic differentiation. We presented symbolic differentiation and two different implementations of automatic differentiation. For students interested in learning more, we recommend the *3Blue1Brown* series on deep learning (including topics like [gradient descent](https://www.youtube.com/watch?v=IHZwWFHWa-w), [backpropagation algorithms](https://www.youtube.com/watch?v=Ilg3gGewQ5U)), and try to write your own neural network.
