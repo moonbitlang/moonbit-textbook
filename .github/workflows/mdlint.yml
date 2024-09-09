@@ -17,8 +17,12 @@ jobs:
       - name: Install mdlint
         run: npm install -g @moonbit/markdown-linter
 
-      - name: Install moonBit
+      - name: Install MoonBit
         run: /bin/bash -c "$(curl -fsSL https://cli.moonbitlang.com/ubuntu_x86_64_moon_setup.sh)"
+
+      - uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: 'docs/*.md'
 
       - name: Get changed files
         id: changed-files

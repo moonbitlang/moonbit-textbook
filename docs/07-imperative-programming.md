@@ -89,6 +89,7 @@ fn init {
 ```
 
 The distinction between mutable and immutable data is important because it affects how we think about the data. As shown in the following diagrams, for mutable data, we can think of identifiers as boxes that hold values.
+
 - In the first diagram, when we modify a mutable variable, we are essentially updating the value stored in the box.
 - In the second diagram, we use `let` to bind the identifier `ref` to a struct. Thus, the box contains a reference to the struct. When we modify the value in the struct using `ref`, we are updating the value stored in the struct which it points to. The reference itself does not change because it still points to the same struct.
 - In the third diagram, when we define a mutable `ref` and modify it, we are creating a new box and updating the reference to point to the new box.
@@ -98,7 +99,6 @@ The distinction between mutable and immutable data is important because it affec
 ### Aliases
 
 Multiple identifiers pointing to the same mutable data structure can be considered aliases, which need to be handled carefully.
-
 
 In the following example, the `alter` function takes two mutable references to `Ref` structs, `a` and `b`, and modifies the `val` field of `a` to `10` and the `val` field of `b` to `20`. When we call `alter(x, x)`, we are essentially passing the same mutable reference, `x`, twice. As a result, the `val` field of `x` will be changed twice, as both `a` and `b` are just aliases referring to the same `x` reference.
 

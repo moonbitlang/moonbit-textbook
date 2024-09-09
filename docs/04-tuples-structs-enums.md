@@ -35,9 +35,11 @@ Structures allow us to assign **names** to the data, both to the entire type and
 - ```moonbit
   struct PersonalInfo { name: String; age: Int }
   ```
+
 - ```moonbit
   struct ContactInfo { name: String; telephone: Int }
   ```
+
 - ```moonbit
   struct AddressInfo { address: String; postal: Int }
   ```
@@ -83,7 +85,7 @@ fn g(pair: (String, Int)) -> PersonalInfo { { name: pair.0, age: pair.1, }}
 
 Feel free to verify this. Similarly, `PersonalInfo` is isomorphic to `(Int, String)`. You can try defining the corresponding mappings yourself.
 
-The key difference between tuples and structures lies in their compatibility. Tuples are *structural*, meaning they are compatible as long as the structure is the same – each field type corresponds one-to-one. For example, a function successfully accepts a tuple here. 
+The key difference between tuples and structures lies in their compatibility. Tuples are *structural*, meaning they are compatible as long as the structure is the same – each field type corresponds one-to-one. For example, a function successfully accepts a tuple here.
 
 ```moonbit
 fn accept(tuple: (Int, String)) -> Bool {
@@ -124,8 +126,7 @@ fn get_or_else(option_int: Option[Int], default: Int) -> Int {
 }
 ```
 
-We have previously used pattern matching to inspect the structure of `List` and `Option`. For instance, using `Nil` and `Cons` to match lists; `None` and `Some` to match Options. In fact, pattern matching can match values (booleans, numbers, characters, strings) as well as constructors. 
-
+We have previously used pattern matching to inspect the structure of `List` and `Option`. For instance, using `Nil` and `Cons` to match lists; `None` and `Some` to match Options. In fact, pattern matching can match values (booleans, numbers, characters, strings) as well as constructors.
 
 ```moonbit
 fn is_zero(i: Int) -> Bool {
@@ -151,7 +152,7 @@ fn contains_zero(l: @immut/list.T[Int]) -> Bool {
 
 In this example, the branch `Cons(0, _)` matches lists starting with `0`. The branch `Cons(_, tl)` matches other lists, while binding the sublist to the identifier `tl` for further processing. The head of the current list is discarded by the wildcard.
 
-Pattern matching for tuples and structures is just like for constructions. 
+Pattern matching for tuples and structures is just like for constructions.
 
 ```moonbit
 fn first(pair: (Int, Int)) -> Int {
@@ -170,9 +171,9 @@ fn baby_name(info: PersonalInfo) -> Option[String] {
 
 Tuples' patterns are just like their definitions, enclosed in parentheses and separated by commas. Make sure the length of the matched tuple is correct. Structure patterns are enclosed in braces and separated by commas. We have additional pattern forms to make pattern matching more flexible:
 
-* Explicitly match some specific values, such as `age: 0` to match the data with specific values. 
-* Use another identifier to bind a field, such as `age: my_age`. This is useful when you don't want to use the field name as an identifier.
-* Omit remaining fields with `..` at the end.
+- Explicitly match some specific values, such as `age: 0` to match the data with specific values.
+- Use another identifier to bind a field, such as `age: my_age`. This is useful when you don't want to use the field name as an identifier.
+- Omit remaining fields with `..` at the end.
 
 Here is another example for better understanding how to use nested patterns. The `zip` function combines two lists into a new list of pairs like a zipper. The length of the resulting list is the minimum of the lengths of the input lists. Given the lists `[1, 2, 3]` and `['a', 'b', 'c', 'd']`, the zipped list would be `[(1, 'a'), (2, 'b'), (3, 'c')]`.
 
@@ -191,7 +192,7 @@ Lastly, pattern matching is not limited to `match`; it can also be used in data 
 
 ```moonbit no-check
 let ok_one = Result::Ok(1);
-let Result::Ok(one) = ok_one; 
+let Result::Ok(one) = ok_one;
 let Result::Err(e) = ok_one; // Runtime error
 ```
 
@@ -222,7 +223,7 @@ enum <type_name> { <variant>; }
 
 Here, each possible variant is a constructor. For instance, `let monday = Monday`, where `Monday` defines the day of the week as Monday. Different enumerated types may cause conflicts because they might use the same names for some cases. In such cases, we distinguish them by adding `<type>::` in front of the constructor, such as `DaysOfWeek::Monday`.
 
-Now we need to ask, why do we need enumerated types? Why not just use numbers from one to seven to represent Monday to Sunday? Let's compare the following two functions. 
+Now we need to ask, why do we need enumerated types? Why not just use numbers from one to seven to represent Monday to Sunday? Let's compare the following two functions.
 
 ```moonbit no-check
 fn tomorrow(today: Int) -> Int
@@ -234,7 +235,7 @@ The most significant difference is that functions defined with enumerated types 
 
 Additionally, enumerated types prevent the representation of irrational data. For instance, when using various services, user identification can be based on either a phone number or an email, both of which are optional but only one is required. If we use a structure with two nullable fields to represent this, there is a risk of both fields being empty or both having data, which is not what we want. Therefore, enumerated types can be used to better restrict the range of reasonable data.
 
-Each variant of an enumerated type can also carry data. For instance, we've seen the enumerated type `Option`. 
+Each variant of an enumerated type can also carry data. For instance, we've seen the enumerated type `Option`.
 
 ```moonbit no-check
 enum Option[T] {
@@ -297,9 +298,9 @@ We've mentioned product types and sum types. Now, let me briefly introduce algeb
 
 The terms tuple, structure, and enumerated type, which we discussed earlier, are collectively referred to as algebraic data types. They are called algebraic data types because they construct types through algebraic operations, specifically "sum" and "product", and they exhibit algebraic structures. Recall the properties of regular numbers, such as equality, addition, multiplication, and the facts such that any number multiplied by 1 equals itself, any number plus 0 equals itself, etc. Similarly, algebraic data types exhibit properties such as:
 
-* type equality implying isomorphism
-* type multiplication forming product types (tuples or structures)
-* type addition forming sum types (enumerated types) 
+- type equality implying isomorphism
+- type multiplication forming product types (tuples or structures)
+- type addition forming sum types (enumerated types)
 
 Here, **Zero** is a type that corresponds to an **empty type**. We can define an empty enumerated type without any cases; such a type has no constructors, and no values can be constructed, making it empty. **One** corresponds to a type with only one element, which we call the **Unit type**, and its value is a zero-tuple.
 
@@ -310,7 +311,7 @@ fn f[T](t: T) -> (T, Unit) { (t, ()) }
 fn g[T](pair: (T, Unit)) -> T { pair.0 }
 ```
 
-In this context, a type `T` multiplied by $1$ implies that `(T, Unit)` is isomorphic to `T`. We can establish a set of mappings: it's straightforward to go from `T` to `(T, Unit)` by simply adding the zero-tuple. Conversely, going from `(T, Unit)` to `T` involves ignoring the zero-tuple. You can intuitively find that they are isomorphic. 
+In this context, a type `T` multiplied by $1$ implies that `(T, Unit)` is isomorphic to `T`. We can establish a set of mappings: it's straightforward to go from `T` to `(T, Unit)` by simply adding the zero-tuple. Conversely, going from `(T, Unit)` to `T` involves ignoring the zero-tuple. You can intuitively find that they are isomorphic.
 
 ```moonbit
 enum Nothing {}
@@ -329,7 +330,7 @@ fn g[T](t: T) -> PlusZero[T] { CaseT(t) }
 
 The property of any type plus zero equals itself means that, for any type, we define an enumerated type `PlusZero`. One case contains a value of type `T`, and the other case contains a value of type `Nothing`. This type is isomorphic to `T`, and we can construct a set of mappings. Starting with `PlusZero`, we use pattern matching to discuss the cases. If the included value is of type `T`, we map it directly to `T`. If the type is `Nothing`, this case will never happen because there are no values of type `Nothing`, so we use `abort` to handle, indicating that the program will terminate. Conversely, we only need to wrap `T` with `CaseT`. It's essential to emphasize that this introduction is quite basic, providing an intuitive feel. Explore further if you are interested.
 
-Here are a few examples. 
+Here are a few examples.
 
 ```moonbit
 enum Coins { Head; Tail }
@@ -343,13 +344,13 @@ enum DaysOfWeek { Monday; Tuesday; ...; }
 
 $\texttt{DaysOfWeek} = 1 + 1 + 1 + 1 + 1 + 1 + 1 = 7$
 
-The data type for the coin toss can be considered as $1 + 1$, as each case, `Head` and `Tail`, actually represents a set with only one value. Therefore, each case is isomorphic to the Unit type. When combined by the sum type, the `Coin` type becomes $1 + 1 = 2$, representing a set with two values, which is isomorphic to any other type with two values. Similarly, `DaysOfWeek` represents a set of seven values, isomorphic to any other type with seven values. 
+The data type for the coin toss can be considered as $1 + 1$, as each case, `Head` and `Tail`, actually represents a set with only one value. Therefore, each case is isomorphic to the Unit type. When combined by the sum type, the `Coin` type becomes $1 + 1 = 2$, representing a set with two values, which is isomorphic to any other type with two values. Similarly, `DaysOfWeek` represents a set of seven values, isomorphic to any other type with seven values.
 
-A more interesting example is `List`, using `List[Int]` as an example. 
+A more interesting example is `List`, using `List[Int]` as an example.
 
 $$
 \begin{array}{rl}
-\texttt{enum} \ \ \texttt{List} & = \texttt{Nil} + \texttt{Int} \times \texttt{List} \\  
+\texttt{enum} \ \ \texttt{List} & = \texttt{Nil} + \texttt{Int} \times \texttt{List} \\
 & = \texttt{1} + \texttt{Int} \times \texttt{List} \\
 & = \texttt{1} + \texttt{Int} \times (\texttt{1} + \texttt{Int} \times \texttt{List} ) \\
 & = \texttt{1} + \texttt{Int} \times \texttt{1} + \texttt{Int} \times \texttt{Int} \times \texttt{List} \\
@@ -366,9 +367,9 @@ In this chapter, we explored various custom data types in MoonBit, including:
 - **Tuples:** Fixed-length combinations of different data types.
 - **Structures:** Tuples with names to fields for better understanding.
 - **Enumerated Types:** Types that represent a distinct set of values, often used to model different cases or options.
-  
+
 We also touched upon the concept of algebraic data types, which encompass tuples, structures, and enumerated types, and discussed some basic properties resembling those found in algebra.
 
 For further exploration, please refer to:
 
-- _**Category Theory for Programmers**_: [Chapter 6 - Simple Algebraic Data Types](https://bartoszmilewski.com/2015/01/13/simple-algebraic-data-types/)
+- ***Category Theory for Programmers***: [Chapter 6 - Simple Algebraic Data Types](https://bartoszmilewski.com/2015/01/13/simple-algebraic-data-types/)

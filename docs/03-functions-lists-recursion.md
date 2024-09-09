@@ -58,7 +58,7 @@ fn one () -> Int {
   1
 }
 
-fn add_char(ch: Char, str: String) -> String { 
+fn add_char(ch: Char, str: String) -> String {
     ch.to_string() + str
 }
 ```
@@ -70,6 +70,7 @@ This syntax enables you to use a function using the interface it provides, witho
 If a function is defined, it can be **applied** with `<func name>(<expr>, <expr>...)`, e.g., `one()` and `add_char('m', "oonbit")`. When applying a function, it is important to ensure that the number of parameters and their types align with the function definition. That is, the order of parameters cannot be disrupted: ~~`add_char("oonbit", 'm')`~~.
 
 The evaluation of a function application follows the following steps:
+
 - Evaluate the parameters **from left to right**.
 - Replace the occurrences of the parameters with their values.
 - Reduce the expressions in the function body.
@@ -77,8 +78,8 @@ The evaluation of a function application follows the following steps:
 For example:
 
 ```moonbit expr
-fn add_char(ch: Char, str: String) -> String { 
-  ch.to_string() + str 
+fn add_char(ch: Char, str: String) -> String {
+  ch.to_string() + str
 }
 
 let moonbit: String = add_char(Char::from_int(109), "oonbit")
@@ -112,10 +113,12 @@ In contrast with partial functions, the functions that do define an output for e
 To prevent program termination caused by forbidden operations and to distinguish between valid and invalid inputs, the `Option[T]` data type is employed.
 
 A value of type `Option[T]` falls into one of the two cases:
+
 - `None`: the absence of a value.
 - `Some(value: T)`: the presence of a value of type `T`.
 
 For example, we can define a total function for integer division using the option type:
+
 ```moonbit expr
 fn div(a: Int, b: Int) -> Option[Int] {
   if b == 0 { None } else { Some(a / b) }
@@ -125,6 +128,7 @@ fn div(a: Int, b: Int) -> Option[Int] {
 If `b == 0`, we will return `None` instead of raising an error; otherwise, we will return the quotient wrapped by `Some`.
 
 In `Option[T]`, the notation `[T]` indicates that `Option` is a generic type, and the value it holds is of type `T`. For example:
+
 - `Option[Int]`: it can either hold a value of type `Int` or it can be empty.
 
 We will explore how to extract the value from `Some` shortly.
@@ -159,6 +163,7 @@ In MoonBit, function types have the following form:
 ```
 
 For example:
+
 - `() -> Int`
 - `(Int, String, Char) -> Int`
 - `((Int, Int, Int)) -> (Int, Int, Int)` accepts a tuple and returns a tuple
@@ -183,7 +188,7 @@ fn init {
 }
 ```
 
-By using labeled arguments, the order of the parameters becomes less important. In addition, they can be made optional by specifying a default value when declaring them. When the function is called, if no argument is explicitly provided, the default value will be used. 
+By using labeled arguments, the order of the parameters becomes less important. In addition, they can be made optional by specifying a default value when declaring them. When the function is called, if no argument is explicitly provided, the default value will be used.
 
 Consider the following example:
 
@@ -206,6 +211,7 @@ It is important to note that the default value expression will be evaluated each
 ## Lists
 
 Data is everywhere. Sometimes, we have data with the following characteristics:
+
 - The data is ordered.
 - The data can be duplicated.
 - The data can vary in length.
@@ -217,6 +223,7 @@ For instance, let's consider the organization of our natural language snippets. 
 Here, we will define a single-ended immutable integer list called `IntList`, where items can only be inserted at one and only one end, known as the head.
 
 Let's recall the workflow introduced in Chapter 1. After understanding the problem, we should define the interfaces, i.e., the operations that should be supported:
+
 - Construction
   - `nil : () -> IntList`: construct an empty list
   - `cons : (Int, IntList) -> IntList`: add a new item into the list
@@ -292,13 +299,14 @@ block-beta
 ```
 
 The following examples help deepen our understanding of lists.
+
 - The following are valid lists:
-    - `let int_list: List[Int] = Cons(1, Cons(2, Cons(3, Nil)))`
-    - `let string_list: List[String] = Cons("This", Cons("is", Cons("a", Cons("sentence.", Nil))))`
+  - `let int_list: List[Int] = Cons(1, Cons(2, Cons(3, Nil)))`
+  - `let string_list: List[String] = Cons("This", Cons("is", Cons("a", Cons("sentence.", Nil))))`
 - The following are not valid lists:
-    - `Cons(1, Cons(true, Cons(3, Nil)))`: Items are of different types.
-    - `Cons(1, 2)`: `2` itself is not a list.
-    - `Cons(1, Cons(Nil, Nil))`: Items are of different types.
+  - `Cons(1, Cons(true, Cons(3, Nil)))`: Items are of different types.
+  - `Cons(1, 2)`: `2` itself is not a list.
+  - `Cons(1, Cons(Nil, Nil))`: Items are of different types.
 
 Like `Option[T]`, the list type `List[T]` is also generic.
 
@@ -333,6 +341,7 @@ In the above example, to access the first item of a list of integers, we use pat
 #### Reduction of Pattern Matching Expressions
 
 The reduction of pattern matching expressions follows the following steps:
+
 - Reduce the expression to be matched.
 - Try the patterns in a sequential order until a successful match is found.
 - Replace the identifiers in the matched case with their corresponding values.
@@ -352,16 +361,20 @@ let first_elem: Option[Int] = head_opt(Cons(1, Cons(2, Nil)))
 ```moonbit expr
 head_opt(Cons(1, Cons(2, Nil)))
 ```
+
 $\mapsto$ (Replace the identifiers in the function body.)
+
 ```moonbit expr
-match List::Cons(1, Cons(2, Nil)) { 
+match List::Cons(1, Cons(2, Nil)) {
   Nil              => Option::None
   Cons(head, tail) => Option::Some(head)
 }
 ```
+
 $\mapsto$ `Some(1)` (Perform pattern matching and replace the identifiers in the matched case.)
 
 The last step of reduction is equivalent to:
+
 ```moonbit expr
 {
   let head = 1
@@ -384,6 +397,7 @@ fn get_or_else(option_int: Option[Int64], default: Int64) -> Int64 {
 ```
 
 If we believe that the expression to be matched will not be `None`, we can write a partial function that omits the `None` pattern.
+
 ```moonbit expr
 fn get(option_int: Option[Int64]) -> Int64 {
   match option_int { // Warning: Partial match
@@ -396,6 +410,7 @@ fn get(option_int: Option[Int64]) -> Int64 {
 ## Recursion
 
 The following are examples of recursion:
+
 - **G**NU is **N**ot **U**nix
 - **W**ine **I**s **N**ot an **E**mulator
 - Fibonacci sequence: each number is the sum of the two preceding ones.
@@ -408,6 +423,7 @@ The following are examples of recursion:
 Recursion is the process of breaking down a problem into smaller subproblems that are similar to the original problem but of a reduced scale. For a function, recursion is the process of calling itself either directly or indirectly. It is crucial to ensure that a recursive function has at least one base case, otherwise, it will continue to run endlessly, much like the captain's stories.
 
 Here is an example of a recursive function:
+
 ```moonbit
 fn fib(n: Int) -> Int {
   if n == 1 || n == 2 { 1 } else { fib (n-1) + fib (n-2) }
@@ -431,7 +447,7 @@ Recursion can also be utilized to determine the parity of a natural number. If a
 
 Lists are defined in a recursive manner: they can be either an empty list or a combination of an item and a sublist. As a result, lists can be manipulated using recursive functions and pattern matching.
 
-```moonbit 
+```moonbit
 fn length(list: List[Int]) -> Int {
   match list {
     Nil => 0
@@ -449,28 +465,37 @@ The evaluation of recursive functions follows a similar process to that of non-r
 ```moonbit expr
 length(List::Cons(1, Cons(2, Nil)))
 ```
+
 $\mapsto$ (Replace the identifiers in the function body.)
+
 ```moonbit expr
 match List::Cons(1, Cons(2, Nil)) {
   Nil => 0
   Cons(_, tl) => 1 + length(tl) // tl = Cons(2, Nil)
 }
 ```
+
 $\mapsto$ (Perform pattern matching and replace the identifiers in the matched case.)
+
 ```moonbit expr
 1 + length(List::Cons(2, Nil))
 ```
+
 $\mapsto$ (Again, replace the identifiers in the function body.)
+
 ```moonbit expr
 1 + match List::Cons(2, Nil) {
   Nil => 0
   Cons(_, tl) => 1 + length(tl) // tl = Nil
 }
 ```
+
 $\mapsto$ (Perform pattern matching and replace the identifiers in the matched case.)
+
 ```moonbit expr
 1 + 1 + length(Nil)
 ```
+
 ...
 $\mapsto$ `1 + 1 + 0` $\mapsto$ `2`
 
@@ -492,6 +517,7 @@ fn tail(list: List[Int]) -> List[Int] {
 ```
 
 Proof:
+
 - If `a` is in the pattern of `Nil`, then the sublist `tail(a) == a`, and both have a length of $0$. Hence, the proposition holds.
 - If `a` is in the pattern of `Cons(head, tail)`, then the sublist `tail(Cons(head, tail)) == tail`. Since $l_1 = l_2 + 1 > l_2$, the proposition holds.
 - By mathematical induction, the original proposition is proven to be true.
@@ -546,18 +572,21 @@ This performance is obviously unacceptable. Therefore, we can use the technique 
 Dynamic programming (DP) refers to the algorithmic paradigm that solves a complex problem by decomposing it into smaller subproblems that are similar to the original problem but of a reduced scale. It is an optimization over naïve recursion.
 
 DP is applicable to optimization problems that have:
+
 - **Overlapping subproblems**: DP solves each subproblem once and caches the result, avoiding redundant computations.
 - **Optimal substructure**: The global solution can be built from subproblems.
 
 Specifically, in cases where non-optimization problems exhibit a recursive substructure and their solutions are uniquely determined by this recursive form, the only solution can be regarded as the optimal solution. Therefore, dynamic programming algorithms can also be applied to these non-optimization problems, such as the Fibonacci sequence.
 
 DP algorithms can be implemented top-down or bottom-up:
+
 - **Top-down**: For each subproblem, if it has already been solved, use the cached result; otherwise, solve it and cache the result.
 - **Bottom-up**: Solve the subproblems first, then calculate the solutions of larger subproblems from the smaller ones.
 
 ### Solving Fibonacci Sequence with DP
 
 DP is applicable to the problem of Fibonacci sequence, which has:
+
 - Overlapping subproblems: Both $F_{n + 1}$ and $F_{n + 2}$ require $F_n$.
 - Recursive substructure: $F_n$ is determined by $F_{n - 1}$ and $F_{n - 2}$.
 
@@ -629,7 +658,7 @@ fn fib1_mut(num: Int) -> Int64 {
         let result_1 = aux(num - 1)
         let result_2 = aux(num - 2)
         // Update the binding with <variable> = <expression>
-        map = put(map, num, result_1 + result_2) 
+        map = put(map, num, result_1 + result_2)
         result_1 + result_2
       }
     }
@@ -645,9 +674,9 @@ In the bottom-up implementation, we typically start from the smallest subproblem
 ```moonbit expr
 fn fib2(num: Int) -> Int64 {
   fn aux(n: Int, map: @immut/sorted_map.T[Int, Int64]) -> Int64 {
-    let result = get_or_else(get(map, n - 1), 1L) + 
+    let result = get_or_else(get(map, n - 1), 1L) +
       get_or_else(get(map, n - 2), 1L)
-    if n == num { result } 
+    if n == num { result }
     else { aux(n + 1, put(map, n, result)) }
   }
   let map = put(put(make(), 0, 0L), 1, 1L)
@@ -680,6 +709,7 @@ flowchart LR
 ## Summary
 
 In this chapter we learned
+
 - Basic data type: functions and their operations
 - Data structure: lists and pattern matching on lists
 - Algorithm: recursion and dynamic programming
@@ -687,18 +717,22 @@ In this chapter we learned
 We also get an informal idea of ​​computational complexity.
 
 This course is intended to be an introductory level introduction. For a deeper understanding of how to use mathematical induction to prove the correctness of structured recursion, please refer to:
+
 - _**Software Foundations, Volume 1: Logical Foundations**_: Basics, Induction & Lists; or
 - _**Programming Language Foundations in Agda**_: Naturals, Induction & Relations
 
 If you want to learn more about algorithms and computational complexity, please refer to:
+
 - _**Algorithms** (4e)_: Chapter 1 - Fundamentals; or
 - _**Introduction to Algorithms** (4e)_: Chapter 3 - Characterizing Running Times; or
 - _**Introduction to Algorithms** (3e)_: Chapter 3 - Growth of Functions
 
 To learn more about dynamic programming, please refer to:
+
 - _**Introduction to Algorithms** (4e)_: Chapter 14 - Dynamic Programming; or
 - _**Introduction to Algorithms** (3e)_: Chapter 15 - Dynamic Programming
 
 Reference code:
+
 - [Functions, Lists & Recursion](https://try.moonbitlang.com/examples/course/lec3/function_list_recursion.mbt)
 - [Dynamic Programming](https://try.moonbitlang.com/examples/course/lec3/dynamic_programming.mbt)

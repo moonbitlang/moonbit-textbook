@@ -67,7 +67,7 @@ In the above program, a top-level function and a test block are defined. In the 
 
 Since this program does not generate any output, how exactly is it executed?
 
-In order to write accurate programs, it is essential to understand how programs are executed. Therefore, it is necessary to establish a computational model that comprehends the process. MoonBit programs can be viewed using an expression-oriented programming approach. They are composed of expressions that represent values, and their execution involves reducing these expressions. 
+In order to write accurate programs, it is essential to understand how programs are executed. Therefore, it is necessary to establish a computational model that comprehends the process. MoonBit programs can be viewed using an expression-oriented programming approach. They are composed of expressions that represent values, and their execution involves reducing these expressions.
 
 In contrast, imperative programming consists of statements that may modify the program's state. For example, statements may include "create a variable named `x`", "assign `5` to `x`", or "let `y` point to `x`", etc.
 
@@ -95,6 +95,7 @@ In static type systems, type checking is performed **before** the program is exe
 MoonBit has a static type system, where its compiler performs type checking before runtime. This approach aims to minimize the likelihood of encountering runtime errors stemming from the execution of operations on incompatible data types, such as attempting arithmetic calculations on Boolean values. By conducting type checking in advance, MoonBit strives to prevent program interruptions and ensure accurate outcomes.
 
 In MoonBit, each **identifier** can be associated with a unique type with a colon `:`. For example,
+
 - `x: Int`
 - `a: Double`
 - `s: String`
@@ -122,6 +123,7 @@ While this chapter will not explore the underlying implementation of data, such 
 The first data type we will introduce here is the Boolean value, also known as a logical value. It is named after the mathematician George Boole, who is credited with inventing Boolean algebra.
 
 In MoonBit, the type for Boolean values is `Bool`, and it can only have two possible values: `true` and `false`. The following are three basic operations it supports:
+
 - NOT: true becomes false, false becomes true.
   - Example: `not(true) == false`
 - AND: both must be true to be true.
@@ -140,6 +142,7 @@ Quiz: How to define XOR (true if only one is true) using OR, AND, and NOT?
 In mathematics, the set of integers is denoted as $\mathbb{Z}$ and is considered a countably infinite set. However, in computer science, integers in programming languages typically have a limited range due to hardware constraints.
 
 In MoonBit, there are two integer types, each with a different range:
+
 - Integer `Int`: ranging from $-2^{31}$ to $2^{31}-1$
 - Long integer `Int64`: ranging from $-2^{63}$ to $2^{63}-1$
 
@@ -178,10 +181,12 @@ It is important to note that each character in MoonBit corresponds strictly to a
 #### Tuples
 
 Sometimes, it is necessary to represent data types that combine multiple pieces of information. For instance, a date can be represented by three numbers, and a person's personal information may include their name and age. In such cases, tuples can be used to combine data of different types with a fixed length. Tuples allow us to group together multiple values into a single entity.
+
 - `(2023, 10, 24): (Int, Int, Int)`
 - `("Bob", 3): (String, Int)`
 
 We can access the data by using zero-based indexing.
+
 - `(2023, 10, 24).0 == 2023`
 - `(2023, 10, 24).1 == 10`
 
@@ -225,6 +230,7 @@ flowchart LR
 ```
 
 We can denote the reduction of an $\texttt{<expression>}$ to a $\texttt{<value>}$ as $\texttt{<expression>} \Rightarrow \texttt{<value>}$. For example,
+
 - $3 \Rightarrow 3$ (the reduction result of a value is itself)
 - $3 + 4 \Rightarrow 7$
 - $2 * (4 + 5) \Rightarrow 18$
@@ -245,6 +251,7 @@ Therefore, $(2 + 3) * (5 - 2) \Rightarrow 15$.
 #### Variable Binding
 
 In MoonBit, variable binding can be achieved using the syntax `let <identifier> : <type> = <expression>`. It assigns an identifier to a value that is represented by an expression. In many cases, the type declaration is optional as the compiler can infer it based on the type of the expression.
+
 - `let x = 10`
 - `let y = "String"`
 
@@ -255,6 +262,7 @@ By utilizing variable binding effectively, you can avoid complex nesting of expr
 #### Expression Blocks and Scope
 
 In MoonBit, expression blocks can be defined using the syntax
+
 ```
 {
   Variable bindings
@@ -279,6 +287,7 @@ It is important to note the direction of the arrows. On line 7, the `tmp` refers
 #### Expression Reduction under Variable Binding
 
 Expression reduction can be broken down into the following steps:
+
 - Reduce the expression on the right-hand side of the variable binding.
 - **Replace** occurrences of identifiers with their reduction results.
 - Omit the variable binding part.

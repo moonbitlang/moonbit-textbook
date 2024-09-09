@@ -1,4 +1,4 @@
-# 14. Case Study: Stack Machine  
+# 14. Case Study: Stack Machine
 
 In this chapter, we are going to implement a simple stack-based virtual machine based on WebAssembly.
 
@@ -15,7 +15,9 @@ In addition to compilation and interpretation, another way is to combine the two
 There are two common types of virtual machines: one is the stack-based virtual machine, where operands are stored on a stack following the Last-In First-Out (LIFO) principle; the other is the register-based virtual machine, where operands are stored in registers like what actually happens in a normal computer. The stack-based virtual machine is simpler to implement and has a smaller code size, while the register-based virtual machine is closer to the actual computer organization and has higher performance.
 
 Taking the `max` function as an example,
+
 - Lua VM (register-based):
+
   ```
   MOVE   2 0 0 ; R(2) = R(0)
   LT     0 0 1 ; R(0) < R(1)?
@@ -24,7 +26,9 @@ Taking the `max` function as an example,
   RETURN 2 2 0 ; return R(2)
   RETURN 0 1 0 ; return
   ```
+
 - WebAssembly VM (stack-based):
+
   ```wasm
   local.get $a local.set $m                     ;; let mut m = a
   local.get $a local.get $b i32.lt_s            ;; if a < b {
@@ -113,7 +117,6 @@ To set the value of an local variable, we can use the `Local_Set` instruction.
 
 After the function `add` is defined, we can call it to perform some calculations. Just like what we did in our first example, we first put `1` and `2` on the stack. Then, instead of using the `Add` instruction, we call the `add` function we defined using the `Call` instruction. At this time, according to the number of function parameters, the corresponding number of elements on the top of the stack will be consumed, bound to local variables in order, and an element representing the function call will be pushed to the stack. It separates the original stack elements from the function's own data, and also records the number of its return values. After the function call is finished, according to the number of return values, we take out the elements from the top of the stack, remove the element for the function call, and then put the original top elements back. After that, that we get the calculation result at the place where the function is called.
 
-
 ```moonbit no-check
 @immut/list.Ts::[ Const(I32(1)), Const(I32(2)), Call("add") ]
 ```
@@ -125,9 +128,9 @@ After the function `add` is defined, we can call it to perform some calculations
 For conditional statements, as we introduced earlier, we use a 32-bit integer to represent `true` or `false`. When we execute the `If` statement, we take out the top element of the stack. If it is non-zero, the `then` branch will be executed; otherwise, the `else` branch will be executed. It is worth noting that each code block in Wasm has parameter types and return value types, corresponding to the elements to be consumed from the top of the stack when entering the code block, and the elements to be put on the top of the stack when exiting the code block. For example, when we enter the `if/else` block, there is no input, so we assume that the stack is empty when we perform calculations inside the block, no matter what is on the stack originally, it is irrelevant to the current code block. And we declared to return an integer, so when we normally end the execution, there must be one and only one integer in the current calculation environment.
 
 ```moonbit no-check
-@immut/list.of([ 
-	Const(I32(1)), Const(I32(0)), Equal,
-	If(1, @immut/list.of([Const(I32(1))]), @immut/list.of([Const(I32(0))]))
+@immut/list.of([
+ Const(I32(1)), Const(I32(0)), Equal,
+ If(1, @immut/list.of([Const(I32(1))]), @immut/list.of([Const(I32(0))]))
 ])
 ```
 
@@ -273,7 +276,6 @@ struct State {
 
 What we need to do now is calculate the next state based on the previous state by pattern matching on the current instruction and data stack. Since errors may occur, the returned state should be wrapped by `Option`. If the match is successful, like the `Add` instruction here, there should be two consecutive integers representing the operands at the top of the stack, then we can calculate the next state. If all matches fail, it means something went wrong, and we use a wildcard to handle such cases and return a `None`.
 
-
 ```moonbit
 fn evaluate(state : State, stdout : Buffer) -> Option[State] {
   match (state.instructions, state.stack) {
@@ -323,9 +325,10 @@ After execution, it should be encountering the control instruction to return the
 ## Summary
 
 In this chapter we
-  - Learned the structure of a stack-based virtual machine
-  - Introduced a subset of the WebAssembly instruction set
-  - Implemented a compiler
-  - Implemented an interpreter
+
+- Learned the structure of a stack-based virtual machine
+- Introduced a subset of the WebAssembly instruction set
+- Implemented a compiler
+- Implemented an interpreter
 
 Interested readers may try to expand the definition of functions in the syntax parser, or add the `return` instruction to the instruction set.

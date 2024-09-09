@@ -219,6 +219,7 @@ The above is the entire structure of this neural network. Now, we will try to im
 ### Basic Operations
 
 First, we define an abstraction for operations. The operations we need to perform include:
+
 - `constant`: type conversion from `Double` to a certain type;
 - `value`: retrieving the intermediate result from that type; and
 - `op_add`, `op_neg`, `op_mul`, `op_div`, `exp`: addition, multiplication, division, negation, and exponential operations.
@@ -271,7 +272,6 @@ fn softmax[T : Base](inputs : Array[T]) -> Array[T] {
 ### Input Layer → Hidden Layer
 
 Next, let's implement the forward propagation function from the input layer to the hidden layer. We iterate over each parameter $w_i$ and each input $x_i$ to calculate $\sum w_i x_i$, and add the bias $c$. The result is then passed to the ReLU function through the pipeline operator `|>` to obtain the final output.
-
 
 ```moonbit
 fn input2hidden[T : Base](inputs: Array[Double], param: Array[Array[T]]) -> Array[T] {
@@ -332,12 +332,12 @@ fn cross_entropy[T : Base + Log](inputs: Array[T], expected: Int) -> T {
 
 ### Gradient Descent
 
-With the cost function in place, the next step is to perform gradient descent through backpropagation. Since we already covered this in [Chapter 12](./autodiff), we will simply show the code here. 
+With the cost function in place, the next step is to perform gradient descent through backpropagation. Since we already covered this in [Chapter 12](./autodiff), we will simply show the code here.
 
 Accumulate the partial derivatives:
 
 ```moonbit
-fn Backward::param(param: Array[Array[Double]], diff: Array[Array[Double]], 
+fn Backward::param(param: Array[Array[Double]], diff: Array[Array[Double]],
   i: Int, j: Int) -> Backward {
   {
     value: param[i][j],
@@ -387,7 +387,7 @@ That is to say, the learning rate gradually decreases as the number of training 
 
 ### Training and Testing
 
-Finally, we can use the data to train our neural network. Usually, we need to randomly divide the dataset into two parts: the training set and the testing set. During the training phase, we compute the cost function and perform differentiation based on the data from the training set, and adjust the parameters based on the learning rate. The testing set is used to evaluate the results after all the training is completed. This is to avoid overfitting, where the model performs well on the training set but fails on general cases. This is also why the data in the training set needs to be randomly split. 
+Finally, we can use the data to train our neural network. Usually, we need to randomly divide the dataset into two parts: the training set and the testing set. During the training phase, we compute the cost function and perform differentiation based on the data from the training set, and adjust the parameters based on the learning rate. The testing set is used to evaluate the results after all the training is completed. This is to avoid overfitting, where the model performs well on the training set but fails on general cases. This is also why the data in the training set needs to be randomly split.
 
 For example, if our complete dataset contains 3 types of iris flowers, and the training set only contains two types of iris flowers, the model will never be able to correctly identify the third type of iris flower. In our case, we have a relatively small amount of training data, so we can perform full batch training, meaning that each epoch consists of one iteration, in which all the training samples are used. However, if we have a larger amount of data, we may perform mini batch training instead by splitting an epoch into several iterations and select a subset of the training data for each iteration.
 

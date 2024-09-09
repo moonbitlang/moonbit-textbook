@@ -2,7 +2,7 @@
 
 In this chapter, we explore a common data structure: trees, and related algorithms. We will start with a simple tree, understand the concept, and then learn about a specialized tree: binary tree. After that, we will explore a specialized binary tree: binary search tree. Further, we will also learn about the balanced binary tree.
 
-Trees are very common plants in our lives, as shown in the diagram. 
+Trees are very common plants in our lives, as shown in the diagram.
 
 ![trees](/pics/trees.drawio.webp)
 
@@ -18,7 +18,7 @@ If a tree is not empty, it should have exactly one root node, which has only chi
 
 In a tree, an edge refers to a pair of nodes $(u, v)$, where either $u$ is the parent node of $v$ or $v$ is the parent node of $u$; simply put, these two nodes should have a parent-child relationship. We use arrows in diagrams to indicate parent-child relationships, with the arrow pointing from an ancestor to its descendant.
 
-The example below is not a tree. 
+The example below is not a tree.
 
 ![](/pics/not-a-tree-en.drawio.webp)
 
@@ -26,25 +26,25 @@ Each red mark violates the requirements of a tree. In the upper right, there's a
 
 It's common to place the root node at the top, with child nodes arranged below their parent nodes. We have some terms related to trees. Firstly, the depth of a node corresponds to the length of the path from the root node down to that node. In other words, the number of edges traversed when going from the root node downwards. Therefore, the depth of the root is $0$. Then the height of a node corresponds to the length of the longest path from the node to a leaf node. Likewise, the height of a leaf node is $0$. Finally, there's the height of a tree, which is equivalent to the height of the root node. If a tree has only one node, it is both the root node and a leaf node, with a height of $0$. If a tree is empty, meaning it has no nodes, we define its height as $-1$. However, some books may define it differently, considering the layers of the tree, with the root being the first layer, and so on.
 
-Having discussed the logical structure of a tree, let's now consider its storage structure. While the logical structure defines the relationships between data, the storage structure defines the specific representation of data. We'll use a binary tree as an example, where each node has at most two children. Here, we'll represent the tree using a list of tuples. Each tuple defines a parent-child relationship, such as `(0, 1)`, indicating that node $0$ is the parent of node $1$. 
+Having discussed the logical structure of a tree, let's now consider its storage structure. While the logical structure defines the relationships between data, the storage structure defines the specific representation of data. We'll use a binary tree as an example, where each node has at most two children. Here, we'll represent the tree using a list of tuples. Each tuple defines a parent-child relationship, such as `(0, 1)`, indicating that node $0$ is the parent of node $1$.
 
 Another way is to use algebraic data structures we have talked about previously:
 
 ```moonbit no-check
-Node(0, 
-  Node(1, 
-    Leaf(3), 
-    Empty), 
+Node(0,
+  Node(1,
+    Leaf(3),
+    Empty),
   Leaf(2))
 ```
 
-We define several cases using an enumeration type: `Node` represents a regular tree node with its own number and two subtrees, `Leaf` represents a tree with only one node, i.e., a leaf node, having only its own number, and `Empty` represents an empty tree. With this representation, we can define a tree structure similar to before. Of course, this is just one possible implementation. 
+We define several cases using an enumeration type: `Node` represents a regular tree node with its own number and two subtrees, `Leaf` represents a tree with only one node, i.e., a leaf node, having only its own number, and `Empty` represents an empty tree. With this representation, we can define a tree structure similar to before. Of course, this is just one possible implementation.
 
 The final approach is a list where each level's structure is arranged consecutively from left to right:
 
 ![](/pics/list-tree.drawio.webp)
 
-For example, the root node is placed at the beginning of the list, followed by nodes of the second level from left to right, then nodes of the third level from left to right, and so on. Thus, node $3$ and the node to its right are children of node $1$, while the two nodes after are children of $2$. These three nodes are all empty in the example. 
+For example, the root node is placed at the beginning of the list, followed by nodes of the second level from left to right, then nodes of the third level from left to right, and so on. Thus, node $3$ and the node to its right are children of node $1$, while the two nodes after are children of $2$. These three nodes are all empty in the example.
 
 We can see that all three methods define the same tree, but their storage structures are quite different. Hence, we can conclude that the logical structure of data is independent of its storage structure.
 
@@ -61,7 +61,7 @@ enum IntTree {
 }
 ```
 
-The first algorithm we will discuss is binary tree traversal (or search). Tree traversal refers to the process of visiting all nodes of a tree in a certain order without repetition. Typically, there are two methods of traversal: depth-first and breadth-first. Depth-first traversal always visits one subtree before the other. During the traversal of a subtree, it recursively visits one of its subtrees. Thus, it always reaches the deepest nodes first before returning. For example, 
+The first algorithm we will discuss is binary tree traversal (or search). Tree traversal refers to the process of visiting all nodes of a tree in a certain order without repetition. Typically, there are two methods of traversal: depth-first and breadth-first. Depth-first traversal always visits one subtree before the other. During the traversal of a subtree, it recursively visits one of its subtrees. Thus, it always reaches the deepest nodes first before returning. For example,
 
 ![](/pics/traversal-en.drawio.webp)
 
@@ -69,11 +69,11 @@ In the diagram, we first visit the left subtree, then the left subtree again, le
 
 Depth-first traversal usually involves three variations: preorder traversal, inorder traversal, and postorder traversal. The difference lies in when the root node is visited while traversing the entire tree. For example, in preorder traversal, the root node is visited first, followed by the left subtree, and then the right subtree. Taking the tree we just saw as an example, this means we start with $0$, then visit the left subtree; when visiting the left subtree, we start from the root node again, which is $1$; then $3$, $4$, $5$, and $2$. In inorder traversal, the left subtree is visited first, followed by the root node, and then the right subtree. Hence, it first visits the left subtree. At this moment, there is still a left subtree, so we go down to tree $3$. Now, it's a leaf node without a left subtree, so we visit the root node $3$. Then we return to visit the root node $1$ of the subtree and proceed to visit the right subtree. Postorder traversal follows a similar logic, visiting the left subtree first, then the right subtree, and finally the root node. In fact, solving the Fibonacci sequence can be seen as a postorder traversal, as we first visit the $(n-1)$-th and $(n-2)$-th items, which are two subtrees, and then solve the $n$-th item, which is the value of the root node. As for breadth-first traversal, we have already explained it: from left to right, the order is `[0, 1, 2, 3, 4, 5]`.
 
-Let's take a look at the specific implementation of these two traversals in terms of finding a specific value in the tree's nodes. Firstly, let's consider depth-first traversal. 
+Let's take a look at the specific implementation of these two traversals in terms of finding a specific value in the tree's nodes. Firstly, let's consider depth-first traversal.
 
 ```moonbit
 fn dfs_search(target: Int, tree: IntTree) -> Bool {
-  match tree { // check the visited tree 
+  match tree { // check the visited tree
     Empty => false // empty tree implies we are getting deepest
     Node(value, left, right) => // otherwise, search in subtrees
       value == target || dfs_search(target, left) || dfs_search(target, right)
@@ -85,7 +85,7 @@ As we introduced earlier, this is a traversal based on structural recursion. We 
 
 ### Queues
 
-Now let's continue with breadth-first traversal. 
+Now let's continue with breadth-first traversal.
 
 ![](/pics/bfs-en.drawio.webp)
 
@@ -97,13 +97,13 @@ A queue is a first-in-first-out (FIFO) data structure. Each time, we dequeue a t
 
 Let's take a closer look. Just like lining up in real life, the person who enters the line first gets served first, so it's important to maintain the order of arrival. The insertion and deletion of data follow the same order, as shown in the diagram. We've added numbers from $0$ to $5$ in order. After adding $6$, it follows $5$; and if we delete from the queue, we start from the earliest added $0$.
 
-The queue we're using here is defined by the following interface: 
+The queue we're using here is defined by the following interface:
 
 ```moonbit no-check
 fn empty[T]() -> Queue[T] // construct an empty queue
 fn enqueue[T](q: Queue[T], x: T) -> Queue[T] // add element to the tail
 // attempt to dequeue an element, return None if the queue is empty
-fn pop[T](q: Queue[T]) -> (Option[T], Queue[T]) 
+fn pop[T](q: Queue[T]) -> (Option[T], Queue[T])
 ```
 
 <!-- Implementation of Queue
@@ -187,7 +187,7 @@ fn pop[T](q: Queue[T]) -> (Option[T], Queue[T]) {
 ```
 -->
 
-`empty`: construct an empty queue; `enqueue`: add an element to the queue, i.e., add it to the tail; `pop`: attempt to dequeue an element and return the remaining queue. If the queue is already empty, the returned value will be `None` along with an empty queue. For example, 
+`empty`: construct an empty queue; `enqueue`: add an element to the queue, i.e., add it to the tail; `pop`: attempt to dequeue an element and return the remaining queue. If the queue is already empty, the returned value will be `None` along with an empty queue. For example,
 
 ```moonbit no-check
 let q = enqueue(enqueue(empty(), 1), 2)
@@ -198,7 +198,7 @@ assert(tail == enqueue(empty(), 2))
 
 We've added $1$ and $2$ to an empty queue. Then, when we try to dequeue an element, we should get `Some(1)`, and what's left should be equivalent to adding $2$ to an empty queue.
 
-Let's return to the implementation of our breadth-first traversal. 
+Let's return to the implementation of our breadth-first traversal.
 
 ```moonbit
 fn bfs_search(target: Int, queue: Queue[IntTree]) -> Bool {
@@ -206,7 +206,7 @@ fn bfs_search(target: Int, queue: Queue[IntTree]) -> Bool {
     (None, _) => false // If the queue is empty, end the search
     (Some(head), tail) => match head { // If the queue is not empty, operate on the extracted tree
       Empty => bfs_search(target, tail) // If the tree is empty, operate on the remaining queue
-      Node(value, left, right) => 
+      Node(value, left, right) =>
         if value == target { true } else {
           // Otherwise, operate on the root node and add the subtrees to the queue
           bfs_search(target, enqueue(enqueue(tail, left), right))
@@ -222,13 +222,13 @@ So far, we've concluded our introduction to tree traversal. However, we may noti
 
 ## Binary Search Trees
 
-Previously, we mentioned that searching for elements in a binary tree might require traversing the entire tree. For example, in the diagram below, we attempt to find the element $8$ in the tree. 
+Previously, we mentioned that searching for elements in a binary tree might require traversing the entire tree. For example, in the diagram below, we attempt to find the element $8$ in the tree.
 
 ![](/pics/bst-en.drawio.webp)
 
 For the left binary tree, we have to search the entire tree, ultimately concluding that $8$ is not in the tree.
 
-To facilitate searching, we impose a rule on the arrangement of data in the tree based on the binary tree: from left to right, the data is arranged in ascending order. This gives rise to the binary search tree. According to the rule, all data in the left subtree should be less than the node's data, and the node's data should be less than the data in the right subtree, as shown in the diagram on the right. 
+To facilitate searching, we impose a rule on the arrangement of data in the tree based on the binary tree: from left to right, the data is arranged in ascending order. This gives rise to the binary search tree. According to the rule, all data in the left subtree should be less than the node's data, and the node's data should be less than the data in the right subtree, as shown in the diagram on the right.
 
 We notice that if we perform an inorder traversal, we can traverse the sorted data from smallest to largest. Searching on a binary search tree is very simple: determine whether the current value is less than, equal to, or greater than the value we are looking for, then we know which subtree should be searched further. In the example above, when we check if $8$ is in the tree, we find that $8$ is greater than $5$, so we should search on the right subtree next. When we encounter $7$, we find that there is no right subtree, meaning there are no numbers greater than $7$, so we conclude that $8$ is not in the tree. As you can see, our search efficiency has greatly improved. In fact, the maximum number of searches we need to perform, in the worst-case scenario, is the height of the tree plus one, rather than the total number of elements. In some cases, the height of the tree may also equal the total number of elements, as we will see later.
 
@@ -243,16 +243,16 @@ fn insert(tree: IntTree, value: Int) -> IntTree {
   match tree {
     Empty => Node(value, Empty, Empty) // construct a new tree if it's empty
     Node(v, left, right) => // if not empty, update one subtree by insertion
-      if value == v { tree } else 
-      if value < v { Node(v, insert(left, value), right) } else 
-        { Node(v, left, insert(right, value)) } 
+      if value == v { tree } else
+      if value < v { Node(v, insert(left, value), right) } else
+        { Node(v, left, insert(right, value)) }
   }
 }
 ```
 
 Here we can see the complete insertion code. In line 3, if the original tree is empty, we reconstruct a new tree. In lines 6 and 7, if we need to update the subtree, we use the `Node` constructor to build a new tree based on the updated subtree.
 
-Next, we discuss the delete operation. 
+Next, we discuss the delete operation.
 
 ![](/pics/bst-deletion-en.drawio.webp)
 
@@ -262,7 +262,7 @@ Similarly, we do it with structural recursion. If the tree is empty, it's straig
 fn remove_largest(tree: IntTree) -> (IntTree, Int) {
     match tree {
     Node(v, left, Empty) => (left, v)
-    Node(v, left, right) => { 
+    Node(v, left, right) => {
         let (newRight, value) = remove_largest(right)
         (Node(v, left, newRight), value)
     } }
@@ -283,13 +283,13 @@ Here, we demonstrate part of the deletion of a binary search tree. We define a h
 
 ### Balanced Binary Trees
 
-Finally, we delve into the balanced binary trees. When explaining binary search trees, we mentioned that the worst-case number of searches in a binary search tree depends on the height of the tree. Insertion and deletion on a binary search tree may cause the tree to become unbalanced, meaning that one subtree's height is significantly greater than the other's. For example, if we insert elements from $1$ to $5$ in sequence, we'll get a tree as shown in the lower left diagram. 
+Finally, we delve into the balanced binary trees. When explaining binary search trees, we mentioned that the worst-case number of searches in a binary search tree depends on the height of the tree. Insertion and deletion on a binary search tree may cause the tree to become unbalanced, meaning that one subtree's height is significantly greater than the other's. For example, if we insert elements from $1$ to $5$ in sequence, we'll get a tree as shown in the lower left diagram.
 
 ![](/pics/worst-bst-en.drawio.webp)
 
 We can see that for the entire tree, the height of the left subtree is $-1$ because it's an empty tree, while the height of the right subtree is $3$. In this case, the worst-case number of searches equals the number of elements in the tree, which is $5$. However, if the tree is more balanced, meaning the heights of the two subtrees are similar, as shown in the right diagram, the maximum depth of a node is at most $2$, which is approximately $\log_2n$ times, where $n$ is the number of elements in the tree. As you may recall from the curve of the logarithmic function, when the number of elements in the tree is large, there can be a significant difference in the worst-case search time between the two scenarios. Therefore, we hope to avoid this worst-case scenario to ensure that we always have good query performance. To achieve this, we can introduce a class of data structures called balanced binary trees, where the heights of any node's left and right subtrees are approximately equal. Common types of balanced binary trees include AVL trees, 2-3 trees, or red-black trees. Here, we'll discuss AVL trees, which are relatively simple.
 
-The key to maintaining balance in a binary balanced tree is that when the tree becomes unbalanced, we can rearrange the tree to regain balance. The insertion and deletion of AVL trees are similar to standard binary search trees, except that AVL trees perform adjustments after each insertion or deletion to ensure the tree remains balanced. We add a height attribute to the node definition. 
+The key to maintaining balance in a binary balanced tree is that when the tree becomes unbalanced, we can rearrange the tree to regain balance. The insertion and deletion of AVL trees are similar to standard binary search trees, except that AVL trees perform adjustments after each insertion or deletion to ensure the tree remains balanced. We add a height attribute to the node definition.
 
 ```moonbit no-check
 enum AVLTree {
@@ -311,9 +311,9 @@ After inserting or deleting an element, we traverse back from the modified locat
 fn balance(left: AVLTree, z: Int, right: AVLTree) -> AVLTree {
   if height(left) > height(right) + 1 {
     match left {
-      Node(y, left_l, left_r, _) => 
-        if height(left_l) >= height(left_r) { 
-          create(left_l, y, create(lr, z, right)) // x is on y and z's same side 
+      Node(y, left_l, left_r, _) =>
+        if height(left_l) >= height(left_r) {
+          create(left_l, y, create(lr, z, right)) // x is on y and z's same side
         } else { match left_r {
           Node(x, left_right_l, left_right_r, _) =>  // x is between y and z
             create(create(left_l, y, left_right_l), x, create(left_right_r, z, right))
@@ -323,7 +323,7 @@ fn balance(left: AVLTree, z: Int, right: AVLTree) -> AVLTree {
 }
 ```
 
-Here is a snippet of code for a balanced tree. You can easily complete the code once you understand what we just discussed. We first determine if a tree is unbalanced, by checking if the height difference between the two subtrees exceeds a specific value and which side is higher. After determining this, we perform a rebalancing operation. At this point, the root node we pass in is $z$, and the higher side after pattern matching is $y$. Then, based on the comparison of the heights of $y$'s two subtrees, we further determine whether $x$ is $y$ and $z$'s same side or between $y$ and $z$, as shown in line 6. Afterwards, we recombine based on the scenarios discussed earlier, as shown in lines 6 and 9. Taking insertion of an element as an example: 
+Here is a snippet of code for a balanced tree. You can easily complete the code once you understand what we just discussed. We first determine if a tree is unbalanced, by checking if the height difference between the two subtrees exceeds a specific value and which side is higher. After determining this, we perform a rebalancing operation. At this point, the root node we pass in is $z$, and the higher side after pattern matching is $y$. Then, based on the comparison of the heights of $y$'s two subtrees, we further determine whether $x$ is $y$ and $z$'s same side or between $y$ and $z$, as shown in line 6. Afterwards, we recombine based on the scenarios discussed earlier, as shown in lines 6 and 9. Taking insertion of an element as an example:
 
 ```moonbit no-check
 fn add(tree: AVLTree, value: Int) -> AVLTree {
