@@ -249,8 +249,6 @@ enum List[T] {
 }
 ```
 
-With MoonBit's syntactic sugar, we can also write a list in the form of `List::[1, 2, 3]`, which is equivalent to `Cons(1, Cons(2, Cons(3, Nil)))`.
-
 As we can observe, the definition of `List[T]` is inductive. Similar to mathematical induction, it comprises of a base case and an inductive case: the base case is `Nil`, which constructs an empty list, while the inductive case is `Cons`, which adds a new item into the list.
 
 The following figure shows the structure of a list:
@@ -296,9 +294,9 @@ block-beta
 The following examples help deepen our understanding of lists.
 - The following are valid lists:
     - `let int_list: List[Int] = Cons(1, Cons(2, Cons(3, Nil)))`
-    - `let string_list: List[String] = List::["This", "is", "a", "sentence."]`
+    - `let string_list: List[String] = Cons("This", Cons("is", Cons("a", Cons("sentence.", Nil))))`
 - The following are not valid lists:
-    - `List::[1, true, 3]`: Items are of different types.
+    - `Cons(1, Cons(true, Cons(3, Nil)))`: Items are of different types.
     - `Cons(1, 2)`: `2` itself is not a list.
     - `Cons(1, Cons(Nil, Nil))`: Items are of different types.
 
